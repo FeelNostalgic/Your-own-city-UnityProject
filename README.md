@@ -6,7 +6,7 @@ Build houses where citizens can live and get gold from them. But be careful, the
 
 Build decoration building around houses to make citizens happy and increase the gold they make.
 
-## Descarga
+## Download
 Builded version
 
 https://feelnostalgic.itch.io/your-own-city
