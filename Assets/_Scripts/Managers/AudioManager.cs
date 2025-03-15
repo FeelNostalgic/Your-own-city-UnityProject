@@ -1,6 +1,8 @@
 using System;
 using Utilities;
 using UnityEngine;
+using UnityEngine.Audio;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace Managers
@@ -9,12 +11,15 @@ namespace Managers
     {
         #region Inspector Variables
 
-        [SerializeField] private AudioSource MainAudioSource;
-        [SerializeField] private AudioSource SFXAudioSource;
-        [SerializeField] private AudioSource SFX_ClickAudioSource;
+        [SerializeField] private AudioMixer audioMixer;
         
+        [FormerlySerializedAs("MainAudioSource")] [SerializeField] private AudioSource mainAudioSource;
+        [FormerlySerializedAs("SFXAudioSource")] [SerializeField] private AudioSource sfxAudioSource;
+        [FormerlySerializedAs("SFX_ClickAudioSource")] [SerializeField] private AudioSource sfxClickAudioSource;
+        
+        [FormerlySerializedAs("SFX_AudioClips")]
         [Tooltip("Orden: construccion, habitante, destroy, clickOnMap, nivelUp, buttonClick, GameOver")]
-        [SerializeField] private AudioClip[] SFX_AudioClips;
+        [SerializeField] private AudioClip[] sfxAudioClips;
 
         #endregion
 
@@ -38,12 +43,12 @@ namespace Managers
 
         public void PlayMainSound()
         {
-            MainAudioSource.Play();
+            mainAudioSource.Play();
         }
         
         public void StopMainSound()
         {
-            MainAudioSource.Stop();
+            mainAudioSource.Stop();
         }
 
         public void PlaySFXSound(SFX_Type type)
@@ -51,36 +56,48 @@ namespace Managers
             switch (type)
             {
                 case SFX_Type.buildBuilding:
-                    SFXAudioSource.pitch = Random.Range(1,1.6f);
-                    PlaySFXSound(SFX_AudioClips[0], SFXAudioSource);
+                    sfxAudioSource.pitch = Random.Range(1,1.6f);
+                    PlaySFXSound(sfxAudioClips[0], sfxAudioSource);
                     break;
                 case SFX_Type.newHabitante:
-                    SFXAudioSource.pitch = Random.Range(1,1.6f);
-                    PlaySFXSound(SFX_AudioClips[1], SFXAudioSource);
+                    sfxAudioSource.pitch = Random.Range(1,1.6f);
+                    PlaySFXSound(sfxAudioClips[1], sfxAudioSource);
                     break;
                 case SFX_Type.detroyBuilding:
-                    SFXAudioSource.pitch = Random.Range(1,1.6f);
-                    PlaySFXSound(SFX_AudioClips[2], SFXAudioSource);
+                    sfxAudioSource.pitch = Random.Range(1,1.6f);
+                    PlaySFXSound(sfxAudioClips[2], sfxAudioSource);
                     break;
                 case SFX_Type.clickOnMap:
-                    SFXAudioSource.pitch = Random.Range(1,1.6f);
-                    PlaySFXSound(SFX_AudioClips[3], SFX_ClickAudioSource);
+                    sfxAudioSource.pitch = Random.Range(1,1.6f);
+                    PlaySFXSound(sfxAudioClips[3], sfxClickAudioSource);
                     break;
                 case SFX_Type.levelUp:
-                    SFXAudioSource.pitch = Random.Range(1,1.6f);
-                    PlaySFXSound(SFX_AudioClips[4], SFXAudioSource);
+                    sfxAudioSource.pitch = Random.Range(1,1.6f);
+                    PlaySFXSound(sfxAudioClips[4], sfxAudioSource);
                     break;
                 case SFX_Type.buttonClick:
-                    SFXAudioSource.pitch = 1;
-                    PlaySFXSound(SFX_AudioClips[5], SFX_ClickAudioSource);
+                    sfxAudioSource.pitch = Random.Range(0.9f,1.1f);
+                    PlaySFXSound(sfxAudioClips[5], sfxClickAudioSource);
                     break;
                 case SFX_Type.GameOver:
-                    SFXAudioSource.pitch = 1;
-                    PlaySFXSound(SFX_AudioClips[6], SFXAudioSource);
+                    sfxAudioSource.pitch = 1;
+                    PlaySFXSound(sfxAudioClips[6], sfxAudioSource);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
+        }
+
+        public void ManageMusicVolume(float sliderValue)
+        {
+            var volume = sliderValue > 0 ? Mathf.Log10(sliderValue) * 20 : -80f;
+            audioMixer.SetFloat("musicVol", volume);
+        }
+
+        public void ManageSFXVolume(float sliderValue)
+        {
+            var volume = sliderValue > 0 ? Mathf.Log10(sliderValue) * 20 : -80f;
+            audioMixer.SetFloat("sfxVol", volume);
         }
         
         #endregion

@@ -699,7 +699,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -1266,19 +1266,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 471258872}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: Proyecto.Managers.UIManager, Assembly-CSharp
-        m_MethodName: StartGame
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &471258872
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1399,19 +1387,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 554747515}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: Proyecto.Managers.UIManager, Assembly-CSharp
-        m_MethodName: StartGame
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &554747515
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1794,19 +1770,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 745539947}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: Proyecto.Managers.UIManager, Assembly-CSharp
-        m_MethodName: StartGame
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &745539947
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2188,7 +2152,6 @@ GameObject:
   - component: {fileID: 1056791986}
   - component: {fileID: 1056791989}
   - component: {fileID: 1056791988}
-  - component: {fileID: 1056791987}
   m_Layer: 5
   m_Name: BlackScreen
   m_TagString: Untagged
@@ -2215,157 +2178,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1056791987
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1056791985}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69beb381e244f92449b8c4cf954630e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_TrackedObjects:
-  - rid: 6115692930894397505
-  - rid: 6115692930894397512
-  references:
-    version: 2
-    RefIds:
-    - rid: 6115692930894397505
-      type: {class: TrackedRectTransform, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 1056791986}
-        m_TrackedProperties:
-          items:
-          - rid: 6115692930894397506
-          - rid: 6115692930894397507
-          - rid: 6115692930894397508
-          - rid: 6115692930894397509
-          - rid: 6115692930894397510
-          - rid: 6115692930894397511
-    - rid: 6115692930894397506
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchorMin.x
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 5
-        - localeIdentifier:
-            m_Code: es
-          value: 0
-    - rid: 6115692930894397507
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchorMin.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 5
-        - localeIdentifier:
-            m_Code: es
-          value: 0
-    - rid: 6115692930894397508
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchorMax.x
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 5
-        - localeIdentifier:
-            m_Code: es
-          value: 1
-    - rid: 6115692930894397509
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_AnchorMax.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 5
-        - localeIdentifier:
-            m_Code: es
-          value: 1
-    - rid: 6115692930894397510
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_SizeDelta.x
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 100
-        - localeIdentifier:
-            m_Code: es
-          value: 0
-    - rid: 6115692930894397511
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_SizeDelta.y
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 100
-        - localeIdentifier:
-            m_Code: es
-          value: 0
-    - rid: 6115692930894397512
-      type: {class: TrackedUGuiGraphic, ns: UnityEngine.Localization.PropertyVariants.TrackedObjects, asm: Unity.Localization}
-      data:
-        m_Target: {fileID: 1056791988}
-        m_TrackedProperties:
-          items:
-          - rid: 6115692930894397513
-          - rid: 6115692930894397514
-          - rid: 6115692930894397515
-          - rid: 6115692930894397516
-        m_UpdateType: 0
-    - rid: 6115692930894397513
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_Color.r
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 1
-        - localeIdentifier:
-            m_Code: es
-          value: 0
-    - rid: 6115692930894397514
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_Color.g
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 1
-        - localeIdentifier:
-            m_Code: es
-          value: 0
-    - rid: 6115692930894397515
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_Color.b
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 1
-        - localeIdentifier:
-            m_Code: es
-          value: 0
-    - rid: 6115692930894397516
-      type: {class: FloatTrackedProperty, ns: UnityEngine.Localization.PropertyVariants.TrackedProperties, asm: Unity.Localization}
-      data:
-        m_PropertyPath: m_Color.a
-        m_VariantData:
-        - localeIdentifier:
-            m_Code: en
-          value: 1
-        - localeIdentifier:
-            m_Code: es
-          value: 0
 --- !u!114 &1056791988
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2380,7 +2192,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -2417,7 +2229,7 @@ GameObject:
   - component: {fileID: 1122777029}
   - component: {fileID: 1122777028}
   m_Layer: 5
-  m_Name: ObejctiveButton
+  m_Name: ObjectiveButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2486,19 +2298,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1122777029}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: Proyecto.Managers.UIManager, Assembly-CSharp
-        m_MethodName: StartGame
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1122777029
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2589,7 +2389,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0.7490196}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -2935,7 +2735,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -2964,6 +2764,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7615216518738303443, guid: 9784fbc81dc3b004990f0015d2df3433, type: 3}
   m_PrefabInstance: {fileID: 7021407139599728339}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1246679279 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1238384033335953302, guid: 9784fbc81dc3b004990f0015d2df3433, type: 3}
+  m_PrefabInstance: {fileID: 7021407139599728339}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1251004222
 GameObject:
   m_ObjectHideFlags: 0
@@ -3017,7 +2828,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -3269,7 +3080,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0.7490196}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -4135,8 +3946,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_IgnoreReversedGraphics: 1
-  m_BlockingObjects: 3
+  m_IgnoreReversedGraphics: 0
+  m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -4181,7 +3992,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 1
-  m_AdditionalShaderChannelsFlag: -1
+  m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 1
@@ -4262,7 +4073,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0.7490196}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -4339,7 +4150,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0.7490196}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -4399,37 +4210,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!1 &1575407258
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1575407259}
-  m_Layer: 0
-  m_Name: GameObject
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1575407259
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1575407258}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1596221536
 GameObject:
   m_ObjectHideFlags: 0
@@ -4512,7 +4292,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -4604,8 +4384,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000030517578}
-  m_SizeDelta: {x: 600, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1659967834
 MonoBehaviour:
@@ -4786,19 +4566,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1662058053}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: Proyecto.Managers.UIManager, Assembly-CSharp
-        m_MethodName: StartGame
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1662058053
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4889,7 +4657,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -4995,19 +4763,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1794826833}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: Proyecto.Managers.UIManager, Assembly-CSharp
-        m_MethodName: StartGame
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1794826833
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5645,6 +5401,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6759129893651837427, guid: 2907cf03a78ca24488b6ddef7e94f166, type: 3}
   m_PrefabInstance: {fileID: 1960578095}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1960578097 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1293121847008409885, guid: 2907cf03a78ca24488b6ddef7e94f166, type: 3}
+  m_PrefabInstance: {fileID: 1960578095}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2010040827
 GameObject:
   m_ObjectHideFlags: 0
@@ -5864,8 +5631,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a87945846ea5bb0418274f16bd9bc3e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startButton: {fileID: 0}
-  blackScreen: {fileID: 0}
+  startPanel: {fileID: 1240705543}
+  startButton: {fileID: 1246679279}
+  optionsButton: {fileID: 1794826832}
+  controlsButton: {fileID: 745539946}
+  objectivesButton: {fileID: 1122777028}
+  optionsPanel: {fileID: 2045974348}
+  musicVolumeSlider: {fileID: 4571521382989203675}
+  effectsVolumeSlider: {fileID: 1960578097}
+  languageDropdown: {fileID: 1842650997}
+  optionsBackButton: {fileID: 554747514}
+  controlsPanel: {fileID: 323207575}
+  controlsBackButton: {fileID: 1662058052}
+  objectivesPanel: {fileID: 1251004222}
+  objectivesBackButton: {fileID: 471258871}
+  blackScreen: {fileID: 1056791988}
 --- !u!1 &2022231626
 GameObject:
   m_ObjectHideFlags: 0
@@ -6008,7 +5788,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0.7490196}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -6085,7 +5865,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -6232,7 +6012,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0.7490196}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -6267,6 +6047,10 @@ PrefabInstance:
     - target: {fileID: 518565041582821688, guid: 2907cf03a78ca24488b6ddef7e94f166, type: 3}
       propertyPath: m_Name
       value: MusicVolume
+      objectReference: {fileID: 0}
+    - target: {fileID: 1293121847008409885, guid: 2907cf03a78ca24488b6ddef7e94f166, type: 3}
+      propertyPath: m_Value
+      value: 0.08
       objectReference: {fileID: 0}
     - target: {fileID: 3628566648653973730, guid: 2907cf03a78ca24488b6ddef7e94f166, type: 3}
       propertyPath: m_AnchorMax.x
@@ -6378,6 +6162,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6759129893651837427, guid: 2907cf03a78ca24488b6ddef7e94f166, type: 3}
   m_PrefabInstance: {fileID: 4571521382989203673}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4571521382989203675 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1293121847008409885, guid: 2907cf03a78ca24488b6ddef7e94f166, type: 3}
+  m_PrefabInstance: {fileID: 4571521382989203673}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &7021407139599728339
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6389,22 +6184,6 @@ PrefabInstance:
     - target: {fileID: 654934243663814186, guid: 9784fbc81dc3b004990f0015d2df3433, type: 3}
       propertyPath: m_Name
       value: StartButton
-      objectReference: {fileID: 0}
-    - target: {fileID: 6139362513238668294, guid: 9784fbc81dc3b004990f0015d2df3433, type: 3}
-      propertyPath: m_fontAsset
-      value: 
-      objectReference: {fileID: 11400000, guid: 05b3a5ee1187c9341879ab9456efb266, type: 2}
-    - target: {fileID: 6139362513238668294, guid: 9784fbc81dc3b004990f0015d2df3433, type: 3}
-      propertyPath: m_sharedMaterial
-      value: 
-      objectReference: {fileID: 4894095553914302692, guid: 05b3a5ee1187c9341879ab9456efb266, type: 2}
-    - target: {fileID: 6139362513238668294, guid: 9784fbc81dc3b004990f0015d2df3433, type: 3}
-      propertyPath: m_VerticalAlignment
-      value: 512
-      objectReference: {fileID: 0}
-    - target: {fileID: 6139362513238668294, guid: 9784fbc81dc3b004990f0015d2df3433, type: 3}
-      propertyPath: m_hasFontAssetChanged
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7615216518738303443, guid: 9784fbc81dc3b004990f0015d2df3433, type: 3}
       propertyPath: m_Pivot.x
@@ -6557,4 +6336,3 @@ SceneRoots:
   - {fileID: 275667424}
   - {fileID: 1490978510}
   - {fileID: 8135209960662668432}
-  - {fileID: 1575407259}

@@ -26,7 +26,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 654934243663814186}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -120,19 +120,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3178565301745915868}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: Proyecto.Managers.UIManager, Assembly-CSharp
-        m_MethodName: StartGame
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &6491916236293069698
 GameObject:
   m_ObjectHideFlags: 0
@@ -201,8 +189,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 2f99158d731a69249bbfe4c97eeafb4e, type: 2}
-  m_sharedMaterial: {fileID: -293308763325264022, guid: 2f99158d731a69249bbfe4c97eeafb4e, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 05b3a5ee1187c9341879ab9456efb266, type: 2}
+  m_sharedMaterial: {fileID: 4894095553914302692, guid: 05b3a5ee1187c9341879ab9456efb266, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

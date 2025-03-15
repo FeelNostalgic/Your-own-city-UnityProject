@@ -26,7 +26,7 @@ MonoBehaviour:
     m_Items: []
   m_ProjectLocaleIdentifier:
     m_Code: en
-  m_PreloadBehavior: 1
+  m_PreloadBehavior: 3
   m_InitializeSynchronously: 0
   references:
     version: 2
@@ -62,13 +62,13 @@ MonoBehaviour:
       type: {class: LocalizedStringDatabase, ns: UnityEngine.Localization.Settings, asm: Unity.Localization}
       data:
         m_DefaultTableReference:
-          m_TableCollectionName: 
+          m_TableCollectionName: LocalizationStrings
         m_CustomTableProvider:
           rid: -2
         m_CustomTablePostprocessor:
           rid: -2
-        m_UseFallback: 0
-        m_MissingTranslationState: 1
+        m_UseFallback: 1
+        m_MissingTranslationState: 2
         m_NoTranslationFoundMessage: No translation found for '{key}' in {table.TableCollectionName}
         m_SmartFormat:
           rid: 6115692930894397446

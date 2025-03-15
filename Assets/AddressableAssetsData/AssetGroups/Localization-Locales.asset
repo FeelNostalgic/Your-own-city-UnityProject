@@ -24,7 +24,7 @@ MonoBehaviour:
     - Locale
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9649e6500409d3c469f183d04f81aa4e
-    m_Address: Spanish (es)
+    m_Address: "Espa\xF1ol (es)"
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale
