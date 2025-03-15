@@ -14,7 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_TableCollectionName: LocalizationStrings
   m_TableCollectionNameGuidString: e8ce51a54b8de4f4fb863651e7d6487c
-  m_Entries: []
+  m_Entries:
+  - m_Id: 27371761664
+    m_Key: PLAY_BUTTON
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
