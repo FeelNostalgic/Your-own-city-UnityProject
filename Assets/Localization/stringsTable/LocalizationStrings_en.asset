@@ -22,6 +22,57 @@ MonoBehaviour:
     m_Localized: PLAY
     m_Metadata:
       m_Items: []
+  - m_Id: 57005309685760
+    m_Localized: OPTIONS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57041963708416
+    m_Localized: CONTROLS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57066206785536
+    m_Localized: OBJECTIVES
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57106614710272
+    m_Localized: BACK
+    m_Metadata:
+      m_Items: []
+  - m_Id: 66535686926336
+    m_Localized: MUSIC
+    m_Metadata:
+      m_Items: []
+  - m_Id: 66593677373440
+    m_Localized: EFFECTS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 70683304128512
+    m_Localized: LANGUAGE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 72908092993536
+    m_Localized: CONTROLS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 72939151814656
+    m_Localized: "- Right click to navigate the map\n- WASD to move around the map\n-
+      E/Q keys to go up or down\n- Left-click on a square to open the construction
+      menu\n- Click on a built box to show its information \n- Escape to pause"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 76845068054528
+    m_Localized: OBJECTIVE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 76902618099712
+    m_Localized: '- Build and manage the city
+
+      - Avoid bankruptcy (-500)
+
+      -
+      Maintain the happiness of the inhabitants'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

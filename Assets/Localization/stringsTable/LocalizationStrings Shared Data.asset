@@ -19,6 +19,50 @@ MonoBehaviour:
     m_Key: PLAY_BUTTON
     m_Metadata:
       m_Items: []
+  - m_Id: 57005309685760
+    m_Key: OPTIONS_BUTTON
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57041963708416
+    m_Key: CONTROLS_BUTTON
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57066206785536
+    m_Key: OBJECTIVE_BUTTON
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57106614710272
+    m_Key: BACK_BUTTON
+    m_Metadata:
+      m_Items: []
+  - m_Id: 66535686926336
+    m_Key: MUSIC_LABEL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 66593677373440
+    m_Key: EFFECTS_LABEL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 70683304128512
+    m_Key: LANGUAGE_LABEL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 72908092993536
+    m_Key: CONTROLS_LABEL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 72939151814656
+    m_Key: CONTROLS_INSTRUCTIONS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 76845068054528
+    m_Key: OBJECTIVE_LABEL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 76902618099712
+    m_Key: OBJECTIVE_INSTRUCTIONS
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

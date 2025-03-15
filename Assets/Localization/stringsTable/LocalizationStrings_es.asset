@@ -22,6 +22,54 @@ MonoBehaviour:
     m_Localized: JUGAR
     m_Metadata:
       m_Items: []
+  - m_Id: 57005309685760
+    m_Localized: OPCIONES
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57041963708416
+    m_Localized: CONTROLES
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57066206785536
+    m_Localized: OBJECTIVOS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 57106614710272
+    m_Localized: VOLVER
+    m_Metadata:
+      m_Items: []
+  - m_Id: 66535686926336
+    m_Localized: "M\xDASICA"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 66593677373440
+    m_Localized: EFECTOS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 70683304128512
+    m_Localized: IDIOMA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 72908092993536
+    m_Localized: CONTROLES
+    m_Metadata:
+      m_Items: []
+  - m_Id: 72939151814656
+    m_Localized: "- Click derecho para navegar por el mapa\n\n- WASD para moverte
+      por el mapa\n\n- Tecla E/Q para subir o bajar\n\n- Click Izquierdo en una casilla
+      para abrir el menu de contruccion\n\n- Click en una casilla construida para
+      mostrar su informacion \n\n- Escape para pausar\n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 76845068054528
+    m_Localized: OBJETIVO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 76902618099712
+    m_Localized: "- Contruye y gestiona la ciudad \n- Evita caer en bancarrota (-500)\n-
+      Mant\xE9n la felicidad de los habitantes"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
