@@ -79,13 +79,13 @@ namespace Buildings
                 UpdateArea();
                 UpdateMultiplicadorCurrentVecinos(MULTIPLIER);
                 UpdateMultiplicadorNewVecinos();
-                UIManager.Instance.UpdateInfoMultiplierNivel(_currentLevel, _gastosPorSegundo, _currentMultiplicador,
+                UIManagerInGame.Instance.UpdateInfoMultiplierNivel(_currentLevel, _gastosPorSegundo, _currentMultiplicador,
                     _areaEfecto, _costeNivel, _casasAfectadas.Count, BuildManager.Instance.HospitalPrice);
                 ShowArea();
             }
             else
             {
-                UIManager.Instance.UpdateInfoGeneral("¡Gold insuficiente!");
+                UIManagerInGame.Instance.UpdateInfoGeneral("¡Gold insuficiente!");
             }
         }
 
@@ -98,7 +98,7 @@ namespace Buildings
             UpdateMultiplicadorCurrentVecinos(-(_currentMultiplicador - 1));
             GetComponentInParent<BuildType>().Type = BuildManager._building.none;
             BuildingsManager.Instance.Hospitales.Remove(this);
-            UIManager.Instance.DisableAllPanels();
+            UIManagerInGame.Instance.DisableAllPanels();
             Destroy(gameObject);
         }
 

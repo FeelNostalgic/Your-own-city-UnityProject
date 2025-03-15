@@ -1,3 +1,4 @@
+using System;
 using Buildings;
 using Utilities;
 using UnityEngine;
@@ -14,20 +15,8 @@ namespace Managers
 
         #region Public Variables
 
-        [HideInInspector] public bool IsEnableRaycast;
-
-        public bool IsGamePaused
-        {
-            get => _isGamePaused;
-            set => _isGamePaused = value;
-        }
-
-        public bool IsGameOver
-        {
-            get => _isGameOver;
-            set => _isGameOver = value;
-        }
-
+        public bool IsEnableRaycast { get; set; }
+        
         #endregion
 
         #region Private Variables
@@ -38,10 +27,16 @@ namespace Managers
         private LineRenderer _currentLineRendererSelected;
         private bool _isGamePaused;
         private bool _isGameOver;
+        private Camera _mainCamera;
 
         #endregion
 
         #region Unity Methods
+
+        private void Awake()
+        {
+            _mainCamera = Camera.main;
+        }
 
         private void Start()
         {
@@ -75,44 +70,42 @@ namespace Managers
 
         private void InputPointAndHitRaycast()
         {
-            if (!Input.GetMouseButton(1) && IsEnableRaycast)
+            if (Input.GetMouseButton(1) || !IsEnableRaycast) return;
+            _ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(_ray, out _hit, 300, layerHitable))
             {
-                _ray = UnityEngine.Camera.main.ScreenPointToRay(Input.mousePosition);
-                if (Physics.Raycast(_ray, out _hit, 300, layerHitable))
+                ShowHit();
+
+                if (Input.GetMouseButtonDown(0)) //Left click
                 {
-                    ShowHit();
+                    AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.clickOnMap);
+                    ShowHitSelected();
 
-                    if (Input.GetMouseButtonDown(0)) //Boton izquierdo
+                    BuildManager.Instance.SetCurrentTile(_hit.collider.gameObject);
+                    if (_hit.collider.GetComponent<BuildType>().Type != BuildManager._building.none)
                     {
-                        AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.clickOnMap);
-                        ShowHitSelected();
-
-                        BuildManager.Instance.SetCurrentTile(_hit.collider.gameObject);
-                        if (_hit.collider.GetComponent<BuildType>().Type != BuildManager._building.none)
-                        {
-                            UIManager.Instance.DisableAllPanels();
-                            UIManager.Instance.HideAllAreas();
-                            UIManager.Instance.ShowPanelInfo(_hit.collider.GetComponent<BuildType>().Type,
-                                _hit.collider);
-                        }
-                        else
-                        {
-                            UIManager.Instance.DisableAllPanels();
-                            UIManager.Instance.HideAllAreas();
-                            UIManager.Instance.ShowBuildPanel(true);
-                        }
+                        UIManagerInGame.Instance.DisableAllPanels();
+                        UIManagerInGame.Instance.HideAllAreas();
+                        UIManagerInGame.Instance.ShowPanelInfo(_hit.collider.GetComponent<BuildType>().Type,
+                            _hit.collider);
+                    }
+                    else
+                    {
+                        UIManagerInGame.Instance.DisableAllPanels();
+                        UIManagerInGame.Instance.HideAllAreas();
+                        UIManagerInGame.Instance.ShowBuildPanel(true);
                     }
                 }
-
-                Debug.DrawRay(_ray.origin, _ray.direction * 100, Color.red);
             }
+
+            Debug.DrawRay(_ray.origin, _ray.direction * 100, Color.red);
         }
 
         private void InputKeyboard()
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                if (UIManager.Instance.IsAPanelActive && !_isGamePaused)
+                if (UIManagerInGame.Instance.IsAPanelActive && !_isGamePaused)
                 {
                     if (_currentLineRendererSelected != null)
                     {
@@ -120,12 +113,12 @@ namespace Managers
                         _currentLineRendererSelected = null;
                     }
 
-                    UIManager.Instance.DisableAllPanels();
+                    UIManagerInGame.Instance.DisableAllPanels();
                 }
                 else
                 {
-                    if (_isGamePaused) UIManager.Instance.PauseGame(false);
-                    else UIManager.Instance.PauseGame(true);
+                    if (_isGamePaused) UIManagerInGame.Instance.PauseGame(false);
+                    else UIManagerInGame.Instance.PauseGame(true);
                 }
             }
         }

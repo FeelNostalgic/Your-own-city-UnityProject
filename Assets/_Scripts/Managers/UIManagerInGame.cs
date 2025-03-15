@@ -1,15 +1,22 @@
+using System;
 using System.Collections;
 using Buildings;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Utilities;
 
 namespace Managers
 {
-    public class UIManager : MonoBehaviourSinglenton<UIManager>
+    [DefaultExecutionOrder(-999)]
+    public class UIManagerInGame : MonoBehaviourSinglenton<UIManagerInGame>
     {
         #region Inspector Variables
+        
+        [Header("Transition")] [SerializeField]
+        private Image blackScreen;
         
         [Header("MenuPausa")]
         [SerializeField] private GameObject ButtonPausa;
@@ -35,8 +42,8 @@ namespace Managers
         [SerializeField] private TMP_Text PoliciaPrice;
 
         [Header("Carretera")] [SerializeField] private GameObject CarreteraPanel;
-        [SerializeField] private Button Button_CarreteraDemoler;
-        [SerializeField] private TMP_Text CarreteraDemolerText;
+        [FormerlySerializedAs("Button_CarreteraDemoler")] [SerializeField] private Button destroyRoadButton;
+         [FormerlySerializedAs("CarreteraDemolerText")] [SerializeField] private TMP_Text roadDestroyTMP;
 
         [Header("Casa")] [SerializeField] private GameObject CasaPanel;
         [SerializeField] private TMP_Text CasaNivel;
@@ -85,11 +92,20 @@ namespace Managers
         #region Private Variables
 
         private float _currentTime;
-        private CasaFunctionality _currentCasa;
-        private ParqueFunctionality _currentParque;
+        private CasaFunctionality _currentHouse;
+        private ParqueFunctionality _currentPlayground;
         private HospitalFunctionality _currentHospital;
-        private PoliciaFunctionality _currentPolicia;
+        private PoliciaFunctionality _currentPolice;
         private bool _isAPanelActive;
+
+        private UIPanels _currentPanel = UIPanels.none;
+        private UIPanels _lastPanel;
+        private GameObject _currentActivePanel;
+        
+        private enum UIPanels
+        {
+            none, buildPanel, roadPanel, housePanel, generalInfoPanel, pausePanel, optionsPanel, controlsPanel, objectivesPanel
+        }
         
         #endregion
 
@@ -97,20 +113,20 @@ namespace Managers
 
         private void Awake()
         {
-            Time.timeScale = 0;
+            blackScreen.DOFade(0f, 1.5f).SetEase(Ease.InSine)
+                .OnPlay(() =>
+                {
+                    blackScreen.gameObject.SetActive(true);
+                    InitializeGame();
+                })
+                .OnComplete(() =>
+                {
+                    GameManager.Instance.ChangeState(GameState.Playing);
+                    AudioManager.Instance.PlayMainSound();
+                })
+                .Play();
         }
-
-        private void Start()
-        {
-            ShowBuildPanel(false);
-            UpdateBuildPanel();
-            InfoGeneral.enabled = false;
-            UpdateHabitantes(0);
-            CarreteraDemolerText.text = "DEMOLER (+" + (int)(BuildManager.Instance.RoadPrice * 0.8) + ")";
-            Button_CarreteraDemoler.onClick.AddListener(delegate { MapManager.Instance.DestroyRoad(); });
-            _isAPanelActive = false;
-        }
-
+        
         private void Update()
         {
             //UpdateTime();
@@ -119,24 +135,24 @@ namespace Managers
         #endregion
 
         #region Public Methods
-
+        
         public void ShowPanelInfo(BuildManager._building type, Collider currentBuild)
         {
             switch (type)
             {
                 case BuildManager._building.casa:
                     HideAllAreas();
-                    _currentCasa = currentBuild.GetComponentInChildren<CasaFunctionality>();
-                    ConfigureCasaPanel();
+                    _currentHouse = currentBuild.GetComponentInChildren<CasaFunctionality>();
+                    ConfigureHousePanel();
                     break;
 
                 case BuildManager._building.parque:
                     HideAllAreas();
-                    _currentParque = currentBuild.GetComponentInChildren<ParqueFunctionality>();
-                    _currentParque.ShowArea();
-                    ConfigureInfoMultiplierPanel(_currentParque.Level, _currentParque.GastosPorSegundo,
-                        _currentParque.Multiplicador, _currentParque.AreaEfecto, _currentParque.CasaAfectadas,
-                        ParqueDescription, _currentParque.CosteNivel, parque: _currentParque);
+                    _currentPlayground = currentBuild.GetComponentInChildren<ParqueFunctionality>();
+                    _currentPlayground.ShowArea();
+                    ConfigureInfoMultiplierPanel(_currentPlayground.Level, _currentPlayground.GastosPorSegundo,
+                        _currentPlayground.Multiplicador, _currentPlayground.AreaEfecto, _currentPlayground.CasaAfectadas,
+                        ParqueDescription, _currentPlayground.CosteNivel, parque: _currentPlayground);
                     break;
 
                 case BuildManager._building.road:
@@ -156,18 +172,18 @@ namespace Managers
 
                 case BuildManager._building.policia:
                     HideAllAreas();
-                    _currentPolicia = currentBuild.GetComponentInChildren<PoliciaFunctionality>();
-                    _currentPolicia.ShowArea();
-                    ConfigureInfoMultiplierPanel(_currentPolicia.Level, _currentPolicia.GastosPorSegundo,
-                        _currentPolicia.Multiplicador, _currentPolicia.AreaEfecto, _currentPolicia.CasaAfectadas,
-                        PoliciaDescription, _currentPolicia.CosteNivel, policia: _currentPolicia);
+                    _currentPolice = currentBuild.GetComponentInChildren<PoliciaFunctionality>();
+                    _currentPolice.ShowArea();
+                    ConfigureInfoMultiplierPanel(_currentPolice.Level, _currentPolice.GastosPorSegundo,
+                        _currentPolice.Multiplicador, _currentPolice.AreaEfecto, _currentPolice.CasaAfectadas,
+                        PoliciaDescription, _currentPolice.CosteNivel, policia: _currentPolice);
                     break;
             }
         }
 
         public void UpdateCasaHabitantes(CasaFunctionality casa, int habitantes, float multiplicador, int gastosPorSegundo, int goldPorSegundo)
         {
-            if (_currentCasa != null && casa.transform.parent.name.Equals(_currentCasa.transform.parent.name))
+            if (_currentHouse != null && casa.transform.parent.name.Equals(_currentHouse.transform.parent.name))
             {
                 CasaHabitantes.text = habitantes.ToString();
                 CasaGastosPorSegundo.text = gastosPorSegundo.ToString();
@@ -239,7 +255,7 @@ namespace Managers
             else Gold.color = Color.white;
         }
 
-        public void UpdateHabitantes(int h)
+        public void UpdateInhabitantsNumberTMP(int h)
         {
             Habitantes.text = h.ToString();
         }
@@ -256,14 +272,14 @@ namespace Managers
 
         public void UpdateInfoGeneral(string info)
         {
-            if (!InfoGeneral.enabled) StartCoroutine(showInfoGeneral(info));
+            if (!InfoGeneral.enabled) StartCoroutine(ShowInfoGeneral(info));
         }
         
         public void HideAllAreas()
         {
-            if(_currentPolicia != null) _currentPolicia.HideArea();
+            if(_currentPolice != null) _currentPolice.HideArea();
             if(_currentHospital != null) _currentHospital.HideArea();
-            if(_currentParque != null) _currentParque.HideArea();
+            if(_currentPlayground != null) _currentPlayground.HideArea();
         }
 
         public void ShowFinalPanel(bool value)
@@ -275,25 +291,16 @@ namespace Managers
         }
 
         #region ButtonFunctionalities
-
-        public void StartGame()
-        {
-            AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buttonClick);
-            MapManager.Instance.StartMap();
-            Time.timeScale = 1;
-            AudioManager.Instance.PlayMainSound();
-        }
         
         public void PauseGame(bool state)
         {
             AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buttonClick);
+            GameManager.Instance.ChangeState(GameState.Paused);
             //InicioPanel.SetActive(state);
-            PointAndClickManager.Instance.IsGamePaused = state;
-            if (state) Time.timeScale = 0;
-            else Time.timeScale = 1;
+            Time.timeScale = state ? 0 : 1;
         }
 
-        public void ExtiButton()
+        public void ExitButton()
         {
             AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buttonClick);
             Application.Quit();
@@ -305,29 +312,68 @@ namespace Managers
             MapManager.Instance.DestroyAll();
             BuildingsManager.Instance.RestartBuildings();
             ResourcesManager.Instance.RestartAllInfo();
-            StartGame();
+            InitializeGame();
             ShowFinalPanel(false);
-            PointAndClickManager.Instance.IsGamePaused = false;
-            PointAndClickManager.Instance.IsGameOver = false;
+            GameManager.Instance.ChangeState(GameState.Starting);
         }
         
-
         #endregion
 
         #endregion
 
         #region Private Methods
-
-        private void ConfigureCasaPanel()
+        
+        private void InitializeGame()
         {
-            CasaNivel.text = "NIVEL " + _currentCasa.Level;
-            CasaHabitantes.text = _currentCasa.Habitantes.ToString();
-            CasaMaxHabitantes.text = _currentCasa.MaxHabitantes.ToString();
-            CasaGastosPorSegundo.text = _currentCasa.GastosPorSegundo.ToString();
-            CasaMultiplier.text = "X" + _currentCasa.Multiplicador.ToString().Replace(",", ".");
-            CasaGoldPorSegundo.text = ((int)(_currentCasa.CurrentGoldPorSegundo * _currentCasa.Multiplicador)).ToString();
+            MapManager.Instance.InitializeMap();
+            ShowBuildPanel(false);
+            SetPricesInBuildPanel();
+            InfoGeneral.enabled = false;
+            UpdateInhabitantsNumberTMP(0);
+            roadDestroyTMP.text = "DEMOLER (+" + (int)(BuildManager.Instance.RoadPrice * 0.8) + ")";
+            destroyRoadButton.onClick.AddListener(delegate { MapManager.Instance.DestroyRoad(); });
+            _isAPanelActive = false;
+            Time.timeScale = 1;
+        }
 
-            if (_currentCasa.Level > 2)
+        private void ChangeUIPanel(UIPanels newPanel)
+        {
+            _lastPanel = _currentPanel;
+            _currentPanel = newPanel;
+            _currentActivePanel!.SetActive(false);
+            switch (newPanel)
+            {
+                case UIPanels.buildPanel:
+                    break;
+                case UIPanels.roadPanel:
+                    break;
+                case UIPanels.housePanel:
+                    break;
+                case UIPanels.generalInfoPanel:
+                    break;
+                case UIPanels.pausePanel:
+                    break;
+                case UIPanels.optionsPanel:
+                    break;
+                case UIPanels.controlsPanel:
+                    break;
+                case UIPanels.objectivesPanel:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(newPanel), newPanel, null);
+            }
+        }
+        
+        private void ConfigureHousePanel()
+        {
+            CasaNivel.text = "NIVEL " + _currentHouse.Level;
+            CasaHabitantes.text = _currentHouse.Habitantes.ToString();
+            CasaMaxHabitantes.text = _currentHouse.MaxHabitantes.ToString();
+            CasaGastosPorSegundo.text = _currentHouse.GastosPorSegundo.ToString();
+            CasaMultiplier.text = "X" + _currentHouse.Multiplicador.ToString().Replace(",", ".");
+            CasaGoldPorSegundo.text = ((int)(_currentHouse.CurrentGoldPorSegundo * _currentHouse.Multiplicador)).ToString();
+
+            if (_currentHouse.Level > 2)
             {
                 CasaCosteNivel.text = "NIVEL MAX";
                 Button_CasaSubirNivel.interactable = false;
@@ -335,16 +381,16 @@ namespace Managers
             else
             {
                 Button_CasaSubirNivel.interactable = true;
-                CasaCosteNivel.text = "SUBIR NIVEL X " + _currentCasa.CosteNivel;
+                CasaCosteNivel.text = "SUBIR NIVEL X " + _currentHouse.CosteNivel;
             }
 
             Button_CasaSubirNivel.onClick.RemoveAllListeners();
-            Button_CasaSubirNivel.onClick.AddListener(delegate { _currentCasa.SubirNivel(); });
+            Button_CasaSubirNivel.onClick.AddListener(delegate { _currentHouse.SubirNivel(); });
 
             CasaDemolerText.text =
-                "DEMOLER (+" + (int)(BuildManager.Instance.HousePrice * 0.8 * _currentCasa.Level) + ")";
+                "DEMOLER (+" + (int)(BuildManager.Instance.HousePrice * 0.8 * _currentHouse.Level) + ")";
             Button_CasaDemoler.onClick.RemoveAllListeners();
-            Button_CasaDemoler.onClick.AddListener(delegate { _currentCasa.Demoler(); });
+            Button_CasaDemoler.onClick.AddListener(delegate { _currentHouse.Demoler(); });
 
             _isAPanelActive = true;
             CasaPanel.SetActive(true);
@@ -432,7 +478,7 @@ namespace Managers
             Tiempo.text = string.Format("{0:00}:{1:00}", minutos, segundos);
         }
 
-        private void UpdateBuildPanel()
+        private void SetPricesInBuildPanel()
         {
             CarreteraPrice.text = string.Format("{0:N0}", (int)BuildManager.Instance.RoadPrice);
             CasaPrice.text = string.Format("{0:N0}", (int)BuildManager.Instance.HousePrice);
@@ -441,7 +487,7 @@ namespace Managers
             PoliciaPrice.text = string.Format("{0:N0}", (int)BuildManager.Instance.PolicePrice);
         }
 
-        private IEnumerator showInfoGeneral(string info)
+        private IEnumerator ShowInfoGeneral(string info)
         {
             InfoGeneral.text = info;
             InfoGeneral.enabled = true;

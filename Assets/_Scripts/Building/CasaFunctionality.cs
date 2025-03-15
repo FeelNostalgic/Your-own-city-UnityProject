@@ -88,7 +88,7 @@ namespace Buildings
             UpdateLight(h.EmissionColor);
             //BuildingsManager.Instance.RemoveCasa(transform.parent.gameObject);
             ResourcesManager.Instance.AddHabitante(1);
-            UIManager.Instance.UpdateCasaHabitantes(this, _currentHabitantes, _currentMultiplicador, _gastosPorSegundo,
+            UIManagerInGame.Instance.UpdateCasaHabitantes(this, _currentHabitantes, _currentMultiplicador, _gastosPorSegundo,
                 (int)(_goldPorSegundo * _currentMultiplicador));
             ResourcesManager.Instance.AddGastos(h.GastosPorSegundo);
         }
@@ -109,12 +109,12 @@ namespace Buildings
                 ResourcesManager.Instance.AddGoldPorSegundo((_goldPorSegundo * _currentMultiplicador));
                 ResourcesManager.Instance.AddGastos((int)(_gastosPorSegundo * 0.2f));
                 _gastosPorSegundo = (int)(_gastosPorSegundo * 1.2f);
-                UIManager.Instance.UpdateCasaNivel(_currentLevel, _costeNivel, _maxHabitantes, _currentMultiplicador,
+                UIManagerInGame.Instance.UpdateCasaNivel(_currentLevel, _costeNivel, _maxHabitantes, _currentMultiplicador,
                     _gastosPorSegundo, (int)(_goldPorSegundo * _currentMultiplicador));
             }
             else
             {
-                UIManager.Instance.UpdateInfoGeneral("¡Gold insuficiente!");
+                UIManagerInGame.Instance.UpdateInfoGeneral("¡Gold insuficiente!");
             }
         }
 
@@ -128,7 +128,7 @@ namespace Buildings
             ResourcesManager.Instance.AddHabitante(-_currentHabitantes);
             GetComponentInParent<BuildType>().Type = BuildManager._building.none;
             BuildingsManager.Instance.RemoveCasa(transform.parent.gameObject);
-            UIManager.Instance.DisableAllPanels();
+            UIManagerInGame.Instance.DisableAllPanels();
             Destroy(gameObject);
         }
 

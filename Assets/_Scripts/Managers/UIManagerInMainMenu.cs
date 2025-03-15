@@ -45,7 +45,7 @@ namespace Managers
 
         #region Public Variables
 
-        public enum UIPanels
+        private enum UIPanels
         {
             none, startMenu, optionsMenu, controlsMenu, objectivesMenu
         }
@@ -142,9 +142,15 @@ namespace Managers
         private void StartGame()
         {
             PlayClickSound();
-            blackScreen.DOFade(1f, 1.5f).SetEase(Ease.OutSine)
-                .OnPlay(() => GameManager.Instance.ChangeState(GameState.Starting))
-                .OnComplete(() => { MySceneManager.LoadScene(MySceneManager.Scenes.GameScene); })
+            blackScreen.DOFade(1f, 1f).SetEase(Ease.OutSine)
+                .OnPlay(() =>
+                {
+                    GameManager.Instance.ChangeState(GameState.Starting);
+                })
+                .OnComplete(() =>
+                {
+                    MySceneManager.LoadScene(MySceneManager.Scenes.GameScene);
+                })
                 .Play();
         }
         

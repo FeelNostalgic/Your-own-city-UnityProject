@@ -10,15 +10,14 @@ namespace Controllers
 
         [Header("Move")] [SerializeField] private float MoveSpeed;
 
-        [Tooltip("El primer valor es el valor mínimo de Y, el segundo valor es el máximo de Y")] 
-        [SerializeField] private Vector2 LimitY;
+        [Tooltip("El primer valor es el valor mínimo de Y, el segundo valor es el máximo de Y")] [SerializeField]
+        private Vector2 LimitY;
 
-        [Header("Rotation")]
-        [SerializeField] private float RotationSpeed;
+        [Header("Rotation")] [SerializeField] private float RotationSpeed;
         [SerializeField] private float LimitRotation;
 
-        [Header("Starting Position")]
-        [SerializeField] private float AlturaOffset;
+        [Header("Starting Position")] [SerializeField]
+        private float AlturaOffset;
 
         [SerializeField] private float CasillasOffset;
         [SerializeField] private float AnguloInicial;
@@ -27,13 +26,15 @@ namespace Controllers
 
         #region Public Variables
 
+        //EMPTY
+
         #endregion
 
         #region Private Variables
 
         private bool _canNavigate;
-        private float _RotationY;
-        private float _RotationX;
+        private float _rotationY;
+        private float _rotationX;
 
         #endregion
 
@@ -41,16 +42,15 @@ namespace Controllers
 
         private void Awake()
         {
-            _RotationY = 0;
+            _rotationY = 0;
         }
 
         private void Update()
         {
-            if (MapManager.Instance.IsMapCreated && !PointAndClickManager.Instance.IsGamePaused)
-            {
-                ShowMouseCursor();
-                NavigateMap();
-            }
+            if (!MapManager.Instance.IsMapCreated || GameManager.CurrentGameState == GameState.Paused) return;
+            
+            ShowMouseCursor();
+            NavigateMap();
         }
 
         #endregion
@@ -96,13 +96,13 @@ namespace Controllers
                 calculateMove();
             }
         }
-        
+
         private void calculateRotation()
         {
-            _RotationY += -Input.GetAxis("Mouse Y") * RotationSpeed;
+            _rotationY += -Input.GetAxis("Mouse Y") * RotationSpeed;
             float rotationX = Input.GetAxis("Mouse X") * RotationSpeed;
-            _RotationY = Mathf.Clamp(_RotationY, -LimitRotation, LimitRotation);
-            UnityEngine.Camera.main.transform.localRotation = Quaternion.Euler(_RotationY, 0, 0);
+            _rotationY = Mathf.Clamp(_rotationY, -LimitRotation, LimitRotation);
+            UnityEngine.Camera.main.transform.localRotation = Quaternion.Euler(_rotationY, 0, 0);
             transform.rotation *= Quaternion.Euler(0, rotationX, 0);
         }
 

@@ -47,13 +47,12 @@ namespace Managers
         private void Update()
         {
             //Cada segundo se restan los gatos
-            if (Time.frameCount % Application.targetFrameRate == 0 && !PointAndClickManager.Instance.IsGamePaused &&
-                !PointAndClickManager.Instance.IsGameOver)
+            if (Time.frameCount % Application.targetFrameRate == 0 && GameManager.CurrentGameState == GameState.Playing)
             {
                 AddGold(-_currentGastosPorSegundo);
             }
 
-            if (_currentGold < -500 && !PointAndClickManager.Instance.IsGameOver)
+            if (_currentGold < -500 && GameManager.CurrentGameState == GameState.Playing)
             {
                 GameOver();
             }
@@ -66,25 +65,25 @@ namespace Managers
         public void AddHabitante(int h)
         {
             _currentHabitantes += h;
-            UIManager.Instance.UpdateHabitantes(_currentHabitantes);
+            UIManagerInGame.Instance.UpdateInhabitantsNumberTMP(_currentHabitantes);
         }
 
         public void AddGold(int g)
         {
             _currentGold += g;
-            UIManager.Instance.UpdateGold(_currentGold);
+            UIManagerInGame.Instance.UpdateGold(_currentGold);
         }
 
         public void AddGastos(int g)
         {
             _currentGastosPorSegundo += g;
-            UIManager.Instance.UpdateGastos(_currentGastosPorSegundo);
+            UIManagerInGame.Instance.UpdateGastos(_currentGastosPorSegundo);
         }
 
         public void AddGoldPorSegundo(float g)
         {
             _currentGoldPorSegundo += g;
-            UIManager.Instance.UpdateGoldPorSegundo((int)_currentGoldPorSegundo);
+            UIManagerInGame.Instance.UpdateGoldPorSegundo((int)_currentGoldPorSegundo);
         }
 
         public void RestartAllInfo()
@@ -102,10 +101,9 @@ namespace Managers
 
         private void GameOver()
         {
-            PointAndClickManager.Instance.IsGamePaused = true;
-            PointAndClickManager.Instance.IsGameOver = true;
+            GameManager.Instance.ChangeState(GameState.GameOver);
             Time.timeScale = 0;
-            UIManager.Instance.ShowFinalPanel(true);
+            UIManagerInGame.Instance.ShowFinalPanel(true);
             AudioManager.Instance.StopMainSound();
             AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.GameOver);
         }

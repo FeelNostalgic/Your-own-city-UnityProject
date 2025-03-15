@@ -83,7 +83,7 @@ namespace Managers
 
         #region Public Methods
 
-        public void StartMap()
+        public void InitializeMap()
         {
             BuildMap();
             BuildBorder();
@@ -349,7 +349,7 @@ namespace Managers
             var newtile = BuildTile(i, j, _tile.baseT, mapParent);
             InicializateLineRenderer(newtile);
             _MapTiles[i, j] = newtile;
-            UIManager.Instance.DisableAllPanels();
+            UIManagerInGame.Instance.DisableAllPanels();
         }
 
         private void InicializateLineRenderer(GameObject newtile)

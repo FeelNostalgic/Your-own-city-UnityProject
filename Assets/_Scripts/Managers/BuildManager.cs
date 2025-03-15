@@ -59,12 +59,7 @@ namespace Managers
         #endregion
 
         #region Unity Methods
-
-        private void Start()
-        {
-            _isFirstRoadBuild = false;
-        }
-
+        // EMPTY
         #endregion
 
         #region Public Methods
@@ -92,13 +87,13 @@ namespace Managers
 
                         MapManager.Instance.RoadParent.GetComponent<NavMeshSurface>().BuildNavMesh();
 
-                        UIManager.Instance.ShowBuildPanel(false);
+                        UIManagerInGame.Instance.ShowBuildPanel(false);
                         ResourcesManager.Instance.AddGold((int)-roadPrice);
                         _isFirstRoadBuild = true;
                     }
                     else
                     {
-                        UIManager.Instance.UpdateInfoGeneral(
+                        UIManagerInGame.Instance.UpdateInfoGeneral(
                             "¡La carretera tiene que estar conectada a otra carretera!");
                     }
                 }
@@ -115,17 +110,17 @@ namespace Managers
                         MapManager.Instance.RoadParent.GetComponent<NavMeshSurface>()
                             .UpdateNavMesh(MapManager.Instance.RoadParent.GetComponent<NavMeshSurface>().navMeshData);
 
-                        UIManager.Instance.ShowBuildPanel(false);
+                        UIManagerInGame.Instance.ShowBuildPanel(false);
                         ResourcesManager.Instance.AddGold((int)-roadPrice);
                         return;
                     }
 
-                    UIManager.Instance.UpdateInfoGeneral("¡La carretera tiene que estar conectada a otra carretera!");
+                    UIManagerInGame.Instance.UpdateInfoGeneral("¡La carretera tiene que estar conectada a otra carretera!");
                 }
             }
             else
             {
-                UIManager.Instance.UpdateInfoGeneral("¡Gold insuficiente!");
+                UIManagerInGame.Instance.UpdateInfoGeneral("¡Gold insuficiente!");
             }
         }
 
@@ -143,14 +138,14 @@ namespace Managers
                     BuildBuilding((int)tilePosition.x, (int)tilePosition.y, _building.casa, rotation);
                     _currentTile.GetComponent<BuildType>().Type = _building.casa;
                     ResourcesManager.Instance.AddGold((int)-housePrice);
-                    UIManager.Instance.ShowBuildPanel(false);
+                    UIManagerInGame.Instance.ShowBuildPanel(false);
                     return;
                 }
 
-                UIManager.Instance.UpdateInfoGeneral("¡El edificio debe estar conectado a una carretera!");
+                UIManagerInGame.Instance.UpdateInfoGeneral("¡El edificio debe estar conectado a una carretera!");
             }
 
-            UIManager.Instance.UpdateInfoGeneral("¡Gold insuficiente!");
+            UIManagerInGame.Instance.UpdateInfoGeneral("¡Gold insuficiente!");
         }
 
         public void BuildParque()
@@ -167,14 +162,14 @@ namespace Managers
                     BuildBuilding((int)tilePosition.x, (int)tilePosition.y, _building.parque, rotation);
                     _currentTile.GetComponent<BuildType>().Type = _building.parque;
                     ResourcesManager.Instance.AddGold((int)-parquePrice);
-                    UIManager.Instance.ShowBuildPanel(false);
+                    UIManagerInGame.Instance.ShowBuildPanel(false);
                     return;
                 }
 
-                UIManager.Instance.UpdateInfoGeneral("¡El edificio debe estar conectado a una carretera!");
+                UIManagerInGame.Instance.UpdateInfoGeneral("¡El edificio debe estar conectado a una carretera!");
             }
 
-            UIManager.Instance.UpdateInfoGeneral("¡Gold insuficiente!");
+            UIManagerInGame.Instance.UpdateInfoGeneral("¡Gold insuficiente!");
         }
 
         public void BuildHospital()
@@ -191,14 +186,14 @@ namespace Managers
                     BuildBuilding((int)tilePosition.x, (int)tilePosition.y, _building.hospital, rotation);
                     _currentTile.GetComponent<BuildType>().Type = _building.hospital;
                     ResourcesManager.Instance.AddGold((int)-hospitalPrice);
-                    UIManager.Instance.ShowBuildPanel(false);
+                    UIManagerInGame.Instance.ShowBuildPanel(false);
                     return;
                 }
 
-                UIManager.Instance.UpdateInfoGeneral("¡El edificio debe estar conectado a una carretera!");
+                UIManagerInGame.Instance.UpdateInfoGeneral("¡El edificio debe estar conectado a una carretera!");
             }
 
-            UIManager.Instance.UpdateInfoGeneral("¡Gold insuficiente!");
+            UIManagerInGame.Instance.UpdateInfoGeneral("¡Gold insuficiente!");
         }
 
         public void BuildPolicia()
@@ -215,14 +210,14 @@ namespace Managers
                     BuildBuilding((int)tilePosition.x, (int)tilePosition.y, _building.policia, rotation);
                     _currentTile.GetComponent<BuildType>().Type = _building.policia;
                     ResourcesManager.Instance.AddGold((int)-policePrice);
-                    UIManager.Instance.ShowBuildPanel(false);
+                    UIManagerInGame.Instance.ShowBuildPanel(false);
                     return;
                 }
 
-                UIManager.Instance.UpdateInfoGeneral("¡El edificio debe estar conectado a una carretera!");
+                UIManagerInGame.Instance.UpdateInfoGeneral("¡El edificio debe estar conectado a una carretera!");
             }
 
-            UIManager.Instance.UpdateInfoGeneral("¡Gold insuficiente!");
+            UIManagerInGame.Instance.UpdateInfoGeneral("¡Gold insuficiente!");
         }
 
         #endregion

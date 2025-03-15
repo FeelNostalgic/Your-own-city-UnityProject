@@ -79,13 +79,13 @@ public class PoliciaFunctionality : MonoBehaviour
                 UpdateArea();
                 UpdateMultiplicadorCurrentVecinos(MULTIPLIER);
                 UpdateMultiplicadorNewVecinos();
-                UIManager.Instance.UpdateInfoMultiplierNivel(_currentLevel, _gastosPorSegundo, _currentMultiplicador,
+                UIManagerInGame.Instance.UpdateInfoMultiplierNivel(_currentLevel, _gastosPorSegundo, _currentMultiplicador,
                     _areaEfecto, _costeNivel, _casasAfectadas.Count, BuildManager.Instance.PolicePrice);
                 ShowArea();
             }
             else
             {
-                UIManager.Instance.UpdateInfoGeneral("¡Gold insuficiente!");
+                UIManagerInGame.Instance.UpdateInfoGeneral("¡Gold insuficiente!");
             }
         }
 
@@ -98,7 +98,7 @@ public class PoliciaFunctionality : MonoBehaviour
             UpdateMultiplicadorCurrentVecinos(-(_currentMultiplicador-1));
             GetComponentInParent<BuildType>().Type = BuildManager._building.none;
             BuildingsManager.Instance.Policia.Remove(this);
-            UIManager.Instance.DisableAllPanels();
+            UIManagerInGame.Instance.DisableAllPanels();
             Destroy(gameObject);
         }
 
