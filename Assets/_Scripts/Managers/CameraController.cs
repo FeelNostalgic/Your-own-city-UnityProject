@@ -1,7 +1,8 @@
+using Managers;
 using Utilities;
 using UnityEngine;
 
-namespace Managers.Camera
+namespace Controllers
 {
     public class CameraController : MonoBehaviourSinglenton<CameraController>
     {
