@@ -70,6 +70,50 @@ MonoBehaviour:
       Mant\xE9n la felicidad de los habitantes"
     m_Metadata:
       m_Items: []
+  - m_Id: 106601125769216
+    m_Localized: REANUDAR
+    m_Metadata:
+      m_Items: []
+  - m_Id: 106919716712448
+    m_Localized: PAUSA!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 112511134986240
+    m_Localized: CARRETERA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 112540033740800
+    m_Localized: CASA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 112569012187136
+    m_Localized: PARQUE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 112617389289472
+    m_Localized: HOSPITAL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 112640747368448
+    m_Localized: "POLIC\xCDA"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 113596960600064
+    m_Localized: ORO
+    m_Metadata:
+      m_Items: []
+  - m_Id: 114288051875840
+    m_Localized: HABITANTES
+    m_Metadata:
+      m_Items: []
+  - m_Id: 114532315557888
+    m_Localized: GASTOS x SEG
+    m_Metadata:
+      m_Items: []
+  - m_Id: 114669360246784
+    m_Localized: ORO x SEG
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

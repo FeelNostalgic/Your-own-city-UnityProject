@@ -73,6 +73,50 @@ MonoBehaviour:
       Maintain the happiness of the inhabitants'
     m_Metadata:
       m_Items: []
+  - m_Id: 106601125769216
+    m_Localized: RESUME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 106919716712448
+    m_Localized: PAUSED!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 112511134986240
+    m_Localized: ROAD
+    m_Metadata:
+      m_Items: []
+  - m_Id: 112540033740800
+    m_Localized: HOUSE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 112569012187136
+    m_Localized: PLAYGROUND
+    m_Metadata:
+      m_Items: []
+  - m_Id: 112617389289472
+    m_Localized: HOSPITAL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 112640747368448
+    m_Localized: POLICE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 113596960600064
+    m_Localized: GOLD
+    m_Metadata:
+      m_Items: []
+  - m_Id: 114288051875840
+    m_Localized: INHABITANTS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 114532315557888
+    m_Localized: COSTS x SEC
+    m_Metadata:
+      m_Items: []
+  - m_Id: 114669360246784
+    m_Localized: GOLD x SEC
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
