@@ -114,6 +114,18 @@ MonoBehaviour:
     m_Localized: ORO x SEG
     m_Metadata:
       m_Items: []
+  - m_Id: 117094204829696
+    m_Localized: DESTRUIR(+{value})
+    m_Metadata:
+      m_Items: []
+  - m_Id: 126779771318272
+    m_Localized: SALIR
+    m_Metadata:
+      m_Items: []
+  - m_Id: 126965780312064
+    m_Localized: REINICIAR
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -107,6 +107,18 @@ MonoBehaviour:
     m_Key: GOLD_PER_SECOND_LABEL
     m_Metadata:
       m_Items: []
+  - m_Id: 117094204829696
+    m_Key: DESTROY_BUTTON
+    m_Metadata:
+      m_Items: []
+  - m_Id: 126779771318272
+    m_Key: EXIT_BUTTON
+    m_Metadata:
+      m_Items: []
+  - m_Id: 126965780312064
+    m_Key: RESTART_BUTTON
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

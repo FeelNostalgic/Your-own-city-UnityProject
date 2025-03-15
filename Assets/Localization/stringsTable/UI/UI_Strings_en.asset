@@ -117,6 +117,18 @@ MonoBehaviour:
     m_Localized: GOLD x SEC
     m_Metadata:
       m_Items: []
+  - m_Id: 117094204829696
+    m_Localized: DESTROY(+{value})
+    m_Metadata:
+      m_Items: []
+  - m_Id: 126779771318272
+    m_Localized: EXIT
+    m_Metadata:
+      m_Items: []
+  - m_Id: 126965780312064
+    m_Localized: RESTART
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
