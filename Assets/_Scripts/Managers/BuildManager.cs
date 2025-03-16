@@ -38,7 +38,7 @@ namespace Managers
             set => _isFirstRoadBuild = value;
         }
 
-        public enum _building
+        public enum BuildingType
         {
             none,
             casa,
@@ -82,7 +82,7 @@ namespace Managers
                     if (tilePosition.x == 0 && tilePosition.y == MapManager.Instance.RoadZ)
                     {
                         var newtile = MapManager.Instance.BuildRoadAtMap((int)tilePosition.x, (int)tilePosition.y);
-                        newtile.GetComponent<BuildType>().Type = _building.road;
+                        newtile.GetComponent<BuildType>().Type = BuildingType.road;
 
                         MapManager.Instance.RoadParent.GetComponent<NavMeshSurface>().BuildNavMesh();
 
@@ -92,19 +92,19 @@ namespace Managers
                     }
                     else
                     {
-                        UIManagerInGame.Instance.UpdateInfoGeneral(
+                        UIManagerInGame.Instance.UpdateFeedback(
                             "¡La carretera tiene que estar conectada a otra carretera!");
                     }
                 }
                 else
                 {
-                    var vecinos = MapManager.Instance.GetVecinos4(_currentTile, _building.road);
+                    var vecinos = MapManager.Instance.GetVecinos4(_currentTile, BuildingType.road);
                     if (vecinos.Count > 0)
                     {
                         var tilePosition = MapManager.Instance.TilePosition(_currentTile.transform.position.x,
                             _currentTile.transform.position.z);
                         var newtile = MapManager.Instance.BuildRoadAtMap((int)tilePosition.x, (int)tilePosition.y);
-                        newtile.GetComponent<BuildType>().Type = _building.road;
+                        newtile.GetComponent<BuildType>().Type = BuildingType.road;
 
                         MapManager.Instance.RoadParent.GetComponent<NavMeshSurface>()
                             .UpdateNavMesh(MapManager.Instance.RoadParent.GetComponent<NavMeshSurface>().navMeshData);
@@ -114,12 +114,12 @@ namespace Managers
                         return;
                     }
 
-                    UIManagerInGame.Instance.UpdateInfoGeneral("¡La carretera tiene que estar conectada a otra carretera!");
+                    UIManagerInGame.Instance.UpdateFeedback("¡La carretera tiene que estar conectada a otra carretera!");
                 }
             }
             else
             {
-                UIManagerInGame.Instance.UpdateInfoGeneral("¡Gold insuficiente!");
+                UIManagerInGame.Instance.UpdateFeedback("¡Gold insuficiente!");
             }
         }
 
@@ -128,23 +128,23 @@ namespace Managers
             AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buttonClick);
             if (ResourcesManager.Instance.CurrentGold >= housePrice)
             {
-                var vecinos = MapManager.Instance.GetVecinos4(_currentTile, _building.road);
+                var vecinos = MapManager.Instance.GetVecinos4(_currentTile, BuildingType.road);
                 if (vecinos.Count > 0)
                 {
                     var tilePosition = MapManager.Instance.TilePosition(_currentTile.transform.position.x,
                         _currentTile.transform.position.z);
                     Quaternion rotation = CalculateRotation(vecinos, tilePosition);
-                    BuildBuilding((int)tilePosition.x, (int)tilePosition.y, _building.casa, rotation);
-                    _currentTile.GetComponent<BuildType>().Type = _building.casa;
+                    BuildBuilding((int)tilePosition.x, (int)tilePosition.y, BuildingType.casa, rotation);
+                    _currentTile.GetComponent<BuildType>().Type = BuildingType.casa;
                     ResourcesManager.Instance.AddGold((int)-housePrice);
                     UIManagerInGame.Instance.ShowBuildPanel(false);
                     return;
                 }
 
-                UIManagerInGame.Instance.UpdateInfoGeneral("¡El edificio debe estar conectado a una carretera!");
+                UIManagerInGame.Instance.UpdateFeedback("¡El edificio debe estar conectado a una carretera!");
             }
 
-            UIManagerInGame.Instance.UpdateInfoGeneral("¡Gold insuficiente!");
+            UIManagerInGame.Instance.UpdateFeedback("¡Gold insuficiente!");
         }
 
         public void BuildParque()
@@ -152,23 +152,23 @@ namespace Managers
             AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buttonClick);
             if (ResourcesManager.Instance.CurrentGold >= parquePrice)
             {
-                var vecinos = MapManager.Instance.GetVecinos4(_currentTile, _building.road);
+                var vecinos = MapManager.Instance.GetVecinos4(_currentTile, BuildingType.road);
                 if (vecinos.Count > 0)
                 {
                     var tilePosition = MapManager.Instance.TilePosition(_currentTile.transform.position.x,
                         _currentTile.transform.position.z);
                     Quaternion rotation = CalculateRotation(vecinos, tilePosition);
-                    BuildBuilding((int)tilePosition.x, (int)tilePosition.y, _building.parque, rotation);
-                    _currentTile.GetComponent<BuildType>().Type = _building.parque;
+                    BuildBuilding((int)tilePosition.x, (int)tilePosition.y, BuildingType.parque, rotation);
+                    _currentTile.GetComponent<BuildType>().Type = BuildingType.parque;
                     ResourcesManager.Instance.AddGold((int)-parquePrice);
                     UIManagerInGame.Instance.ShowBuildPanel(false);
                     return;
                 }
 
-                UIManagerInGame.Instance.UpdateInfoGeneral("¡El edificio debe estar conectado a una carretera!");
+                UIManagerInGame.Instance.UpdateFeedback("¡El edificio debe estar conectado a una carretera!");
             }
 
-            UIManagerInGame.Instance.UpdateInfoGeneral("¡Gold insuficiente!");
+            UIManagerInGame.Instance.UpdateFeedback("¡Gold insuficiente!");
         }
 
         public void BuildHospital()
@@ -176,23 +176,23 @@ namespace Managers
             AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buttonClick);
             if (ResourcesManager.Instance.CurrentGold >= hospitalPrice)
             {
-                var vecinos = MapManager.Instance.GetVecinos4(_currentTile, _building.road);
+                var vecinos = MapManager.Instance.GetVecinos4(_currentTile, BuildingType.road);
                 if (vecinos.Count > 0)
                 {
                     var tilePosition = MapManager.Instance.TilePosition(_currentTile.transform.position.x,
                         _currentTile.transform.position.z);
                     var rotation = CalculateRotation(vecinos, tilePosition);
-                    BuildBuilding((int)tilePosition.x, (int)tilePosition.y, _building.hospital, rotation);
-                    _currentTile.GetComponent<BuildType>().Type = _building.hospital;
+                    BuildBuilding((int)tilePosition.x, (int)tilePosition.y, BuildingType.hospital, rotation);
+                    _currentTile.GetComponent<BuildType>().Type = BuildingType.hospital;
                     ResourcesManager.Instance.AddGold((int)-hospitalPrice);
                     UIManagerInGame.Instance.ShowBuildPanel(false);
                     return;
                 }
 
-                UIManagerInGame.Instance.UpdateInfoGeneral("¡El edificio debe estar conectado a una carretera!");
+                UIManagerInGame.Instance.UpdateFeedback("¡El edificio debe estar conectado a una carretera!");
             }
 
-            UIManagerInGame.Instance.UpdateInfoGeneral("¡Gold insuficiente!");
+            UIManagerInGame.Instance.UpdateFeedback("¡Gold insuficiente!");
         }
 
         public void BuildPolicia()
@@ -200,23 +200,23 @@ namespace Managers
             AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buttonClick);
             if (ResourcesManager.Instance.CurrentGold >= policePrice)
             {
-                var vecinos = MapManager.Instance.GetVecinos4(_currentTile, _building.road);
+                var vecinos = MapManager.Instance.GetVecinos4(_currentTile, BuildingType.road);
                 if (vecinos.Count > 0)
                 {
                     var tilePosition = MapManager.Instance.TilePosition(_currentTile.transform.position.x,
                         _currentTile.transform.position.z);
                     var rotation = CalculateRotation(vecinos, tilePosition);
-                    BuildBuilding((int)tilePosition.x, (int)tilePosition.y, _building.policia, rotation);
-                    _currentTile.GetComponent<BuildType>().Type = _building.policia;
+                    BuildBuilding((int)tilePosition.x, (int)tilePosition.y, BuildingType.policia, rotation);
+                    _currentTile.GetComponent<BuildType>().Type = BuildingType.policia;
                     ResourcesManager.Instance.AddGold((int)-policePrice);
                     UIManagerInGame.Instance.ShowBuildPanel(false);
                     return;
                 }
 
-                UIManagerInGame.Instance.UpdateInfoGeneral("¡El edificio debe estar conectado a una carretera!");
+                UIManagerInGame.Instance.UpdateFeedback("¡El edificio debe estar conectado a una carretera!");
             }
 
-            UIManagerInGame.Instance.UpdateInfoGeneral("¡Gold insuficiente!");
+            UIManagerInGame.Instance.UpdateFeedback("¡Gold insuficiente!");
         }
 
         #endregion
@@ -252,7 +252,7 @@ namespace Managers
             return Quaternion.identity;
         }
 
-        private void BuildBuilding(int i, int j, _building type, Quaternion rotation)
+        private void BuildBuilding(int i, int j, BuildingType type, Quaternion rotation)
         {
             AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buildBuilding);
             var newBuilding = Instantiate(buildingsPrefab[(int)type - 1], MapManager.Instance.MapTiles[i, j].transform);

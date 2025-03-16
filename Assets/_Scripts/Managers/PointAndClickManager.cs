@@ -14,7 +14,7 @@ namespace Managers
 
         #region Public Variables
 
-        public bool IsEnableRaycast { get; set; }
+        //public bool IsEnableRaycast { get; set; }
 
         #endregion
 
@@ -32,12 +32,12 @@ namespace Managers
 
         private void Awake()
         {
-            _mainCamera = Camera.main;
+            _mainCamera = Helpers.Camera;
         }
 
         private void Start()
         {
-            IsEnableRaycast = true;
+            //IsEnableRaycast = true;
         }
 
         private void Update()
@@ -54,9 +54,14 @@ namespace Managers
 
         #region Public Methods
 
-        public void DisableCurrentLineRenderer()
+        public void DisableCurrentLineRendererSelected()
         {
-            _currentLineRenderer.enabled = false;
+            if (_currentLineRendererSelected.IsNotNull())
+            {
+                DisableCurrentSelected();
+            }
+            
+            if(_currentLineRenderer.IsNotNull()) _currentLineRenderer.enabled = false;
         }
 
         #endregion
@@ -65,7 +70,7 @@ namespace Managers
 
         private void InputPointAndHitRaycast()
         {
-            if (Input.GetMouseButton(1) || !IsEnableRaycast) return;
+            if (Input.GetMouseButton(1) || Helpers.IsOverUI()) return;
             _ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(_ray, out _hit, 300, layerHitable))
             {
@@ -77,12 +82,11 @@ namespace Managers
                     ShowHitSelected();
 
                     BuildManager.Instance.SetCurrentTile(_hit.collider.gameObject);
-                    if (_hit.collider.GetComponent<BuildType>().Type != BuildManager._building.none)
+                    if (_hit.collider.GetComponent<BuildType>().Type != BuildManager.BuildingType.none)
                     {
                         UIManagerInGame.Instance.DisableAllPanels();
                         UIManagerInGame.Instance.HideAllAreas();
-                        UIManagerInGame.Instance.ShowPanelInfo(_hit.collider.GetComponent<BuildType>().Type,
-                            _hit.collider);
+                        UIManagerInGame.Instance.ShowPanelInfo(_hit.collider.GetComponent<BuildType>().Type, _hit.collider);
                     }
                     else
                     {
@@ -102,10 +106,9 @@ namespace Managers
 
             if (UIManagerInGame.Instance.IsAPanelActive && GameManager.CurrentGameState == GameState.Playing)
             {
-                if (_currentLineRendererSelected != null)
+                if (_currentLineRendererSelected.IsNotNull())
                 {
-                    _currentLineRendererSelected.enabled = false;
-                    _currentLineRendererSelected = null;
+                    DisableCurrentSelected();
                 }
 
                 UIManagerInGame.Instance.DisableAllPanels();
@@ -127,40 +130,35 @@ namespace Managers
         private void ShowHit()
         {
             var newLineRenderer = _hit.collider.GetComponent<LineRenderer>();
-            if (_currentLineRenderer != null && _currentLineRenderer.gameObject.name != newLineRenderer.name)
+            if (_currentLineRenderer.IsNotNull() && _currentLineRenderer.gameObject.name.NotEquals(newLineRenderer.name))
             {
-                if (_currentLineRendererSelected != null)
+                if (_currentLineRendererSelected.IsNotNull())
                 {
-                    if (newLineRenderer.name != _currentLineRendererSelected.gameObject.name)
-                    {
-                        if (_currentLineRenderer.gameObject.name != _currentLineRendererSelected.gameObject.name)
-                            _currentLineRenderer.enabled = false;
-                        _currentLineRenderer = newLineRenderer;
-                        newLineRenderer.enabled = true;
-                    }
+                    if (newLineRenderer.name.Equals(_currentLineRendererSelected.gameObject.name)) return;
+                    if (_currentLineRenderer.gameObject.name.NotEquals(_currentLineRendererSelected.gameObject.name))
+                        _currentLineRenderer.enabled = false;
                 }
                 else
                 {
                     _currentLineRenderer.enabled = false;
-                    _currentLineRenderer = newLineRenderer;
-                    newLineRenderer.enabled = true;
                 }
+
+                _currentLineRenderer = newLineRenderer;
+                newLineRenderer.enabled = true;
             }
             else
             {
-                if (_currentLineRenderer == null)
-                {
-                    _currentLineRenderer = newLineRenderer;
-                    _currentLineRenderer.enabled = true;
-                }
+                if (_currentLineRenderer.IsNotNull()) return;
+                _currentLineRenderer = newLineRenderer;
+                _currentLineRenderer.enabled = true;
             }
         }
 
         private void ShowHitSelected()
         {
             var newLineRenderer = _hit.collider.GetComponent<LineRenderer>();
-            if (_currentLineRendererSelected != null &&
-                _currentLineRendererSelected.gameObject.name != newLineRenderer.gameObject.name)
+            if (_currentLineRendererSelected.IsNotNull() &&
+                _currentLineRendererSelected.gameObject.name.NotEquals(newLineRenderer.gameObject.name))
             {
                 _currentLineRendererSelected.enabled = false;
                 _currentLineRendererSelected = newLineRenderer;
@@ -168,14 +166,18 @@ namespace Managers
             }
             else
             {
-                if (_currentLineRendererSelected == null)
-                {
-                    _currentLineRendererSelected = newLineRenderer;
-                    _currentLineRendererSelected.enabled = true;
-                }
+                if (_currentLineRendererSelected.IsNotNull()) return;
+                _currentLineRendererSelected = newLineRenderer;
+                _currentLineRendererSelected.enabled = true;
             }
         }
 
+        private void DisableCurrentSelected()
+        {
+            _currentLineRendererSelected.enabled = false;
+            _currentLineRendererSelected = null;
+        }        
+        
         #endregion
     }
 }

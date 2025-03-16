@@ -114,7 +114,7 @@ namespace Buildings
             }
             else
             {
-                UIManagerInGame.Instance.UpdateInfoGeneral("¡Gold insuficiente!");
+                UIManagerInGame.Instance.UpdateFeedback("¡Gold insuficiente!");
             }
         }
 
@@ -126,7 +126,7 @@ namespace Buildings
             ResourcesManager.Instance.AddGoldPerSecond((-_goldPorSegundo * _currentMultiplicador));
             ResourcesManager.Instance.AddCosts(-_gastosPorSegundo);
             ResourcesManager.Instance.AddResident(-_currentHabitantes);
-            GetComponentInParent<BuildType>().Type = BuildManager._building.none;
+            GetComponentInParent<BuildType>().Type = BuildManager.BuildingType.none;
             BuildingsManager.Instance.RemoveCasa(transform.parent.gameObject);
             UIManagerInGame.Instance.DisableAllPanels();
             Destroy(gameObject);

@@ -85,7 +85,7 @@ namespace Buildings
             }
             else
             {
-                UIManagerInGame.Instance.UpdateInfoGeneral("¡Gold insuficiente!");
+                UIManagerInGame.Instance.UpdateFeedback("¡Gold insuficiente!");
             }
         }
 
@@ -96,7 +96,7 @@ namespace Buildings
             ResourcesManager.Instance.AddGold((int)(BuildManager.Instance.HospitalPrice * 0.8f * _currentLevel));
             ResourcesManager.Instance.AddCosts(-_gastosPorSegundo);
             UpdateMultiplicadorCurrentVecinos(-(_currentMultiplicador - 1));
-            GetComponentInParent<BuildType>().Type = BuildManager._building.none;
+            GetComponentInParent<BuildType>().Type = BuildManager.BuildingType.none;
             BuildingsManager.Instance.Hospitales.Remove(this);
             UIManagerInGame.Instance.DisableAllPanels();
             Destroy(gameObject);
@@ -111,7 +111,7 @@ namespace Buildings
         {
             foreach (var v in _tilesVecinas)
             {
-                if (v != null && v.GetComponent<BuildType>().Type == BuildManager._building.casa &&
+                if (v != null && v.GetComponent<BuildType>().Type == BuildManager.BuildingType.casa &&
                     !_casasAfectadas.Contains(v))
                 {
                     _casasAfectadas.Add(v);

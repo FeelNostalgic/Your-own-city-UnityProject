@@ -1,11 +1,7 @@
-
-using System;
-using System.Collections;
 using DG.Tweening;
 using Managers;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Utilities;
 
 namespace UI

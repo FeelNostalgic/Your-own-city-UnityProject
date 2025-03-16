@@ -112,7 +112,7 @@ namespace Managers
         }
 
         #region GetVecinos
-        public List<GameObject> GetVecinos4(GameObject tile, BuildManager._building type)
+        public List<GameObject> GetVecinos4(GameObject tile, BuildManager.BuildingType type)
         {
             var neightbour = new List<GameObject>();
             var x = (int)GetX_Index(tile.transform.position.x);

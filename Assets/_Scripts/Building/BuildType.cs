@@ -11,7 +11,7 @@ namespace Buildings
 
         #region Public Variables
     
-        public BuildManager._building Type;
+        public BuildManager.BuildingType Type;
 
         #endregion
 

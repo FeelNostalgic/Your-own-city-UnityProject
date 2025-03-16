@@ -1,12 +1,10 @@
 using System;
-using System.Collections;
 using Buildings;
 using DG.Tweening;
 using TMPro;
 using UI;
 using UnityEngine;
 using UnityEngine.Localization.Settings;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Utilities;
 
@@ -39,15 +37,10 @@ namespace Managers
         private GameObject gameOverPanel;
         
         [Header("General Info")]
-        [SerializeField] private GameObject generalPanel;
-        [SerializeField] private GeneralInfoController generalInfoController;
+        [SerializeField] private GeneralInfoController generalInfoPanel;
 
-        [Header("Buildings")] [SerializeField] private GameObject BuildPanel;
-        [SerializeField] private TMP_Text CarreteraPrice;
-        [SerializeField] private TMP_Text CasaPrice;
-        [SerializeField] private TMP_Text ParquePrice;
-        [SerializeField] private TMP_Text HospitalPrice;
-        [SerializeField] private TMP_Text PoliciaPrice;
+        [Header("Buildings")]
+        [SerializeField] private BuildPanelController buildPanel;
 
         [Header("Carretera")] [SerializeField] private GameObject CarreteraPanel;
         [SerializeField] private Button destroyRoadButton;
@@ -155,17 +148,17 @@ namespace Managers
             ChangeUIPanel(_lastPanel);
         }
 
-        public void ShowPanelInfo(BuildManager._building type, Collider currentBuild)
+        public void ShowPanelInfo(BuildManager.BuildingType type, Collider currentBuild)
         {
             switch (type)
             {
-                case BuildManager._building.casa:
+                case BuildManager.BuildingType.casa:
                     HideAllAreas();
                     _currentHouse = currentBuild.GetComponentInChildren<CasaFunctionality>();
                     ConfigureHousePanel();
                     break;
 
-                case BuildManager._building.parque:
+                case BuildManager.BuildingType.parque:
                     HideAllAreas();
                     _currentPlayground = currentBuild.GetComponentInChildren<ParqueFunctionality>();
                     _currentPlayground.ShowArea();
@@ -174,13 +167,13 @@ namespace Managers
                         ParqueDescription, _currentPlayground.CosteNivel, parque: _currentPlayground);
                     break;
 
-                case BuildManager._building.road:
+                case BuildManager.BuildingType.road:
                     HideAllAreas();
                     MapManager.Instance.RoadToDestroy = currentBuild.gameObject;
                     CarreteraPanel.SetActive(true);
                     break;
 
-                case BuildManager._building.hospital:
+                case BuildManager.BuildingType.hospital:
                     HideAllAreas();
                     _currentHospital = currentBuild.GetComponentInChildren<HospitalFunctionality>();
                     _currentHospital.ShowArea();
@@ -189,7 +182,7 @@ namespace Managers
                         HospitalDescription, _currentHospital.CosteNivel, hospital: _currentHospital);
                     break;
 
-                case BuildManager._building.policia:
+                case BuildManager.BuildingType.policia:
                     HideAllAreas();
                     _currentPolice = currentBuild.GetComponentInChildren<PoliciaFunctionality>();
                     _currentPolice.ShowArea();
@@ -250,11 +243,13 @@ namespace Managers
         public void ShowBuildPanel(bool value)
         {
             _isAPanelActive = value;
-            BuildPanel.SetActive(value);
-            if (!value)
-            {
-                PointAndClickManager.Instance.IsEnableRaycast = true;
-            }
+            if (value) buildPanel.ShowBuildPanel();
+            else buildPanel.HideBuildPanel();
+            
+            // if (!value)
+            // {
+            //     PointAndClickManager.Instance.IsEnableRaycast = true;
+            // }
         }
 
         public void DisableAllPanels()
@@ -263,18 +258,18 @@ namespace Managers
             // CasaPanel.SetActive(false);
             // CarreteraPanel.SetActive(false);
             // InfoMultiplierPanel.SetActive(false);
-            // BuildPanel.SetActive(false);
+            buildPanel.HideBuildPanel();
             pausePanel.SetActive(false);
             optionsPanel.SetActive(false);
             controlsPanel.SetActive(false);
             objectivesPanel.SetActive(false);
-            PointAndClickManager.Instance.IsEnableRaycast = true;
+            //PointAndClickManager.Instance.IsEnableRaycast = true;
             _isAPanelActive = false;
         }
         
-        public void UpdateInfoGeneral(string info)
+        public void UpdateFeedback(string info)
         {
-            generalInfoController.ShowFeedback(info);
+            generalInfoPanel.ShowFeedback(info);
         }
 
         public void HideAllAreas()
@@ -288,7 +283,7 @@ namespace Managers
         {
             DisableAllPanels();
             _isAPanelActive = value;
-            generalPanel.SetActive(!value);
+            generalInfoPanel.gameObject.SetActive(!value);
             gameOverPanel.SetActive(value);
         }
 
@@ -338,8 +333,6 @@ namespace Managers
             DisableAllPanels();
             InitializeButtonListeners();
             // TODO
-            // ShowBuildPanel(false);
-            // SetPricesInBuildPanel();
             // roadDestroyTMP.text = "DEMOLER (+" + (int)(BuildManager.Instance.RoadPrice * 0.8) + ")";
             // destroyRoadButton.onClick.AddListener(delegate { MapManager.Instance.DestroyRoad(); });
             _isAPanelActive = false;
@@ -523,15 +516,6 @@ namespace Managers
                 Button_InfoMultiplierDemoler.onClick.RemoveAllListeners();
                 Button_InfoMultiplierDemoler.onClick.AddListener(delegate { policia.Demoler(); });
             }
-        }
-        
-        private void SetPricesInBuildPanel()
-        {
-            CarreteraPrice.text = string.Format("{0:N0}", (int)BuildManager.Instance.RoadPrice);
-            CasaPrice.text = string.Format("{0:N0}", (int)BuildManager.Instance.HousePrice);
-            ParquePrice.text = string.Format("{0:N0}", (int)BuildManager.Instance.ParquePrice);
-            HospitalPrice.text = string.Format("{0:N0}", (int)BuildManager.Instance.HospitalPrice);
-            PoliciaPrice.text = string.Format("{0:N0}", (int)BuildManager.Instance.PolicePrice);
         }
         
         #endregion

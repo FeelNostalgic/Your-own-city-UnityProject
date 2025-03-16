@@ -36,7 +36,7 @@ namespace Controllers
         private float _rotationY;
         private float _rotationX;
         private Camera _camera;
-
+        
         #endregion
 
         #region Unity Methods
@@ -48,7 +48,7 @@ namespace Controllers
         
         private void Start()
         {
-            _camera = Camera.main;
+            _camera = Helpers.Camera;
         }
 
         private void Update()
@@ -81,9 +81,10 @@ namespace Controllers
             if (Input.GetMouseButtonDown(1))
             {
                 Cursor.lockState = CursorLockMode.Locked;
-                PointAndClickManager.Instance.DisableCurrentLineRenderer();
-                Cursor.visible = true;
+                PointAndClickManager.Instance.DisableCurrentLineRendererSelected();
+                Cursor.visible = false;
                 _canNavigate = true;
+                UIManagerInGame.Instance.ShowBuildPanel(false);
             }
 
             if (!Input.GetMouseButtonUp(1)) return;
@@ -104,7 +105,7 @@ namespace Controllers
             _rotationY += -Input.GetAxis("Mouse Y") * RotationSpeed;
             var rotationX = Input.GetAxis("Mouse X") * RotationSpeed;
             _rotationY = Mathf.Clamp(_rotationY, -LimitRotation, LimitRotation);
-            if (_camera != null) _camera.transform.localRotation = Quaternion.Euler(_rotationY, 0, 0);
+            _camera.transform.localRotation = Quaternion.Euler(_rotationY, 0, 0);
             transform.rotation *= Quaternion.Euler(0, rotationX, 0);
         }
 
@@ -117,7 +118,7 @@ namespace Controllers
             transform.position += Quaternion.AngleAxis(90, Vector3.up) * transform.forward *
                                   (h * MoveSpeed * Time.deltaTime);
 
-            Vector3 vectorRightForward = Quaternion.AngleAxis(90, Vector3.up) * transform.forward;
+            var vectorRightForward = Quaternion.AngleAxis(90, Vector3.up) * transform.forward;
             if (Input.GetKey(KeyCode.E)) //UP
             {
                 transform.position += Quaternion.AngleAxis(-90, vectorRightForward) * transform.forward *
@@ -138,11 +139,11 @@ namespace Controllers
             var x = MapManager.Instance.XOffset;
             var z = MapManager.Instance.ZOffset;
             var mapSize = MapManager.Instance.MapSize + 1;
-            var borderSizehalf = (MapManager.Instance.BorderSize / 2) - 1;
+            var borderHalfSize = (MapManager.Instance.BorderSize / 2) - 1;
 
-            transform.LimitX(-x * borderSizehalf, x * (mapSize + borderSizehalf));
+            transform.LimitX(-x * borderHalfSize, x * (mapSize + borderHalfSize));
             transform.LimitY(LimitY.x, LimitY.y);
-            transform.LimitZ(-z * borderSizehalf, z * (mapSize + borderSizehalf));
+            transform.LimitZ(-z * borderHalfSize, z * (mapSize + borderHalfSize));
         }
 
         #endregion
