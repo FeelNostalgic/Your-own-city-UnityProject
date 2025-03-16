@@ -14,7 +14,7 @@ namespace Managers
         private LineRenderer _currentLineRenderer;
         private LineRenderer _currentLineRendererSelected;
 
-        #region Unity Lifecycle Methods
+        #region Unity Methods
 
         private void Awake()
         {
@@ -48,6 +48,7 @@ namespace Managers
             if (_currentLineRenderer.IsNotNull())
             {
                 _currentLineRenderer.enabled = false;
+                _currentLineRenderer = null;
             }
         }
 
@@ -58,7 +59,13 @@ namespace Managers
         private void HandlePointAndClickInput()
         {
             // Skip if right mouse button is pressed or UI is being interacted with
-            if (Input.GetMouseButton(1) || Helpers.IsOverUI()) return;
+            if(Input.GetMouseButton(1) || Helpers.IsOverUI())
+            {
+                if (_currentLineRenderer.IsNull()) return;
+                _currentLineRenderer.enabled = false;
+                _currentLineRenderer = null;
+                return;
+            }
 
             _ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
             Debug.DrawRay(_ray.origin, _ray.direction * 100, Color.red);
@@ -75,6 +82,7 @@ namespace Managers
 
         private void HighlightHoveredTile()
         {
+            if (_hit.collider.IsNull()) return;
             var newLineRenderer = _hit.collider.GetComponent<LineRenderer>();
 
             // If we're already highlighting something different
@@ -188,8 +196,6 @@ namespace Managers
 
         private void DisableCurrentSelected()
         {
-            if (_currentLineRendererSelected.IsNull()) return;
-
             _currentLineRendererSelected.enabled = false;
             _currentLineRendererSelected = null;
         }

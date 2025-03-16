@@ -25,10 +25,7 @@ namespace Managers
         [SerializeField] private float hospitalPrice;
         [SerializeField] private float policePrice;
 
-        [FormerlySerializedAs("parquePrice")] [SerializeField]
-        private float playgroundPrice;
-
-        [SerializeField] private StringTableCollection feedbackTable;
+        [SerializeField] private float playgroundPrice;
         
         [Header("FeedbackStrings")]
         [SerializeField] private LocalizedString roadNotConnectedToRoadFeedback;
@@ -280,17 +277,17 @@ namespace Managers
 
         private void ShowRoadNotConnectedToRoadFeedback()
         {
-            UIManagerInGame.Instance.UpdateFeedback(Helpers.GetLocalizedString(feedbackTable.TableCollectionName, "ROAD_NOT_CONNECTED_TO_ROAD_FEEDBACK"));
+            UIManagerInGame.Instance.UpdateFeedback(roadNotConnectedToRoadFeedback.GetLocalizedString());
         }
 
         private void ShowRoadNotConnectedToBuildingFeedback()
         {
-            UIManagerInGame.Instance.UpdateFeedback(Helpers.GetLocalizedString(feedbackTable.TableCollectionName, "ROAD_NOT_CONNECTED_TO_BUILDING_FEEDBACK"));
+            UIManagerInGame.Instance.UpdateFeedback(roadNotConnectedToBuildingFeedback.GetLocalizedString());
         }
 
         private void ShowNotEnoughGoldFeedback()
         {
-            UIManagerInGame.Instance.UpdateFeedback(Helpers.GetLocalizedString(feedbackTable.TableCollectionName, "NOT_ENOUGH_GOLD_FEEDBACK"));
+            UIManagerInGame.Instance.UpdateFeedback(notEnoughGoldFeedback.GetLocalizedString());
         }
 
         #endregion

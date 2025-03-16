@@ -15451,7 +15451,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   destroyRoadButton: {fileID: 797401381}
   destroyRoadTMP: {fileID: 1913468098}
-  mystring:
+  myLocalizationString:
     m_TableReference:
       m_TableCollectionName: GUID:e8ce51a54b8de4f4fb863651e7d6487c
     m_TableEntryReference:
@@ -17610,7 +17610,36 @@ MonoBehaviour:
   hospitalPrice: 900
   policePrice: 650
   playgroundPrice: 500
-  feedbackTable: {fileID: 11400000, guid: f06185fb944916a4cb96df744abb6807, type: 2}
+  roadNotConnectedToRoadFeedback:
+    m_TableReference:
+      m_TableCollectionName: GUID:4c237ae985ba6c94d93c807d4135d775
+    m_TableEntryReference:
+      m_KeyId: 6815477760
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  roadNotConnectedToBuildingFeedback:
+    m_TableReference:
+      m_TableCollectionName: GUID:4c237ae985ba6c94d93c807d4135d775
+    m_TableEntryReference:
+      m_KeyId: 3994692612096
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  notEnoughGoldFeedback:
+    m_TableReference:
+      m_TableCollectionName: GUID:4c237ae985ba6c94d93c807d4135d775
+    m_TableEntryReference:
+      m_KeyId: 3365609926656
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  references:
+    version: 2
+    RefIds: []
 --- !u!4 &1904534139
 Transform:
   m_ObjectHideFlags: 0
