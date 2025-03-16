@@ -4,7 +4,7 @@ using Buildings;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
+using UnityEngine.Localization.Settings;
 using UnityEngine.UI;
 using Utilities;
 
@@ -14,18 +14,29 @@ namespace Managers
     public class UIManagerInGame : MonoBehaviourSinglenton<UIManagerInGame>
     {
         #region Inspector Variables
-        
-        [Header("Transition")] [SerializeField]
-        private Image blackScreen;
-        
-        [Header("MenuPausa")]
-        [SerializeField] private GameObject ButtonPausa;
 
-        [Header("PanelFinal")]
-        [SerializeField] private GameObject FinalPanel;
-        
-        [Header("Principal")]
-        [SerializeField] private GameObject PanelGeneral;
+        [Header("Transition")] 
+        [SerializeField] private Image blackScreen;
+
+        [Header("Pause panels")] 
+        [SerializeField] private GameObject pausePanel;
+        [SerializeField] private GameObject optionsPanel;
+        [SerializeField] private GameObject controlsPanel;
+        [SerializeField] private GameObject objectivesPanel;
+
+        [Header("Pause panels buttons")]
+        [SerializeField] private Button resumeButton;
+        [SerializeField] private Button optionsButton;
+        [SerializeField] private Button controlsButton;
+        [SerializeField] private Button objectivesButton;
+        [SerializeField] private Button exitButton;
+        [SerializeField] private Button controlsBackButton;
+        [SerializeField] private Button objectivesBackButton;
+
+        [Header("Game Over Panel")] [SerializeField]
+        private GameObject gameOverPanel;
+
+        [Header("Principal")] [SerializeField] private GameObject PanelGeneral;
         [SerializeField] private TMP_Text Tiempo;
         [SerializeField] private TMP_Text Gold;
         [SerializeField] private TMP_Text Habitantes;
@@ -42,8 +53,8 @@ namespace Managers
         [SerializeField] private TMP_Text PoliciaPrice;
 
         [Header("Carretera")] [SerializeField] private GameObject CarreteraPanel;
-        [FormerlySerializedAs("Button_CarreteraDemoler")] [SerializeField] private Button destroyRoadButton;
-         [FormerlySerializedAs("CarreteraDemolerText")] [SerializeField] private TMP_Text roadDestroyTMP;
+        [SerializeField] private Button destroyRoadButton;
+        [SerializeField] private TMP_Text roadDestroyTMP;
 
         [Header("Casa")] [SerializeField] private GameObject CasaPanel;
         [SerializeField] private TMP_Text CasaNivel;
@@ -86,7 +97,7 @@ namespace Managers
         #region Public Variables
 
         public bool IsAPanelActive => _isAPanelActive;
-        
+
         #endregion
 
         #region Private Variables
@@ -101,12 +112,21 @@ namespace Managers
         private UIPanels _currentPanel = UIPanels.none;
         private UIPanels _lastPanel;
         private GameObject _currentActivePanel;
-        
+
         private enum UIPanels
         {
-            none, buildPanel, roadPanel, housePanel, generalInfoPanel, pausePanel, optionsPanel, controlsPanel, objectivesPanel
+            none,
+            buildPanel,
+            roadPanel,
+            housePanel,
+            generalInfoPanel,
+            pausePanel,
+            optionsPanel,
+            controlsPanel,
+            objectivesPanel,
+            gameOverPanel
         }
-        
+
         #endregion
 
         #region Unity Methods
@@ -116,17 +136,13 @@ namespace Managers
             blackScreen.DOFade(0f, 1f).SetEase(Ease.InSine)
                 .OnPlay(() =>
                 {
-                    blackScreen.gameObject.SetActive(true);
+                    LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.Locales[GameManager.SelectedLocale];
                     InitializeGame();
-                })
-                .OnComplete(() =>
-                {
-                    GameManager.Instance.ChangeState(GameState.Playing);
-                    AudioManager.Instance.PlayMainSound();
+                    blackScreen.gameObject.SetActive(true);
                 })
                 .Play();
         }
-        
+
         private void Update()
         {
             //UpdateTime();
@@ -135,7 +151,13 @@ namespace Managers
         #endregion
 
         #region Public Methods
-        
+
+        public void BackPanel()
+        {
+            PlayClickSound();
+            ChangeUIPanel(_lastPanel);
+        }
+
         public void ShowPanelInfo(BuildManager._building type, Collider currentBuild)
         {
             switch (type)
@@ -240,10 +262,15 @@ namespace Managers
 
         public void DisableAllPanels()
         {
-            CasaPanel.SetActive(false);
-            CarreteraPanel.SetActive(false);
-            InfoMultiplierPanel.SetActive(false);
-            BuildPanel.SetActive(false);
+            // TODO
+            // CasaPanel.SetActive(false);
+            // CarreteraPanel.SetActive(false);
+            // InfoMultiplierPanel.SetActive(false);
+            // BuildPanel.SetActive(false);
+            pausePanel.SetActive(false);
+            optionsPanel.SetActive(false);
+            controlsPanel.SetActive(false);
+            objectivesPanel.SetActive(false);
             PointAndClickManager.Instance.IsEnableRaycast = true;
             _isAPanelActive = false;
         }
@@ -264,7 +291,7 @@ namespace Managers
         {
             Gastos.text = g.ToString(); //string.Format("{0:N0}", g);
         }
-        
+
         public void UpdateGoldPorSegundo(int g)
         {
             GoldPorSegundo.text = g.ToString(); //string.Format("{0:N0}", g);
@@ -274,12 +301,12 @@ namespace Managers
         {
             if (!InfoGeneral.enabled) StartCoroutine(ShowInfoGeneral(info));
         }
-        
+
         public void HideAllAreas()
         {
-            if(_currentPolice != null) _currentPolice.HideArea();
-            if(_currentHospital != null) _currentHospital.HideArea();
-            if(_currentPlayground != null) _currentPlayground.HideArea();
+            if (_currentPolice != null) _currentPolice.HideArea();
+            if (_currentHospital != null) _currentHospital.HideArea();
+            if (_currentPlayground != null) _currentPlayground.HideArea();
         }
 
         public void ShowFinalPanel(bool value)
@@ -287,28 +314,35 @@ namespace Managers
             DisableAllPanels();
             _isAPanelActive = value;
             PanelGeneral.SetActive(!value);
-            FinalPanel.SetActive(value);
+            gameOverPanel.SetActive(value);
         }
 
-        #region ButtonFunctionalities
-        
-        public void PauseGame(bool state)
+        #region Button Functionalities
+
+        public void PauseGame()
         {
-            AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buttonClick);
             GameManager.Instance.ChangeState(GameState.Paused);
-            //InicioPanel.SetActive(state);
-            Time.timeScale = state ? 0 : 1;
+            ChangeUIPanel(UIPanels.pausePanel);
+            Time.timeScale = 0;
         }
 
-        public void ExitButton()
+        public void UnpauseGame()
         {
-            AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buttonClick);
-            Application.Quit();
+            _currentActivePanel.SetActive(false);
+            Time.timeScale = 1;
+            GameManager.Instance.ChangeState(GameState.Playing);
+        }
+
+        public static void ExitButton()
+        {
+            PlayClickSound();
+            GameManager.Instance.ChangeState(GameState.NotStarted);
+            MySceneManager.LoadScene(MySceneManager.Scenes.MainMenuScene);
         }
 
         public void RestartButton()
         {
-            AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buttonClick);
+            PlayClickSound();
             MapManager.Instance.DestroyAll();
             BuildingsManager.Instance.RestartBuildings();
             ResourcesManager.Instance.RestartAllInfo();
@@ -316,31 +350,59 @@ namespace Managers
             ShowFinalPanel(false);
             GameManager.Instance.ChangeState(GameState.Starting);
         }
-        
+
         #endregion
 
         #endregion
 
         #region Private Methods
-        
+
         private void InitializeGame()
         {
             MapManager.Instance.InitializeMap();
-            ShowBuildPanel(false);
-            SetPricesInBuildPanel();
-            InfoGeneral.enabled = false;
-            UpdateInhabitantsNumberTMP(0);
-            roadDestroyTMP.text = "DEMOLER (+" + (int)(BuildManager.Instance.RoadPrice * 0.8) + ")";
-            destroyRoadButton.onClick.AddListener(delegate { MapManager.Instance.DestroyRoad(); });
+            DisableAllPanels();
+            InitializeButtonListeners();
+            // TODO
+            // ShowBuildPanel(false);
+            // SetPricesInBuildPanel();
+            // InfoGeneral.enabled = false;
+            // UpdateInhabitantsNumberTMP(0);
+            // roadDestroyTMP.text = "DEMOLER (+" + (int)(BuildManager.Instance.RoadPrice * 0.8) + ")";
+            // destroyRoadButton.onClick.AddListener(delegate { MapManager.Instance.DestroyRoad(); });
             _isAPanelActive = false;
             Time.timeScale = 1;
+            GameManager.Instance.ChangeState(GameState.Playing);
+            AudioManager.Instance.PlayMainSound();
+        }
+
+        private void InitializeButtonListeners()
+        {
+            resumeButton.onClick.AddListener(UnpauseGame);
+            optionsButton.onClick.AddListener(() =>
+            {
+                PlayClickSound();
+                ChangeUIPanel(UIPanels.optionsPanel);
+            });
+            controlsButton.onClick.AddListener(() =>
+            {
+                PlayClickSound();
+                ChangeUIPanel(UIPanels.controlsPanel);
+            });
+            objectivesButton.onClick.AddListener(() =>
+            {
+                PlayClickSound();
+                ChangeUIPanel(UIPanels.objectivesPanel);
+            });
+            exitButton.onClick.AddListener(ExitButton);
+            controlsBackButton.onClick.AddListener(BackPanel);
+            objectivesBackButton.onClick.AddListener(BackPanel);
         }
 
         private void ChangeUIPanel(UIPanels newPanel)
         {
             _lastPanel = _currentPanel;
             _currentPanel = newPanel;
-            _currentActivePanel!.SetActive(false);
+            if (_currentActivePanel) _currentActivePanel.SetActive(false);
             switch (newPanel)
             {
                 case UIPanels.buildPanel:
@@ -352,18 +414,38 @@ namespace Managers
                 case UIPanels.generalInfoPanel:
                     break;
                 case UIPanels.pausePanel:
+                    SetPanelActive(pausePanel);
                     break;
                 case UIPanels.optionsPanel:
+                    SetPanelActive(optionsPanel);
                     break;
                 case UIPanels.controlsPanel:
+                    SetPanelActive(controlsPanel);
                     break;
                 case UIPanels.objectivesPanel:
+                    SetPanelActive(objectivesPanel);
                     break;
+                case UIPanels.gameOverPanel:
+                    break;
+                case UIPanels.none:
                 default:
                     throw new ArgumentOutOfRangeException(nameof(newPanel), newPanel, null);
             }
+            
+            Debug.Log($"Changed UI Panel to {newPanel}");
         }
-        
+
+        private static void PlayClickSound()
+        {
+            AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buttonClick);
+        }
+
+        private void SetPanelActive(GameObject newPanel)
+        {
+            newPanel.SetActive(true);
+            _currentActivePanel = newPanel;
+        }
+
         private void ConfigureHousePanel()
         {
             CasaNivel.text = "NIVEL " + _currentHouse.Level;

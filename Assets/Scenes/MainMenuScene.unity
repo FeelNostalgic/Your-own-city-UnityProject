@@ -5869,10 +5869,6 @@ MonoBehaviour:
   controlsButton: {fileID: 745539946}
   objectivesButton: {fileID: 1122777028}
   optionsPanel: {fileID: 2045974348}
-  musicVolumeSlider: {fileID: 4571521382989203675}
-  effectsVolumeSlider: {fileID: 1960578097}
-  languageDropdown: {fileID: 1842650997}
-  optionsBackButton: {fileID: 554747514}
   controlsPanel: {fileID: 323207575}
   controlsBackButton: {fileID: 1662058052}
   objectivesPanel: {fileID: 1251004222}
@@ -6055,6 +6051,7 @@ GameObject:
   - component: {fileID: 2045974349}
   - component: {fileID: 2045974351}
   - component: {fileID: 2045974350}
+  - component: {fileID: 2045974352}
   m_Layer: 5
   m_Name: OptionsPanel
   m_TagString: Untagged
@@ -6122,6 +6119,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2045974348}
   m_CullTransparentMesh: 1
+--- !u!114 &2045974352
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2045974348}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3cad96c38f78adc46be9725a1bf6b15c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  musicVolumeSlider: {fileID: 4571521382989203675}
+  effectsVolumeSlider: {fileID: 1960578097}
+  languageDropdown: {fileID: 1842650997}
+  optionsBackButton: {fileID: 554747514}
+  backEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 2020871612}
+        m_TargetAssemblyTypeName: Managers.UIManagerInMainMenu, Assembly-CSharp
+        m_MethodName: BackPanel
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1001 &2050605427
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -11,6 +11,7 @@ namespace Managers
     public class MapManager : MonoBehaviourSinglenton<MapManager>
     {
         #region Inspector Variables
+        
         [Header("MapTile")]
         [Tooltip("Genera un mapa de MapSizexMapSize")] [Range(8, 100)] [SerializeField]
         private int mapSize;
@@ -41,14 +42,18 @@ namespace Managers
         #region Public Variables
 
         public int MapSize => mapSize;
-        public float X_Offset => x_Offset;
-        public float Z_Offset => z_Offset;
-        public int RoadZ => _roadZ;
-        public GameObject[,] MapTiles => _MapTiles;
+        public float XOffset => x_Offset;
+        public float ZOffset => z_Offset;
+        public int RoadZ { get; private set; }
+
+        public GameObject[,] MapTiles { get; private set; }
+
         public Transform RoadParent => roadParent;
-        public GameObject RoadSpawnPoint => _roadSpawnPoint;
+        public GameObject RoadSpawnPoint { get; private set; }
+
         public int BorderSize => borderSize;
-        public bool IsMapCreated => _isMapCreated;
+        public bool IsMapCreated { get; private set; }
+
         public GameObject RoadToDestroy
         {
             set => _currentRoadToDestroy = value;
@@ -58,14 +63,10 @@ namespace Managers
 
         #region Private Variables
 
-        private GameObject[,] _MapTiles;
-        private GameObject[,] _BorderTiles;
-        private int _roadZ;
+        private GameObject[,] _borderTiles;
         private GameObject _currentRoadToDestroy;
-        private GameObject _roadSpawnPoint;
-        private bool _isMapCreated;
-        
-        private enum _tile
+
+        private enum Tile
         {
             baseT, border, road
         }
@@ -73,12 +74,7 @@ namespace Managers
         #endregion
 
         #region Unity Methods
-
-        private void Start()
-        {
-            _isMapCreated = false;
-        }
-
+        //
         #endregion
 
         #region Public Methods
@@ -90,17 +86,17 @@ namespace Managers
             BuildStartRoad();
             BuildDecoration();
             CameraController.Instance.StartingPosition();
-            ResidentsManager.Instance.RoadPosition = _roadSpawnPoint.transform.position;
-            _isMapCreated = true;
+            ResidentsManager.Instance.RoadPosition = RoadSpawnPoint.transform.position;
+            IsMapCreated = true;
         }
         
         public GameObject BuildRoadAtMap(int i, int j)
         {
             AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buildBuilding);
-            Destroy(_MapTiles[i,j]);
-            var newtile = BuildTile(i, j, _tile.road, roadParent);
+            Destroy(MapTiles[i,j]);
+            var newtile = BuildTile(i, j, Tile.road, roadParent);
             InicializateLineRenderer(newtile);
-            _MapTiles[i, j] = newtile;
+            MapTiles[i, j] = newtile;
             return newtile;
         }
 
@@ -118,115 +114,115 @@ namespace Managers
         #region GetVecinos
         public List<GameObject> GetVecinos4(GameObject tile, BuildManager._building type)
         {
-            var vecinos = new List<GameObject>();
+            var neightbour = new List<GameObject>();
             var x = (int)GetX_Index(tile.transform.position.x);
             var z = (int)GetZ_Index(tile.transform.position.z);
             
-            //Derecha
+            //Right
             //Debug.Log(_MapTiles[x + 1, z].name);
-            if ((x+1) < MapSize && _MapTiles[x + 1, z].GetComponent<BuildType>().Type == type)
+            if ((x+1) < MapSize && MapTiles[x + 1, z].GetComponent<BuildType>().Type == type)
             {
-                vecinos.Add(_MapTiles[x + 1, z]);
+                neightbour.Add(MapTiles[x + 1, z]);
             }
-            //Izquierda
+            //Left
             //Debug.Log(_MapTiles[x - 1, z].name);
-            if ((x-1) >= 0 && _MapTiles[x - 1, z].GetComponent<BuildType>().Type == type)
+            if ((x-1) >= 0 && MapTiles[x - 1, z].GetComponent<BuildType>().Type == type)
             {
-                vecinos.Add(_MapTiles[x - 1, z]);
+                neightbour.Add(MapTiles[x - 1, z]);
             }
             //Up
             //Debug.Log(_MapTiles[x, z + 1].name);
-            if ((z+1) < MapSize && _MapTiles[x, z + 1].GetComponent<BuildType>().Type == type)
+            if ((z+1) < MapSize && MapTiles[x, z + 1].GetComponent<BuildType>().Type == type)
             {
-                vecinos.Add(_MapTiles[x, z + 1]);
+                neightbour.Add(MapTiles[x, z + 1]);
             }
             //Down
             //Debug.Log(_MapTiles[x, z - 1].name);
-            if ((z-1) >= 0 && _MapTiles[x, z - 1].GetComponent<BuildType>().Type == type)
+            if ((z-1) >= 0 && MapTiles[x, z - 1].GetComponent<BuildType>().Type == type)
             {
-                vecinos.Add(_MapTiles[x, z - 1]);
+                neightbour.Add(MapTiles[x, z - 1]);
             }
             
-            return vecinos;
+            return neightbour;
         }
         
         public List<GameObject> GetVecinos4(GameObject tile)
         {
-            var vecinos = new List<GameObject>();
+            var neightbours = new List<GameObject>();
             var x = (int)GetX_Index(tile.transform.position.x);
             var z = (int)GetZ_Index(tile.transform.position.z);
             
-            //Derecha
-            if ((x+1) < MapSize) vecinos.Add(_MapTiles[x + 1, z]);
-            else vecinos.Add(null);
-            //Izquierda
-            if ((x-1) >= 0) vecinos.Add(_MapTiles[x - 1, z]);
-            else vecinos.Add(null);
+            //Right
+            if ((x+1) < MapSize) neightbours.Add(MapTiles[x + 1, z]);
+            else neightbours.Add(null);
+            //Left
+            if ((x-1) >= 0) neightbours.Add(MapTiles[x - 1, z]);
+            else neightbours.Add(null);
             //Up
-            if ((z+1) < MapSize) vecinos.Add(_MapTiles[x, z + 1]);
-            else vecinos.Add(null);
+            if ((z+1) < MapSize) neightbours.Add(MapTiles[x, z + 1]);
+            else neightbours.Add(null);
             //Down
-            if ((z-1) >= 0) vecinos.Add(_MapTiles[x, z - 1]);
-            else vecinos.Add(null);
+            if ((z-1) >= 0) neightbours.Add(MapTiles[x, z - 1]);
+            else neightbours.Add(null);
             
-            return vecinos;
+            return neightbours;
         }
 
         public List<GameObject> GetVecinos8(GameObject tile)
         {
-            var vecinos = new List<GameObject>();
+            var neightbours = new List<GameObject>();
             var x = (int)GetX_Index(tile.transform.position.x);
             var z = (int)GetZ_Index(tile.transform.position.z);
             
-            for (int i = x-1; i <= x+1; i++)
+            for (var i = x-1; i <= x+1; i++)
             {
-                for (int j = z-1; j <= z+1; j++)
+                for (var j = z-1; j <= z+1; j++)
                 {
-                    if (i >= 0 && i < MapSize && j >= 0 && j < MapSize && _MapTiles[i,j] != tile) vecinos.Add(_MapTiles[i,j]);
-                    else vecinos.Add(null);
+                    if (i >= 0 && i < MapSize && j >= 0 && j < MapSize && MapTiles[i,j] != tile) neightbours.Add(MapTiles[i,j]);
+                    else neightbours.Add(null);
                 }
             }
             
-            return vecinos;
+            return neightbours;
         }
 
         public List<GameObject> GetVecinos12(GameObject tile)
         {
-            var vecinos = GetVecinos8(tile);
+            var neightbours = GetVecinos8(tile);
             var x = (int)GetX_Index(tile.transform.position.x);
             var z = (int)GetZ_Index(tile.transform.position.z);
-            //Derecha
-            if ((x+2) < MapSize)vecinos.Add(_MapTiles[x + 2, z]);
-            else vecinos.Add(null);
-            //Izquierda
-            if ((x-2) >= 0) vecinos.Add(_MapTiles[x - 2, z]);
-            else vecinos.Add(null);
+            //Right
+            if ((x+2) < MapSize)neightbours.Add(MapTiles[x + 2, z]);
+            else neightbours.Add(null);
+            //Left
+            if ((x-2) >= 0) neightbours.Add(MapTiles[x - 2, z]);
+            else neightbours.Add(null);
             //Up
-            if ((z+2) < MapSize) vecinos.Add(_MapTiles[x, z + 2]);
-            else vecinos.Add(null);
+            if ((z+2) < MapSize) neightbours.Add(MapTiles[x, z + 2]);
+            else neightbours.Add(null);
             //Down
-            if ((z-2) >= 0) vecinos.Add(_MapTiles[x, z - 2]);
-            else vecinos.Add(null);
+            if ((z-2) >= 0) neightbours.Add(MapTiles[x, z - 2]);
+            else neightbours.Add(null);
             
-            return vecinos;
+            return neightbours;
         }
 
         public List<GameObject> GetVecinos25(GameObject tile)
         {
-            var vecinos = new List<GameObject>();
+            var neightbours = new List<GameObject>();
             var x = (int)GetX_Index(tile.transform.position.x);
             var z = (int)GetZ_Index(tile.transform.position.z);
             
-            for (int i = x-2; i <= x+2; i++)
+            for (var i = x-2; i <= x+2; i++)
             {
-                for (int j = z-2; j <= z+2; j++)
+                for (var j = z-2; j <= z+2; j++)
                 {
-                    if (i >= 0 && i < MapSize && j >= 0 && j < MapSize && _MapTiles[i,j] != tile) vecinos.Add(_MapTiles[i,j]);
-                    else vecinos.Add(null);
+                    if (i >= 0 && i < MapSize && j >= 0 && j < MapSize && MapTiles[i,j] != tile) neightbours.Add(MapTiles[i,j]);
+                    else neightbours.Add(null);
                 }
             }
             
-            return vecinos;
+            return neightbours;
         }
         #endregion
 
@@ -252,29 +248,29 @@ namespace Managers
 
         private void BuildMap()
         {
-            _MapTiles = new GameObject[mapSize, mapSize];
-            for (int i = 0; i < mapSize; i++)
+            MapTiles = new GameObject[mapSize, mapSize];
+            for (var i = 0; i < mapSize; i++)
             {
-                for (int j = 0; j < mapSize; j++)
+                for (var j = 0; j < mapSize; j++)
                 {
-                    var newtile = BuildTile(i,j,_tile.baseT, mapParent);
+                    var newtile = BuildTile(i,j,Tile.baseT, mapParent);
                     InicializateLineRenderer(newtile);
-                    _MapTiles[i, j] = newtile;
+                    MapTiles[i, j] = newtile;
                 }
             }
         }
 
         private void BuildBorder()
         {
-            _BorderTiles = new GameObject[mapSize + 2 * borderSize, mapSize + 2 * borderSize];
-            for (int i = -borderSize; i < mapSize + borderSize; i++)
+            _borderTiles = new GameObject[mapSize + 2 * borderSize, mapSize + 2 * borderSize];
+            for (var i = -borderSize; i < mapSize + borderSize; i++)
             {
-                for (int j = -borderSize; j < borderSize + mapSize; j++)
+                for (var j = -borderSize; j < borderSize + mapSize; j++)
                 {
                     if (checkPertenenciaMap(i,j))
                     {
-                        var newtile = BuildTile(i, j, _tile.border, borderParent);
-                        _BorderTiles[i + borderSize, j + borderSize] = newtile;
+                        var newtile = BuildTile(i, j, Tile.border, borderParent);
+                        _borderTiles[i + borderSize, j + borderSize] = newtile;
                     }
                 }
             }
@@ -283,14 +279,14 @@ namespace Managers
         private void BuildStartRoad()
         {
             var positionY = Random.Range(3, mapSize-3);
-            _roadZ = positionY;
-            for (int i = -borderSize; i < 0; i++)
+            RoadZ = positionY;
+            for (var i = -borderSize; i < 0; i++)
             {
-                var newtile = BuildTile(i, positionY, _tile.road, roadParent);
-                if (i == -borderSize) _roadSpawnPoint = newtile;
+                var newtile = BuildTile(i, positionY, Tile.road, roadParent);
+                if (i == -borderSize) RoadSpawnPoint = newtile;
                 newtile.layer = 0;
-                Destroy(_BorderTiles[i + borderSize,positionY + borderSize]);
-                _BorderTiles[i + borderSize, positionY + borderSize] = newtile;
+                Destroy(_borderTiles[i + borderSize,positionY + borderSize]);
+                _borderTiles[i + borderSize, positionY + borderSize] = newtile;
             }
         }
 
@@ -300,7 +296,7 @@ namespace Managers
             var y = BuildManager.Instance.YBuilding;
 
             var borderTiles = borderParent.GetComponentsInChildren<BoxCollider>(true);
-            for (int i = 0; i < maxDecoration; i++)
+            for (var i = 0; i < maxDecoration; i++)
             {
                 var decorationGameObject = decorationGameObjectsList[Random.Range(0, decorationGameObjectsList.Count)];
                 var currentBorderTile = borderTiles[Random.Range(0, borderTiles.Length)];
@@ -325,15 +321,15 @@ namespace Managers
 
         private float GetX_Index(float x)
         {
-            return (x / X_Offset);
+            return (x / XOffset);
         }
         
         private float GetZ_Index(float z)
         {
-            return (z / Z_Offset);
+            return (z / ZOffset);
         }
         
-        private GameObject BuildTile(int i, int j, _tile type, Transform parent)
+        private GameObject BuildTile(int i, int j, Tile type, Transform parent)
         {
             var position = new Vector3(i * x_Offset, 0, j * z_Offset);
             var newtile = Instantiate(tiles[(int)type], position, Quaternion.identity, parent);
@@ -345,10 +341,10 @@ namespace Managers
         private void DestroyRoadAtMap(int i, int j)
         {
             if (i == 0 && j == RoadZ) BuildManager.Instance.IsFirstRoadBuild = false;
-            Destroy(_MapTiles[i,j]);
-            var newtile = BuildTile(i, j, _tile.baseT, mapParent);
+            Destroy(MapTiles[i,j]);
+            var newtile = BuildTile(i, j, Tile.baseT, mapParent);
             InicializateLineRenderer(newtile);
-            _MapTiles[i, j] = newtile;
+            MapTiles[i, j] = newtile;
             UIManagerInGame.Instance.DisableAllPanels();
         }
 
@@ -358,7 +354,7 @@ namespace Managers
             var collider = newtile.GetComponent<Collider>();
             var maxCol = collider.bounds.max;
             var minCol = collider.bounds.min;
-            Vector3[] positions = new Vector3[4];
+            var positions = new Vector3[4];
             positions[0] = transform.TransformPoint( new Vector3(minCol.x, maxCol.y,minCol.z));
             positions[1] = transform.TransformPoint(new Vector3(minCol.x, maxCol.y,maxCol.z));
             positions[2] = transform.TransformPoint(new Vector3(maxCol.x, maxCol.y,maxCol.z));

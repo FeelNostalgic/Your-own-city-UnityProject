@@ -35,14 +35,20 @@ namespace Controllers
         private bool _canNavigate;
         private float _rotationY;
         private float _rotationX;
+        private Camera _camera;
 
         #endregion
 
         #region Unity Methods
-
+        
         private void Awake()
         {
             _rotationY = 0;
+        }
+        
+        private void Start()
+        {
+            _camera = Camera.main;
         }
 
         private void Update()
@@ -60,10 +66,10 @@ namespace Controllers
         public void StartingPosition()
         {
             var firstRoad = MapManager.Instance.RoadSpawnPoint.transform.position;
-            var position = new Vector3(firstRoad.x + (MapManager.Instance.BorderSize * MapManager.Instance.X_Offset),
-                firstRoad.y + (LimitY.x + AlturaOffset), firstRoad.z - (CasillasOffset * MapManager.Instance.Z_Offset));
+            var position = new Vector3(firstRoad.x + (MapManager.Instance.BorderSize * MapManager.Instance.XOffset),
+                firstRoad.y + (LimitY.x + AlturaOffset), firstRoad.z - (CasillasOffset * MapManager.Instance.ZOffset));
             transform.position = position;
-            UnityEngine.Camera.main.transform.rotation = Quaternion.Euler(new Vector3(AnguloInicial, 0, 0));
+            _camera.transform.rotation = Quaternion.Euler(new Vector3(AnguloInicial, 0, 0));
         }
 
         #endregion
@@ -80,38 +86,34 @@ namespace Controllers
                 _canNavigate = true;
             }
 
-            if (Input.GetMouseButtonUp(1))
-            {
-                Cursor.lockState = CursorLockMode.None;
-                Cursor.visible = true;
-                _canNavigate = false;
-            }
+            if (!Input.GetMouseButtonUp(1)) return;
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            _canNavigate = false;
         }
 
         private void NavigateMap()
         {
-            if (_canNavigate)
-            {
-                calculateRotation();
-                calculateMove();
-            }
+            if (!_canNavigate) return;
+            CalculateRotation();
+            CalculateMove();
         }
 
-        private void calculateRotation()
+        private void CalculateRotation()
         {
             _rotationY += -Input.GetAxis("Mouse Y") * RotationSpeed;
-            float rotationX = Input.GetAxis("Mouse X") * RotationSpeed;
+            var rotationX = Input.GetAxis("Mouse X") * RotationSpeed;
             _rotationY = Mathf.Clamp(_rotationY, -LimitRotation, LimitRotation);
-            UnityEngine.Camera.main.transform.localRotation = Quaternion.Euler(_rotationY, 0, 0);
+            if (_camera != null) _camera.transform.localRotation = Quaternion.Euler(_rotationY, 0, 0);
             transform.rotation *= Quaternion.Euler(0, rotationX, 0);
         }
 
-        private void calculateMove()
+        private void CalculateMove()
         {
-            float h = Input.GetAxis("Horizontal");
-            float v = Input.GetAxis("Vertical");
+            var h = Input.GetAxis("Horizontal");
+            var v = Input.GetAxis("Vertical");
 
-            transform.position += UnityEngine.Camera.main.transform.forward * (v * MoveSpeed * Time.deltaTime);
+            transform.position += _camera.transform.forward * (v * MoveSpeed * Time.deltaTime);
             transform.position += Quaternion.AngleAxis(90, Vector3.up) * transform.forward *
                                   (h * MoveSpeed * Time.deltaTime);
 
@@ -128,19 +130,19 @@ namespace Controllers
                                       (MoveSpeed * .8f * Time.deltaTime);
             }
 
-            calculateLimits();
+            CalculateLimits();
         }
 
-        private void calculateLimits()
+        private void CalculateLimits()
         {
-            var X = MapManager.Instance.X_Offset;
-            var Z = MapManager.Instance.Z_Offset;
+            var x = MapManager.Instance.XOffset;
+            var z = MapManager.Instance.ZOffset;
             var mapSize = MapManager.Instance.MapSize + 1;
             var borderSizehalf = (MapManager.Instance.BorderSize / 2) - 1;
 
-            transform.LimitX(-X * borderSizehalf, X * (mapSize + borderSizehalf));
+            transform.LimitX(-x * borderSizehalf, x * (mapSize + borderSizehalf));
             transform.LimitY(LimitY.x, LimitY.y);
-            transform.LimitZ(-Z * borderSizehalf, Z * (mapSize + borderSizehalf));
+            transform.LimitZ(-z * borderSizehalf, z * (mapSize + borderSizehalf));
         }
 
         #endregion

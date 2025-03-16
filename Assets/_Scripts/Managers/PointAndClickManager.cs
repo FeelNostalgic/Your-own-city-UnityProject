@@ -1,4 +1,3 @@
-using System;
 using Buildings;
 using Utilities;
 using UnityEngine;
@@ -16,7 +15,7 @@ namespace Managers
         #region Public Variables
 
         public bool IsEnableRaycast { get; set; }
-        
+
         #endregion
 
         #region Private Variables
@@ -25,8 +24,6 @@ namespace Managers
         private RaycastHit _hit;
         private LineRenderer _currentLineRenderer;
         private LineRenderer _currentLineRendererSelected;
-        private bool _isGamePaused;
-        private bool _isGameOver;
         private Camera _mainCamera;
 
         #endregion
@@ -41,18 +38,16 @@ namespace Managers
         private void Start()
         {
             IsEnableRaycast = true;
-            _isGamePaused = false;
-            _isGameOver = false;
         }
 
         private void Update()
         {
-            if (!_isGamePaused)
+            if (GameManager.CurrentGameState == GameState.Playing)
             {
                 InputPointAndHitRaycast();
             }
 
-            if (!_isGameOver && MapManager.Instance.IsMapCreated) InputKeyboard();
+            if (MapManager.Instance.IsMapCreated) InputKeyboard();
         }
 
         #endregion
@@ -103,22 +98,28 @@ namespace Managers
 
         private void InputKeyboard()
         {
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                if (UIManagerInGame.Instance.IsAPanelActive && !_isGamePaused)
-                {
-                    if (_currentLineRendererSelected != null)
-                    {
-                        _currentLineRendererSelected.enabled = false;
-                        _currentLineRendererSelected = null;
-                    }
+            if (!Input.GetKeyDown(KeyCode.Escape)) return;
 
-                    UIManagerInGame.Instance.DisableAllPanels();
-                }
-                else
+            if (UIManagerInGame.Instance.IsAPanelActive && GameManager.CurrentGameState == GameState.Playing)
+            {
+                if (_currentLineRendererSelected != null)
                 {
-                    if (_isGamePaused) UIManagerInGame.Instance.PauseGame(false);
-                    else UIManagerInGame.Instance.PauseGame(true);
+                    _currentLineRendererSelected.enabled = false;
+                    _currentLineRendererSelected = null;
+                }
+
+                UIManagerInGame.Instance.DisableAllPanels();
+            }
+            else
+            {
+                switch (GameManager.CurrentGameState)
+                {
+                    case GameState.Playing:
+                        UIManagerInGame.Instance.PauseGame();
+                        break;
+                    case GameState.Paused:
+                        UIManagerInGame.Instance.UnpauseGame();
+                        break;
                 }
             }
         }

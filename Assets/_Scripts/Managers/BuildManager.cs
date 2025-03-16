@@ -3,7 +3,6 @@ using Buildings;
 using Utilities;
 using Unity.AI.Navigation;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace Managers
 {

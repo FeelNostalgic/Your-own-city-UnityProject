@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using Residents;
 using Utilities;
 using UnityEngine;
-using UnityEngine.AI;
 using Random = UnityEngine.Random;
 
 namespace Managers

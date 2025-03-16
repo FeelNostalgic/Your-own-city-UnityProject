@@ -2,7 +2,6 @@ using System;
 using Utilities;
 using UnityEngine;
 using UnityEngine.Audio;
-using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace Managers
@@ -13,12 +12,11 @@ namespace Managers
 
         [SerializeField] private AudioMixer audioMixer;
         
-        [FormerlySerializedAs("MainAudioSource")] [SerializeField] private AudioSource mainAudioSource;
-        [FormerlySerializedAs("SFXAudioSource")] [SerializeField] private AudioSource sfxAudioSource;
-        [FormerlySerializedAs("SFX_ClickAudioSource")] [SerializeField] private AudioSource sfxClickAudioSource;
+        [SerializeField] private AudioSource mainAudioSource;
+        [SerializeField] private AudioSource sfxAudioSource;
+        [SerializeField] private AudioSource sfxClickAudioSource;
         
-        [FormerlySerializedAs("SFX_AudioClips")]
-        [Tooltip("Orden: construccion, habitante, destroy, clickOnMap, nivelUp, buttonClick, GameOver")]
+        [Tooltip("Orden: building, resident, destroy, clickOnMap, levelUp, buttonClick, GameOver")]
         [SerializeField] private AudioClip[] sfxAudioClips;
 
         #endregion
@@ -91,12 +89,14 @@ namespace Managers
         public void ManageMusicVolume(float sliderValue)
         {
             var volume = sliderValue > 0 ? Mathf.Log10(sliderValue) * 20 : -80f;
+            GameManager.MusicVolume = volume;
             audioMixer.SetFloat("musicVol", volume);
         }
 
         public void ManageSFXVolume(float sliderValue)
         {
             var volume = sliderValue > 0 ? Mathf.Log10(sliderValue) * 20 : -80f;
+            GameManager.EffectsVolume = volume;
             audioMixer.SetFloat("sfxVol", volume);
         }
         

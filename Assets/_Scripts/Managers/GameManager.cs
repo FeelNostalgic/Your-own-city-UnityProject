@@ -2,7 +2,6 @@
 using System;
 using UnityEngine;
 using Utilities;
-using Random = UnityEngine.Random;
 
 namespace Managers
 { 
@@ -15,6 +14,10 @@ namespace Managers
 		
 		public static GameState CurrentGameState { get; private set; }
 		
+		public static float MusicVolume { get;  set; }
+		public static float EffectsVolume { get;  set; }
+		public static int SelectedLocale { get; set; }
+		
 		#endregion
 
 		#region Private Variables
@@ -22,6 +25,13 @@ namespace Managers
 		#endregion
 
 		#region Unity Methods
+
+		private void Awake()
+		{
+			MusicVolume = 1;
+			EffectsVolume = 1;
+			SelectedLocale = 0;
+		}
 
 		private void Start() => ChangeState(GameState.NotStarted);
 		
@@ -53,6 +63,8 @@ namespace Managers
 			}
 			
 			OnAfterStateChange?.Invoke(newGameState);
+			
+			Debug.Log($"Game state changed to {newGameState}");
 		}
 		
 		#endregion
