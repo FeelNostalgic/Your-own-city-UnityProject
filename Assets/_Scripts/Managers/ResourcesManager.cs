@@ -1,3 +1,4 @@
+using System;
 using Utilities;
 using UnityEngine;
 
@@ -15,13 +16,18 @@ namespace Managers
 
         public int CurrentGold => _currentGold;
 
+        public event Action<int> OnGoldUpdate;
+        public event Action<int> OnResidentUpdate;
+        public event Action<int> OnCostsPerSecondUpdate;
+        public event Action<int> OnGoldPerSecondUpdate;
+
         #endregion
 
         #region Private Variables
 
-        private int _currentHabitantes;
-        private int _currentGastosPorSegundo;
-        private float _currentGoldPorSegundo;
+        private int _currentInhabitants;
+        private int _currentCostsPerSecond;
+        private float _currentGoldPerSecond;
         private int _currentGold;
 
         #endregion
@@ -38,17 +44,17 @@ namespace Managers
         {
             AddGold(0);
             AddGold(StartGold);
-            AddHabitante(0);
-            AddGastos(0);
-            AddGoldPorSegundo(0);
+            AddResident(0);
+            AddCosts(0);
+            AddGoldPerSecond(0);
         }
 
         private void Update()
         {
-            //Cada segundo se restan los gatos
+            //Every second costs are reduced
             if (Time.frameCount % Application.targetFrameRate == 0 && GameManager.CurrentGameState == GameState.Playing)
             {
-                AddGold(-_currentGastosPorSegundo);
+                AddGold(-_currentCostsPerSecond);
             }
 
             if (_currentGold < -500 && GameManager.CurrentGameState == GameState.Playing)
@@ -61,37 +67,37 @@ namespace Managers
 
         #region Public Methods
 
-        public void AddHabitante(int h)
+        public void AddResident(int h)
         {
-            _currentHabitantes += h;
-            UIManagerInGame.Instance.UpdateInhabitantsNumberTMP(_currentHabitantes);
+            _currentInhabitants += h;
+            OnResidentUpdate?.Invoke(_currentInhabitants);
         }
 
         public void AddGold(int g)
         {
             _currentGold += g;
-            UIManagerInGame.Instance.UpdateGold(_currentGold);
+            OnGoldUpdate?.Invoke(_currentGold);
         }
 
-        public void AddGastos(int g)
+        public void AddCosts(int g)
         {
-            _currentGastosPorSegundo += g;
-            UIManagerInGame.Instance.UpdateGastos(_currentGastosPorSegundo);
+            _currentCostsPerSecond += g;
+            OnCostsPerSecondUpdate?.Invoke(_currentCostsPerSecond);
         }
 
-        public void AddGoldPorSegundo(float g)
+        public void AddGoldPerSecond(float g)
         {
-            _currentGoldPorSegundo += g;
-            UIManagerInGame.Instance.UpdateGoldPorSegundo((int)_currentGoldPorSegundo);
+            _currentGoldPerSecond += g;
+            OnGoldPerSecondUpdate?.Invoke((int)_currentGoldPerSecond);
         }
 
         public void RestartAllInfo()
         {
             AddGold(-_currentGold);
             AddGold(StartGold);
-            AddHabitante(-_currentHabitantes);
-            AddGoldPorSegundo(-_currentGoldPorSegundo);
-            AddGastos(-_currentGastosPorSegundo);
+            AddResident(-_currentInhabitants);
+            AddGoldPerSecond(-_currentGoldPerSecond);
+            AddCosts(-_currentCostsPerSecond);
         }
 
         #endregion

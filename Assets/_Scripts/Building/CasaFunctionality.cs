@@ -79,18 +79,18 @@ namespace Buildings
         {
             AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.newHabitante);
             if (_currentHabitantes > 0)
-                ResourcesManager.Instance.AddGoldPorSegundo((-_goldPorSegundo * _currentMultiplicador));
+                ResourcesManager.Instance.AddGoldPerSecond((-_goldPorSegundo * _currentMultiplicador));
             _currentHabitantes++;
             _goldPorSegundo += h.BaseGold;
             _currentMultiplicador += h.MultiplicadorGold;
-            ResourcesManager.Instance.AddGoldPorSegundo((_goldPorSegundo * _currentMultiplicador));
+            ResourcesManager.Instance.AddGoldPerSecond((_goldPorSegundo * _currentMultiplicador));
             _gastosPorSegundo += h.GastosPorSegundo;
             UpdateLight(h.EmissionColor);
             //BuildingsManager.Instance.RemoveCasa(transform.parent.gameObject);
-            ResourcesManager.Instance.AddHabitante(1);
+            ResourcesManager.Instance.AddResident(1);
             UIManagerInGame.Instance.UpdateCasaHabitantes(this, _currentHabitantes, _currentMultiplicador, _gastosPorSegundo,
                 (int)(_goldPorSegundo * _currentMultiplicador));
-            ResourcesManager.Instance.AddGastos(h.GastosPorSegundo);
+            ResourcesManager.Instance.AddCosts(h.GastosPorSegundo);
         }
 
         public void SubirNivel()
@@ -104,10 +104,10 @@ namespace Buildings
                 _maxHabitantes++;
                 _costeNivel *= 2;
                 if (_currentHabitantes > 0)
-                    ResourcesManager.Instance.AddGoldPorSegundo((-_goldPorSegundo * _currentMultiplicador));
+                    ResourcesManager.Instance.AddGoldPerSecond((-_goldPorSegundo * _currentMultiplicador));
                 _currentMultiplicador += 0.1f;
-                ResourcesManager.Instance.AddGoldPorSegundo((_goldPorSegundo * _currentMultiplicador));
-                ResourcesManager.Instance.AddGastos((int)(_gastosPorSegundo * 0.2f));
+                ResourcesManager.Instance.AddGoldPerSecond((_goldPorSegundo * _currentMultiplicador));
+                ResourcesManager.Instance.AddCosts((int)(_gastosPorSegundo * 0.2f));
                 _gastosPorSegundo = (int)(_gastosPorSegundo * 1.2f);
                 UIManagerInGame.Instance.UpdateCasaNivel(_currentLevel, _costeNivel, _maxHabitantes, _currentMultiplicador,
                     _gastosPorSegundo, (int)(_goldPorSegundo * _currentMultiplicador));
@@ -123,9 +123,9 @@ namespace Buildings
             AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buttonClick);
             AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.detroyBuilding);
             ResourcesManager.Instance.AddGold((int)(BuildManager.Instance.HousePrice * 0.8f * _currentLevel));
-            ResourcesManager.Instance.AddGoldPorSegundo((-_goldPorSegundo * _currentMultiplicador));
-            ResourcesManager.Instance.AddGastos(-_gastosPorSegundo);
-            ResourcesManager.Instance.AddHabitante(-_currentHabitantes);
+            ResourcesManager.Instance.AddGoldPerSecond((-_goldPorSegundo * _currentMultiplicador));
+            ResourcesManager.Instance.AddCosts(-_gastosPorSegundo);
+            ResourcesManager.Instance.AddResident(-_currentHabitantes);
             GetComponentInParent<BuildType>().Type = BuildManager._building.none;
             BuildingsManager.Instance.RemoveCasa(transform.parent.gameObject);
             UIManagerInGame.Instance.DisableAllPanels();
@@ -135,9 +135,9 @@ namespace Buildings
         public void MejorarMultiplicador(float m)
         {
             if (_currentHabitantes > 0)
-                ResourcesManager.Instance.AddGoldPorSegundo((-_goldPorSegundo * _currentMultiplicador));
+                ResourcesManager.Instance.AddGoldPerSecond((-_goldPorSegundo * _currentMultiplicador));
             _currentMultiplicador += m;
-            ResourcesManager.Instance.AddGoldPorSegundo((_goldPorSegundo * _currentMultiplicador));
+            ResourcesManager.Instance.AddGoldPerSecond((_goldPorSegundo * _currentMultiplicador));
         }
 
         #endregion

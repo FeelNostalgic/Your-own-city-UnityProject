@@ -3,8 +3,10 @@ using System.Collections;
 using Buildings;
 using DG.Tweening;
 using TMPro;
+using UI;
 using UnityEngine;
 using UnityEngine.Localization.Settings;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Utilities;
 
@@ -35,15 +37,10 @@ namespace Managers
 
         [Header("Game Over Panel")] [SerializeField]
         private GameObject gameOverPanel;
-
-        [Header("Principal")] [SerializeField] private GameObject PanelGeneral;
-        [SerializeField] private TMP_Text Tiempo;
-        [SerializeField] private TMP_Text Gold;
-        [SerializeField] private TMP_Text Habitantes;
-        [SerializeField] private TMP_Text Gastos;
-        [SerializeField] private TMP_Text GoldPorSegundo;
-        [SerializeField] private TMP_Text InfoGeneral;
-        [SerializeField] private float TiempoInfoActiva;
+        
+        [Header("General Info")]
+        [SerializeField] private GameObject generalPanel;
+        [SerializeField] private GeneralInfoController generalInfoController;
 
         [Header("Buildings")] [SerializeField] private GameObject BuildPanel;
         [SerializeField] private TMP_Text CarreteraPrice;
@@ -97,7 +94,7 @@ namespace Managers
         #region Public Variables
 
         public bool IsAPanelActive => _isAPanelActive;
-
+        
         #endregion
 
         #region Private Variables
@@ -274,32 +271,10 @@ namespace Managers
             PointAndClickManager.Instance.IsEnableRaycast = true;
             _isAPanelActive = false;
         }
-
-        public void UpdateGold(int g)
-        {
-            Gold.text = string.Format("{0:N0}", g);
-            if (g < 0) Gold.color = Color.red;
-            else Gold.color = Color.white;
-        }
-
-        public void UpdateInhabitantsNumberTMP(int h)
-        {
-            Habitantes.text = h.ToString();
-        }
-
-        public void UpdateGastos(int g)
-        {
-            Gastos.text = g.ToString(); //string.Format("{0:N0}", g);
-        }
-
-        public void UpdateGoldPorSegundo(int g)
-        {
-            GoldPorSegundo.text = g.ToString(); //string.Format("{0:N0}", g);
-        }
-
+        
         public void UpdateInfoGeneral(string info)
         {
-            if (!InfoGeneral.enabled) StartCoroutine(ShowInfoGeneral(info));
+            generalInfoController.ShowFeedback(info);
         }
 
         public void HideAllAreas()
@@ -313,7 +288,7 @@ namespace Managers
         {
             DisableAllPanels();
             _isAPanelActive = value;
-            PanelGeneral.SetActive(!value);
+            generalPanel.SetActive(!value);
             gameOverPanel.SetActive(value);
         }
 
@@ -365,8 +340,6 @@ namespace Managers
             // TODO
             // ShowBuildPanel(false);
             // SetPricesInBuildPanel();
-            // InfoGeneral.enabled = false;
-            // UpdateInhabitantsNumberTMP(0);
             // roadDestroyTMP.text = "DEMOLER (+" + (int)(BuildManager.Instance.RoadPrice * 0.8) + ")";
             // destroyRoadButton.onClick.AddListener(delegate { MapManager.Instance.DestroyRoad(); });
             _isAPanelActive = false;
@@ -551,15 +524,7 @@ namespace Managers
                 Button_InfoMultiplierDemoler.onClick.AddListener(delegate { policia.Demoler(); });
             }
         }
-
-        private void UpdateTime()
-        {
-            _currentTime += Time.deltaTime;
-            var minutos = Mathf.FloorToInt(_currentTime / 60);
-            var segundos = Mathf.FloorToInt(_currentTime % 60);
-            Tiempo.text = string.Format("{0:00}:{1:00}", minutos, segundos);
-        }
-
+        
         private void SetPricesInBuildPanel()
         {
             CarreteraPrice.text = string.Format("{0:N0}", (int)BuildManager.Instance.RoadPrice);
@@ -568,15 +533,7 @@ namespace Managers
             HospitalPrice.text = string.Format("{0:N0}", (int)BuildManager.Instance.HospitalPrice);
             PoliciaPrice.text = string.Format("{0:N0}", (int)BuildManager.Instance.PolicePrice);
         }
-
-        private IEnumerator ShowInfoGeneral(string info)
-        {
-            InfoGeneral.text = info;
-            InfoGeneral.enabled = true;
-            yield return new WaitForSeconds(TiempoInfoActiva);
-            InfoGeneral.enabled = false;
-        }
-
+        
         #endregion
     }
 }

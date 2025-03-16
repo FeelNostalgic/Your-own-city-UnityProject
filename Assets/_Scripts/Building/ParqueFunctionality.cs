@@ -52,7 +52,7 @@ namespace Buildings
             _currentMultiplicador = 1 + MultiplicadorInicial;
             _areaEfecto = 1;
             _costeNivel = (int)(BuildManager.Instance.ParquePrice * 2f);
-            ResourcesManager.Instance.AddGastos(_gastosPorSegundo);
+            ResourcesManager.Instance.AddCosts(_gastosPorSegundo);
             UpdateArea();
             UpdateMultiplicadorNewVecinos();
         }
@@ -72,7 +72,7 @@ namespace Buildings
                 _currentLevel++;
                 _costeNivel = (int)(_costeNivel * 2.2f);
                 _currentMultiplicador += MULTIPLIER;
-                ResourcesManager.Instance.AddGastos((int)(_gastosPorSegundo * 0.25f));
+                ResourcesManager.Instance.AddCosts((int)(_gastosPorSegundo * 0.25f));
                 _gastosPorSegundo = (int)(_gastosPorSegundo * 1.25f);
                 UpdateArea();
                 UpdateMultiplicadorCurrentVecinos(MULTIPLIER);
@@ -92,7 +92,7 @@ namespace Buildings
             AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buttonClick);
             AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.detroyBuilding);
             ResourcesManager.Instance.AddGold((int)(BuildManager.Instance.ParquePrice * 0.8f * _currentLevel));
-            ResourcesManager.Instance.AddGastos(-_gastosPorSegundo);
+            ResourcesManager.Instance.AddCosts(-_gastosPorSegundo);
             UpdateMultiplicadorCurrentVecinos(-(_currentMultiplicador - 1));
             GetComponentInParent<BuildType>().Type = BuildManager._building.none;
             BuildingsManager.Instance.Parques.Remove(this);

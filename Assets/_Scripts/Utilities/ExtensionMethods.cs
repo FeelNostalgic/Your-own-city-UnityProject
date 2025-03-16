@@ -1,8 +1,9 @@
+using TMPro;
 using UnityEngine;
 
 namespace Utilities
 {
-    public static class ExtesionMethods
+    public static class ExtensionMethods
     {
         public static void LimitX(this Transform t,float min, float max)
         {
@@ -20,6 +21,11 @@ namespace Utilities
         {
             var newZ = Mathf.Clamp(t.transform.position.z, min, max);
             t.transform.position = new Vector3(t.transform.position.x, t.transform.position.y, newZ);
+        }
+
+        public static void SetAlpha(this TMP_Text text, float alpha)
+        {
+            text.color = new Color(text.color.r, text.color.g, text.color.b, alpha);
         }
     }
 }
