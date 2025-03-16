@@ -60,6 +60,8 @@ namespace Managers
         }
         
         public NavMeshSurface NavMeshSurface { get; private set; }
+
+        public static event Action<GameObject> OnTileDelete;
         
         #endregion
 
@@ -100,6 +102,7 @@ namespace Managers
         public GameObject BuildRoadAtMap(int i, int j)
         {
             AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buildBuilding);
+            OnTileDelete?.Invoke(MapTiles[i,j]);
             Destroy(MapTiles[i,j]);
             var newTile = BuildTile(i, j, Tile.road, roadParent);
             InicializateLineRenderer(newTile);
@@ -348,10 +351,11 @@ namespace Managers
         private void DestroyRoadAtMap(int i, int j)
         {
             if (i == 0 && j == RoadZ) BuildManager.Instance.IsFirstRoadBuild = false;
+            OnTileDelete?.Invoke(MapTiles[i,j]);
             Destroy(MapTiles[i,j]);
-            var newtile = BuildTile(i, j, Tile.baseT, mapParent);
-            InicializateLineRenderer(newtile);
-            MapTiles[i, j] = newtile;
+            var newTile = BuildTile(i, j, Tile.baseT, mapParent);
+            InicializateLineRenderer(newTile);
+            MapTiles[i, j] = newTile;
             UIManagerInGame.Instance.DisableAllPanels();
         }
 

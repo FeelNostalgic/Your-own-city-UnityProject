@@ -131,6 +131,10 @@ MonoBehaviour:
     m_Localized: RESTART
     m_Metadata:
       m_Items: []
+  - m_Id: 495403887489024
+    m_Localized: Connects buildings to allow the traffic of inhabitants
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

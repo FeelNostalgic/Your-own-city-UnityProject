@@ -1,3 +1,4 @@
+using System;
 using Buildings;
 using Utilities;
 using UnityEngine;
@@ -11,8 +12,8 @@ namespace Managers
         private Camera _mainCamera;
         private Ray _ray;
         private RaycastHit _hit;
-        private LineRenderer _currentLineRenderer;
-        private LineRenderer _currentLineRendererSelected;
+        private LineRendererHighlight _currentHighlightedLineRenderer;
+        private LineRendererHighlight _selectedLineRenderer;
 
         #region Unity Methods
 
@@ -21,6 +22,11 @@ namespace Managers
             _mainCamera = Helpers.Camera;
         }
 
+        private void Start()
+        {
+            MapManager.OnTileDelete += OnTileDeleted;
+        }
+        
         private void Update()
         {
             if (GameManager.CurrentGameState == GameState.Playing)
@@ -40,16 +46,8 @@ namespace Managers
 
         public void DisableCurrentLineRendererSelected()
         {
-            if (_currentLineRendererSelected.IsNotNull())
-            {
-                DisableCurrentSelected();
-            }
-
-            if (_currentLineRenderer.IsNotNull())
-            {
-                _currentLineRenderer.enabled = false;
-                _currentLineRenderer = null;
-            }
+            _selectedLineRenderer?.Deselect();
+            _currentHighlightedLineRenderer?.Unhighlight();
         }
 
         #endregion
@@ -59,11 +57,9 @@ namespace Managers
         private void HandlePointAndClickInput()
         {
             // Skip if right mouse button is pressed or UI is being interacted with
-            if(Input.GetMouseButton(1) || Helpers.IsOverUI())
+            if (Input.GetMouseButton(1) || Helpers.IsOverUI())
             {
-                if (_currentLineRenderer.IsNull()) return;
-                _currentLineRenderer.enabled = false;
-                _currentLineRenderer = null;
+                _currentHighlightedLineRenderer?.Unhighlight();
                 return;
             }
 
@@ -82,32 +78,23 @@ namespace Managers
 
         private void HighlightHoveredTile()
         {
-            if (_hit.collider.IsNull()) return;
-            var newLineRenderer = _hit.collider.GetComponent<LineRenderer>();
+            if (!_hit.collider.TryGetComponent<LineRendererHighlight>(out var newLineRenderer)) return;
 
-            // If we're already highlighting something different
-            if (_currentLineRenderer.IsNotNull() && _currentLineRenderer.gameObject.name.NotEquals(newLineRenderer.name))
+            switch (newLineRenderer.HighlightState)
             {
-                // Don't disable current highlight if it's the selected one
-                var isCurrentSelectedTile = _currentLineRendererSelected.IsNotNull() && newLineRenderer.name.Equals(_currentLineRendererSelected.gameObject.name);
-
-                if (!isCurrentSelectedTile)
-                {
-                    var shouldDisableCurrent = _currentLineRendererSelected.IsNull() || _currentLineRenderer.gameObject.name.NotEquals(_currentLineRendererSelected.gameObject.name);
-
-                    if (shouldDisableCurrent)
-                    {
-                        _currentLineRenderer.enabled = false;
-                    }
-                }
-
-                _currentLineRenderer = newLineRenderer;
-                newLineRenderer.enabled = true;
-            }
-            else if (_currentLineRenderer.IsNull())
-            {
-                _currentLineRenderer = newLineRenderer;
-                _currentLineRenderer.enabled = true;
+                case LineRendererHighlight.HighlightType.selected:
+                    _currentHighlightedLineRenderer?.Unhighlight();
+                    _currentHighlightedLineRenderer = newLineRenderer;
+                    return;
+                case LineRendererHighlight.HighlightType.highlighted:
+                    return;
+                case LineRendererHighlight.HighlightType.none:
+                    _currentHighlightedLineRenderer?.Unhighlight();
+                    newLineRenderer.Highlight();
+                    _currentHighlightedLineRenderer = newLineRenderer;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -115,26 +102,18 @@ namespace Managers
         {
             AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.clickOnMap);
             SelectTile();
-            ProcessSelectedTile();
         }
 
         private void SelectTile()
         {
-            var newLineRenderer = _hit.collider.GetComponent<LineRenderer>();
+            if (!_hit.collider.TryGetComponent<LineRendererHighlight>(out var newLineRenderer)) return;
 
-            // If we're selecting a different tile than the currently selected one
-            if (_currentLineRendererSelected.IsNotNull() &&
-                _currentLineRendererSelected.gameObject.name.NotEquals(newLineRenderer.gameObject.name))
-            {
-                _currentLineRendererSelected.enabled = false;
-                _currentLineRendererSelected = newLineRenderer;
-                newLineRenderer.enabled = true;
-            }
-            else if (_currentLineRendererSelected.IsNull())
-            {
-                _currentLineRendererSelected = newLineRenderer;
-                _currentLineRendererSelected.enabled = true;
-            }
+            if (newLineRenderer.HighlightState == LineRendererHighlight.HighlightType.selected) return;
+            _selectedLineRenderer?.Deselect();
+            newLineRenderer.Select();
+            _selectedLineRenderer = newLineRenderer;
+            //New selection then show new data
+            ProcessSelectedTile(); 
         }
 
         private void ProcessSelectedTile()
@@ -173,10 +152,7 @@ namespace Managers
 
         private void CloseActivePanel()
         {
-            if (_currentLineRendererSelected.IsNotNull())
-            {
-                DisableCurrentSelected();
-            }
+            _selectedLineRenderer?.Deselect();
 
             UIManagerInGame.Instance.DisableAllPanels();
         }
@@ -193,13 +169,13 @@ namespace Managers
                     break;
             }
         }
-
-        private void DisableCurrentSelected()
+        
+        private void OnTileDeleted(GameObject obj)
         {
-            _currentLineRendererSelected.enabled = false;
-            _currentLineRendererSelected = null;
+            _selectedLineRenderer = null;
+            _currentHighlightedLineRenderer = null;
         }
-
+        
         #endregion
     }
 }
