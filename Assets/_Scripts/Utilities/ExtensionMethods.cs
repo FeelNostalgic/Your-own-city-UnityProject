@@ -23,6 +23,11 @@ namespace Utilities
             t.transform.position = new Vector3(t.transform.position.x, t.transform.position.y, newZ);
         }
 
+        public static void DeleteChildren(this Transform t)
+        {
+            foreach (Transform child in t) Object.Destroy(child.gameObject);
+        }
+        
         public static void SetAlpha(this TMP_Text text, float alpha)
         {
             text.color = new Color(text.color.r, text.color.g, text.color.b, alpha);
