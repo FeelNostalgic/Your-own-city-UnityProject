@@ -113,7 +113,7 @@ namespace Managers
 
         private void Awake()
         {
-            blackScreen.DOFade(0f, 1.5f).SetEase(Ease.InSine)
+            blackScreen.DOFade(0f, 1f).SetEase(Ease.InSine)
                 .OnPlay(() =>
                 {
                     blackScreen.gameObject.SetActive(true);
