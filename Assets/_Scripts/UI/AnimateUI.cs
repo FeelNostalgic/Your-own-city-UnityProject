@@ -1,4 +1,6 @@
+using System;
 using DG.Tweening;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace UI
@@ -8,21 +10,31 @@ namespace UI
     {
         #region Inspector Variables
 
-        [Header("Position animation")]
-        [SerializeField] private bool animatePosition;
+        [Header("Position animation")] [SerializeField]
+        private bool animatePosition;
+
         [SerializeField] private Vector2 startPosition;
-        [Range(0, 2f),SerializeField] private float positionDuration;
+        [Range(0, 2f), SerializeField] private float positionDuration;
         [SerializeField] private Ease inEasePosition;
         [SerializeField] private Ease outEasePosition;
 
-        [Header("Scale animation")] 
-        [SerializeField] private bool animateScale;
+        [Header("Scale animation")] [SerializeField]
+        private bool animateScale;
+
         [SerializeField] private Vector2 startScale = Vector2.one;
-        [SerializeField] private float scaleDuration;
+        [Range(0, 2f), SerializeField] private float scaleDuration;
         [SerializeField] private Ease inEaseScale;
         [SerializeField] private Ease outEaseScale;
-        
-        
+
+        #endregion
+
+        #region Public Variables
+
+        public event Action OnShowAnimationPlay;
+        public event Action OnShowAnimationCompleted;
+        public event Action OnHideAnimationPlay;
+        public event Action OnHideAnimationCompleted;
+
         #endregion
 
         #region Private Variables
@@ -39,12 +51,19 @@ namespace UI
         private void Awake()
         {
             _rectTransform = GetComponent<RectTransform>();
-            _endPosition = _rectTransform.anchoredPosition;
-            _endScale = _rectTransform.localScale;
-            _rectTransform.anchoredPosition = startPosition;
-            _rectTransform.localScale = startScale;
+            if (animatePosition)
+            {
+                _endPosition = _rectTransform.anchoredPosition;
+                _rectTransform.anchoredPosition = startPosition;
+            }
+
+            if (animateScale)
+            {
+                _endScale = _rectTransform.localScale;
+                _rectTransform.localScale = startScale;
+            }
         }
-        
+
         #endregion
 
         #region Public Methods
@@ -53,11 +72,11 @@ namespace UI
         {
             gameObject.SetActive(true);
             var sequence = DOTween.Sequence();
-            
+
             if (animatePosition)
             {
                 sequence.Append(_rectTransform.DOAnchorPos(_endPosition, positionDuration)
-                        .SetEase(inEasePosition));
+                    .SetEase(inEasePosition));
             }
 
             if (animateScale)
@@ -65,15 +84,18 @@ namespace UI
                 sequence.Join(_rectTransform.DOScale(_endScale, scaleDuration)
                     .SetEase(inEaseScale));
             }
-            
+
+            sequence.OnPlay(() => OnShowAnimationPlay?.Invoke())
+                .OnComplete(() => OnShowAnimationCompleted?.Invoke());
+
             sequence.Play();
         }
 
         public void Hide()
         {
             var sequence = DOTween.Sequence();
-            
-            
+
+
             if (animatePosition)
             {
                 sequence.Append(_rectTransform.DOAnchorPos(startPosition, positionDuration)
@@ -85,8 +107,14 @@ namespace UI
                 sequence.Join(_rectTransform.DOScale(startScale, scaleDuration)
                     .SetEase(outEasePosition));
             }
-            
-            sequence.OnComplete(()=>gameObject.SetActive(true));
+
+            sequence.OnPlay(() => OnHideAnimationPlay?.Invoke());
+            sequence.OnComplete(() =>
+            {
+                gameObject.SetActive(true);
+                OnHideAnimationCompleted?.Invoke();
+            });
+
             sequence.Play();
         }
 

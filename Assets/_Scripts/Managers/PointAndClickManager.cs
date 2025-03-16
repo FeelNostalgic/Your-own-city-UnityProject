@@ -6,48 +6,32 @@ namespace Managers
 {
     public class PointAndClickManager : MonoBehaviourSinglenton<PointAndClickManager>
     {
-        #region Inspector Variables
-
         [SerializeField] private LayerMask layerHitable;
 
-        #endregion
-
-        #region Public Variables
-
-        //public bool IsEnableRaycast { get; set; }
-
-        #endregion
-
-        #region Private Variables
-
+        private Camera _mainCamera;
         private Ray _ray;
         private RaycastHit _hit;
         private LineRenderer _currentLineRenderer;
         private LineRenderer _currentLineRendererSelected;
-        private Camera _mainCamera;
 
-        #endregion
-
-        #region Unity Methods
+        #region Unity Lifecycle Methods
 
         private void Awake()
         {
             _mainCamera = Helpers.Camera;
         }
 
-        private void Start()
-        {
-            //IsEnableRaycast = true;
-        }
-
         private void Update()
         {
             if (GameManager.CurrentGameState == GameState.Playing)
             {
-                InputPointAndHitRaycast();
+                HandlePointAndClickInput();
             }
 
-            if (MapManager.Instance.IsMapCreated) InputKeyboard();
+            if (MapManager.Instance.IsMapCreated)
+            {
+                HandleKeyboardInput();
+            }
         }
 
         #endregion
@@ -60,103 +44,77 @@ namespace Managers
             {
                 DisableCurrentSelected();
             }
-            
-            if(_currentLineRenderer.IsNotNull()) _currentLineRenderer.enabled = false;
+
+            if (_currentLineRenderer.IsNotNull())
+            {
+                _currentLineRenderer.enabled = false;
+            }
         }
 
         #endregion
 
         #region Private Methods
 
-        private void InputPointAndHitRaycast()
+        private void HandlePointAndClickInput()
         {
+            // Skip if right mouse button is pressed or UI is being interacted with
             if (Input.GetMouseButton(1) || Helpers.IsOverUI()) return;
+
             _ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(_ray, out _hit, 300, layerHitable))
-            {
-                ShowHit();
-
-                if (Input.GetMouseButtonDown(0)) //Left click
-                {
-                    AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.clickOnMap);
-                    ShowHitSelected();
-
-                    BuildManager.Instance.SetCurrentTile(_hit.collider.gameObject);
-                    if (_hit.collider.GetComponent<BuildType>().Type != BuildManager.BuildingType.none)
-                    {
-                        UIManagerInGame.Instance.DisableAllPanels();
-                        UIManagerInGame.Instance.HideAllAreas();
-                        UIManagerInGame.Instance.ShowPanelInfo(_hit.collider.GetComponent<BuildType>().Type, _hit.collider);
-                    }
-                    else
-                    {
-                        UIManagerInGame.Instance.DisableAllPanels();
-                        UIManagerInGame.Instance.HideAllAreas();
-                        UIManagerInGame.Instance.ShowBuildPanel(true);
-                    }
-                }
-            }
-
             Debug.DrawRay(_ray.origin, _ray.direction * 100, Color.red);
-        }
 
-        private void InputKeyboard()
-        {
-            if (!Input.GetKeyDown(KeyCode.Escape)) return;
+            if (!Physics.Raycast(_ray, out _hit, 300, layerHitable)) return;
 
-            if (UIManagerInGame.Instance.IsAPanelActive && GameManager.CurrentGameState == GameState.Playing)
+            HighlightHoveredTile();
+
+            if (Input.GetMouseButtonDown(0)) // Left click
             {
-                if (_currentLineRendererSelected.IsNotNull())
-                {
-                    DisableCurrentSelected();
-                }
-
-                UIManagerInGame.Instance.DisableAllPanels();
-            }
-            else
-            {
-                switch (GameManager.CurrentGameState)
-                {
-                    case GameState.Playing:
-                        UIManagerInGame.Instance.PauseGame();
-                        break;
-                    case GameState.Paused:
-                        UIManagerInGame.Instance.UnpauseGame();
-                        break;
-                }
+                HandleTileSelection();
             }
         }
 
-        private void ShowHit()
+        private void HighlightHoveredTile()
         {
             var newLineRenderer = _hit.collider.GetComponent<LineRenderer>();
+
+            // If we're already highlighting something different
             if (_currentLineRenderer.IsNotNull() && _currentLineRenderer.gameObject.name.NotEquals(newLineRenderer.name))
             {
-                if (_currentLineRendererSelected.IsNotNull())
+                // Don't disable current highlight if it's the selected one
+                var isCurrentSelectedTile = _currentLineRendererSelected.IsNotNull() && newLineRenderer.name.Equals(_currentLineRendererSelected.gameObject.name);
+
+                if (!isCurrentSelectedTile)
                 {
-                    if (newLineRenderer.name.Equals(_currentLineRendererSelected.gameObject.name)) return;
-                    if (_currentLineRenderer.gameObject.name.NotEquals(_currentLineRendererSelected.gameObject.name))
+                    var shouldDisableCurrent = _currentLineRendererSelected.IsNull() || _currentLineRenderer.gameObject.name.NotEquals(_currentLineRendererSelected.gameObject.name);
+
+                    if (shouldDisableCurrent)
+                    {
                         _currentLineRenderer.enabled = false;
-                }
-                else
-                {
-                    _currentLineRenderer.enabled = false;
+                    }
                 }
 
                 _currentLineRenderer = newLineRenderer;
                 newLineRenderer.enabled = true;
             }
-            else
+            else if (_currentLineRenderer.IsNull())
             {
-                if (_currentLineRenderer.IsNotNull()) return;
                 _currentLineRenderer = newLineRenderer;
                 _currentLineRenderer.enabled = true;
             }
         }
 
-        private void ShowHitSelected()
+        private void HandleTileSelection()
+        {
+            AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.clickOnMap);
+            SelectTile();
+            ProcessSelectedTile();
+        }
+
+        private void SelectTile()
         {
             var newLineRenderer = _hit.collider.GetComponent<LineRenderer>();
+
+            // If we're selecting a different tile than the currently selected one
             if (_currentLineRendererSelected.IsNotNull() &&
                 _currentLineRendererSelected.gameObject.name.NotEquals(newLineRenderer.gameObject.name))
             {
@@ -164,20 +122,78 @@ namespace Managers
                 _currentLineRendererSelected = newLineRenderer;
                 newLineRenderer.enabled = true;
             }
-            else
+            else if (_currentLineRendererSelected.IsNull())
             {
-                if (_currentLineRendererSelected.IsNotNull()) return;
                 _currentLineRendererSelected = newLineRenderer;
                 _currentLineRendererSelected.enabled = true;
             }
         }
 
+        private void ProcessSelectedTile()
+        {
+            BuildManager.Instance.SetCurrentTile(_hit.collider.gameObject);
+            UIManagerInGame.Instance.DisableAllPanels();
+            UIManagerInGame.Instance.HideAllAreas();
+
+            var buildType = _hit.collider.GetComponent<BuildType>().type;
+            if (buildType != BuildManager.BuildingType.none)
+            {
+                UIManagerInGame.Instance.ShowInfoPanel(buildType, _hit.collider);
+            }
+            else
+            {
+                UIManagerInGame.Instance.ShowBuildPanel(true);
+            }
+        }
+
+        private void HandleKeyboardInput()
+        {
+            if (!Input.GetKeyDown(KeyCode.Escape))
+            {
+                return;
+            }
+
+            if (UIManagerInGame.Instance.IsAPanelActive && GameManager.CurrentGameState == GameState.Playing)
+            {
+                CloseActivePanel();
+            }
+            else
+            {
+                TogglePauseState();
+            }
+        }
+
+        private void CloseActivePanel()
+        {
+            if (_currentLineRendererSelected.IsNotNull())
+            {
+                DisableCurrentSelected();
+            }
+
+            UIManagerInGame.Instance.DisableAllPanels();
+        }
+
+        private void TogglePauseState()
+        {
+            switch (GameManager.CurrentGameState)
+            {
+                case GameState.Playing:
+                    UIManagerInGame.Instance.PauseGame();
+                    break;
+                case GameState.Paused:
+                    UIManagerInGame.Instance.UnpauseGame();
+                    break;
+            }
+        }
+
         private void DisableCurrentSelected()
         {
+            if (_currentLineRendererSelected.IsNull()) return;
+
             _currentLineRendererSelected.enabled = false;
             _currentLineRendererSelected = null;
-        }        
-        
+        }
+
         #endregion
     }
 }

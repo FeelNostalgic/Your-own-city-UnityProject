@@ -126,7 +126,7 @@ namespace Buildings
             ResourcesManager.Instance.AddGoldPerSecond((-_goldPorSegundo * _currentMultiplicador));
             ResourcesManager.Instance.AddCosts(-_gastosPorSegundo);
             ResourcesManager.Instance.AddResident(-_currentHabitantes);
-            GetComponentInParent<BuildType>().Type = BuildManager.BuildingType.none;
+            GetComponentInParent<BuildType>().type = BuildManager.BuildingType.none;
             BuildingsManager.Instance.RemoveCasa(transform.parent.gameObject);
             UIManagerInGame.Instance.DisableAllPanels();
             Destroy(gameObject);

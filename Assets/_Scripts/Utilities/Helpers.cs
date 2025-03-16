@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Localization;
+using UnityEngine.Localization.Settings;
+using UnityEngine.Localization.Tables;
 
 namespace Utilities
 { 
@@ -50,5 +53,27 @@ namespace Utilities
 		}
 
 
+		public static string GetLocalizedString(string tableName, string key)
+		{
+			var table = LocalizationSettings.StringDatabase.GetTable(tableName);
+			if (table != null)
+			{
+				var entry = table.GetEntry(key);
+				if (entry != null)
+				{
+					return entry.GetLocalizedString();
+				}
+				else
+				{
+					Debug.LogError($"Key '{key}' not found in table '{tableName}'");
+				}
+			}
+			else
+			{
+				Debug.LogError($"Table '{tableName}' not found");
+			}
+			return string.Empty;
+		}
+		
 	}
 }

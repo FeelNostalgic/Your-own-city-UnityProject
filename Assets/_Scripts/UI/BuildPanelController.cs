@@ -1,13 +1,22 @@
 using Managers;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace UI
 {
-    public class BuildPanelController : MonoBehaviour
+    public class BuildPanelController : UIPanel
     {
         #region Inspector Variables
 
+        [Header("Button components")]
+        [SerializeField] private Button roadButton;
+        [SerializeField] private Button houseButton;
+        [SerializeField] private Button playgroundButton;
+        [SerializeField] private Button hospitalButton;
+        [SerializeField] private Button policeButton;
+        
+        [Header("TMP components")]
         [SerializeField] private TMP_Text roadPriceTMP;
         [SerializeField] private TMP_Text housePriceTMP;
         [SerializeField] private TMP_Text playgroundPriceTMP;
@@ -28,39 +37,35 @@ namespace UI
 
         #region Unity Methods
 
-        private void Awake()
+        protected override void Awake()
         {
-            _animateUI = GetComponent<AnimateUI>();
+            base.Awake();
             SetPricesInBuildPanel();
+            InitializeButtonListeners();
         }
 
-        #endregion
-
-        #region Public Methods
-
-        public void ShowBuildPanel()
-        {
-            _animateUI.Show();
-        }
-
-        public void HideBuildPanel()
-        {
-            _animateUI.Hide();
-        }
-        
         #endregion
 
         #region Private Methods
-        
+
         private void SetPricesInBuildPanel()
         {
             roadPriceTMP.text = $"{(int)BuildManager.Instance.RoadPrice:N0}";
             housePriceTMP.text = $"{(int)BuildManager.Instance.HousePrice:N0}";
-            playgroundPriceTMP.text = $"{(int)BuildManager.Instance.ParquePrice:N0}";
+            playgroundPriceTMP.text = $"{(int)BuildManager.Instance.PlaygroundPrice:N0}";
             housePriceTMP.text = $"{(int)BuildManager.Instance.HospitalPrice:N0}";
             policePriceTMP.text = $"{(int)BuildManager.Instance.PolicePrice:N0}";
         }
-        
+
+        private void InitializeButtonListeners()
+        {
+            roadButton.onClick.AddListener(BuildManager.Instance.BuildRoad);
+            houseButton.onClick.AddListener(BuildManager.Instance.BuildHouse);
+            playgroundButton.onClick.AddListener(BuildManager.Instance.BuildPlayground);
+            hospitalButton.onClick.AddListener(BuildManager.Instance.BuildHospital);
+            policeButton.onClick.AddListener(BuildManager.Instance.BuildPolice);
+        }
+
         #endregion
     }
 }

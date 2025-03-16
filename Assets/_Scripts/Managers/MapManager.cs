@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Controllers;
 using Buildings;
@@ -47,8 +48,7 @@ namespace Managers
         public int RoadZ { get; private set; }
 
         public GameObject[,] MapTiles { get; private set; }
-
-        public Transform RoadParent => roadParent;
+        
         public GameObject RoadSpawnPoint { get; private set; }
 
         public int BorderSize => borderSize;
@@ -58,6 +58,8 @@ namespace Managers
         {
             set => _currentRoadToDestroy = value;
         }
+        
+        public NavMeshSurface NavMeshSurface { get; private set; }
         
         #endregion
 
@@ -74,7 +76,12 @@ namespace Managers
         #endregion
 
         #region Unity Methods
-        //
+
+        private void Awake()
+        {
+            NavMeshSurface = roadParent.GetComponent<NavMeshSurface>();
+        }
+
         #endregion
 
         #region Public Methods
@@ -94,16 +101,16 @@ namespace Managers
         {
             AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buildBuilding);
             Destroy(MapTiles[i,j]);
-            var newtile = BuildTile(i, j, Tile.road, roadParent);
-            InicializateLineRenderer(newtile);
-            MapTiles[i, j] = newtile;
-            return newtile;
+            var newTile = BuildTile(i, j, Tile.road, roadParent);
+            InicializateLineRenderer(newTile);
+            MapTiles[i, j] = newTile;
+            return newTile;
         }
 
         public void DestroyRoad()
         {
             DestroyRoadAtMap((int)GetX_Index(_currentRoadToDestroy.transform.position.x), (int)GetZ_Index(_currentRoadToDestroy.transform.position.z));
-            RoadParent.GetComponent<NavMeshSurface>().UpdateNavMesh(RoadParent.GetComponent<NavMeshSurface>().navMeshData);
+            NavMeshSurface.UpdateNavMesh(NavMeshSurface.navMeshData);
         }
 
         public Vector2 TilePosition(float x, float z)
@@ -112,7 +119,7 @@ namespace Managers
         }
 
         #region GetVecinos
-        public List<GameObject> GetVecinos4(GameObject tile, BuildManager.BuildingType type)
+        public List<GameObject> Get4Neighbours(GameObject tile, BuildManager.BuildingType type)
         {
             var neightbour = new List<GameObject>();
             var x = (int)GetX_Index(tile.transform.position.x);
@@ -120,25 +127,25 @@ namespace Managers
             
             //Right
             //Debug.Log(_MapTiles[x + 1, z].name);
-            if ((x+1) < MapSize && MapTiles[x + 1, z].GetComponent<BuildType>().Type == type)
+            if ((x+1) < MapSize && MapTiles[x + 1, z].GetComponent<BuildType>().type == type)
             {
                 neightbour.Add(MapTiles[x + 1, z]);
             }
             //Left
             //Debug.Log(_MapTiles[x - 1, z].name);
-            if ((x-1) >= 0 && MapTiles[x - 1, z].GetComponent<BuildType>().Type == type)
+            if ((x-1) >= 0 && MapTiles[x - 1, z].GetComponent<BuildType>().type == type)
             {
                 neightbour.Add(MapTiles[x - 1, z]);
             }
             //Up
             //Debug.Log(_MapTiles[x, z + 1].name);
-            if ((z+1) < MapSize && MapTiles[x, z + 1].GetComponent<BuildType>().Type == type)
+            if ((z+1) < MapSize && MapTiles[x, z + 1].GetComponent<BuildType>().type == type)
             {
                 neightbour.Add(MapTiles[x, z + 1]);
             }
             //Down
             //Debug.Log(_MapTiles[x, z - 1].name);
-            if ((z-1) >= 0 && MapTiles[x, z - 1].GetComponent<BuildType>().Type == type)
+            if ((z-1) >= 0 && MapTiles[x, z - 1].GetComponent<BuildType>().type == type)
             {
                 neightbour.Add(MapTiles[x, z - 1]);
             }
@@ -146,7 +153,7 @@ namespace Managers
             return neightbour;
         }
         
-        public List<GameObject> GetVecinos4(GameObject tile)
+        public List<GameObject> Get4Neighbours(GameObject tile)
         {
             var neightbours = new List<GameObject>();
             var x = (int)GetX_Index(tile.transform.position.x);
@@ -348,10 +355,10 @@ namespace Managers
             UIManagerInGame.Instance.DisableAllPanels();
         }
 
-        private void InicializateLineRenderer(GameObject newtile)
+        private void InicializateLineRenderer(GameObject newTile)
         {
-            var lineRenderer = newtile.GetComponent<LineRenderer>();
-            var collider = newtile.GetComponent<Collider>();
+            var lineRenderer = newTile.GetComponent<LineRenderer>();
+            var collider = newTile.GetComponent<Collider>();
             var maxCol = collider.bounds.max;
             var minCol = collider.bounds.min;
             var positions = new Vector3[4];

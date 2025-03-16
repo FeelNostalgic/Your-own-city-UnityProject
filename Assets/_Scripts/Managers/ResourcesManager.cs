@@ -1,6 +1,7 @@
 using System;
 using Utilities;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Managers
 {
@@ -8,7 +9,7 @@ namespace Managers
     {
         #region Inspector Variables
 
-        [SerializeField] private int StartGold;
+        [FormerlySerializedAs("StartGold")] [SerializeField] private int startGold;
 
         #endregion
 
@@ -30,6 +31,11 @@ namespace Managers
         private float _currentGoldPerSecond;
         private int _currentGold;
 
+        public ResourcesManager(int startGold)
+        {
+            this.startGold = startGold;
+        }
+
         #endregion
 
         #region Unity Methods
@@ -43,7 +49,7 @@ namespace Managers
         private void Start()
         {
             AddGold(0);
-            AddGold(StartGold);
+            AddGold(startGold);
             AddResident(0);
             AddCosts(0);
             AddGoldPerSecond(0);
@@ -94,7 +100,7 @@ namespace Managers
         public void RestartAllInfo()
         {
             AddGold(-_currentGold);
-            AddGold(StartGold);
+            AddGold(startGold);
             AddResident(-_currentInhabitants);
             AddGoldPerSecond(-_currentGoldPerSecond);
             AddCosts(-_currentCostsPerSecond);

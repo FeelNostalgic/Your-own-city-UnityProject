@@ -96,7 +96,7 @@ namespace Buildings
             ResourcesManager.Instance.AddGold((int)(BuildManager.Instance.HospitalPrice * 0.8f * _currentLevel));
             ResourcesManager.Instance.AddCosts(-_gastosPorSegundo);
             UpdateMultiplicadorCurrentVecinos(-(_currentMultiplicador - 1));
-            GetComponentInParent<BuildType>().Type = BuildManager.BuildingType.none;
+            GetComponentInParent<BuildType>().type = BuildManager.BuildingType.none;
             BuildingsManager.Instance.Hospitales.Remove(this);
             UIManagerInGame.Instance.DisableAllPanels();
             Destroy(gameObject);
@@ -111,7 +111,7 @@ namespace Buildings
         {
             foreach (var v in _tilesVecinas)
             {
-                if (v != null && v.GetComponent<BuildType>().Type == BuildManager.BuildingType.casa &&
+                if (v != null && v.GetComponent<BuildType>().type == BuildManager.BuildingType.house &&
                     !_casasAfectadas.Contains(v))
                 {
                     _casasAfectadas.Add(v);

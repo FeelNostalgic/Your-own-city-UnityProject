@@ -16,7 +16,8 @@ MonoBehaviour:
     m_Code: en
   m_SharedData: {fileID: 11400000, guid: e8ce51a54b8de4f4fb863651e7d6487c, type: 2}
   m_Metadata:
-    m_Items: []
+    m_Items:
+    - rid: 6115692955032617045
   m_TableData:
   - m_Id: 27371761664
     m_Localized: PLAY
@@ -118,9 +119,10 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 117094204829696
-    m_Localized: DESTROY(+{value})
+    m_Localized: DESTROY (+{ReturnedValue})
     m_Metadata:
-      m_Items: []
+      m_Items:
+      - rid: 6115692955032617045
   - m_Id: 126779771318272
     m_Localized: EXIT
     m_Metadata:
@@ -131,4 +133,8 @@ MonoBehaviour:
       m_Items: []
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 6115692955032617045
+      type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_Entries: 00f07b1e7f6a0000

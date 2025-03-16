@@ -51,7 +51,7 @@ namespace Buildings
             _gastosPorSegundo = GastorPorSegundoIniciales;
             _currentMultiplicador = 1 + MultiplicadorInicial;
             _areaEfecto = 1;
-            _costeNivel = (int)(BuildManager.Instance.ParquePrice * 2f);
+            _costeNivel = (int)(BuildManager.Instance.PlaygroundPrice * 2f);
             ResourcesManager.Instance.AddCosts(_gastosPorSegundo);
             UpdateArea();
             UpdateMultiplicadorNewVecinos();
@@ -78,7 +78,7 @@ namespace Buildings
                 UpdateMultiplicadorCurrentVecinos(MULTIPLIER);
                 UpdateMultiplicadorNewVecinos();
                 UIManagerInGame.Instance.UpdateInfoMultiplierNivel(_currentLevel, _gastosPorSegundo, _currentMultiplicador,
-                    _areaEfecto, _costeNivel, _casasAfectadas.Count, BuildManager.Instance.ParquePrice);
+                    _areaEfecto, _costeNivel, _casasAfectadas.Count, BuildManager.Instance.PlaygroundPrice);
                 ShowArea();
             }
             else
@@ -91,10 +91,10 @@ namespace Buildings
         {
             AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buttonClick);
             AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.detroyBuilding);
-            ResourcesManager.Instance.AddGold((int)(BuildManager.Instance.ParquePrice * 0.8f * _currentLevel));
+            ResourcesManager.Instance.AddGold((int)(BuildManager.Instance.PlaygroundPrice * 0.8f * _currentLevel));
             ResourcesManager.Instance.AddCosts(-_gastosPorSegundo);
             UpdateMultiplicadorCurrentVecinos(-(_currentMultiplicador - 1));
-            GetComponentInParent<BuildType>().Type = BuildManager.BuildingType.none;
+            GetComponentInParent<BuildType>().type = BuildManager.BuildingType.none;
             BuildingsManager.Instance.Parques.Remove(this);
             UIManagerInGame.Instance.DisableAllPanels();
             Destroy(gameObject);
@@ -109,7 +109,7 @@ namespace Buildings
         {
             foreach (var v in _tilesVecinas)
             {
-                if (v != null && v.GetComponent<BuildType>().Type == BuildManager.BuildingType.casa &&
+                if (v != null && v.GetComponent<BuildType>().type == BuildManager.BuildingType.house &&
                     !_casasAfectadas.Contains(v))
                 {
                     _casasAfectadas.Add(v);
@@ -125,7 +125,7 @@ namespace Buildings
             {
                 case 1:
                     _tilesVecinas =
-                        MapManager.Instance.GetVecinos4(gameObject); //0 -> derecha, 1-> Izquierda, 2-> Up, 3-> down
+                        MapManager.Instance.Get4Neighbours(gameObject); //0 -> derecha, 1-> Izquierda, 2-> Up, 3-> down
                     lineRendererPositions = BuildLineRenderer4();
                     break;
                 case 2:

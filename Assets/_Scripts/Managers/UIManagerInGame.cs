@@ -40,11 +40,10 @@ namespace Managers
         [SerializeField] private GeneralInfoController generalInfoPanel;
 
         [Header("Buildings")]
-        [SerializeField] private BuildPanelController buildPanel;
+        [SerializeField] private UIPanel buildPanel;
 
-        [Header("Carretera")] [SerializeField] private GameObject CarreteraPanel;
-        [SerializeField] private Button destroyRoadButton;
-        [SerializeField] private TMP_Text roadDestroyTMP;
+        [Header("Road")]
+        [SerializeField] private UIPanel roadPanel;
 
         [Header("Casa")] [SerializeField] private GameObject CasaPanel;
         [SerializeField] private TMP_Text CasaNivel;
@@ -148,17 +147,17 @@ namespace Managers
             ChangeUIPanel(_lastPanel);
         }
 
-        public void ShowPanelInfo(BuildManager.BuildingType type, Collider currentBuild)
+        public void ShowInfoPanel(BuildManager.BuildingType type, Collider currentBuild)
         {
             switch (type)
             {
-                case BuildManager.BuildingType.casa:
+                case BuildManager.BuildingType.house:
                     HideAllAreas();
                     _currentHouse = currentBuild.GetComponentInChildren<CasaFunctionality>();
                     ConfigureHousePanel();
                     break;
 
-                case BuildManager.BuildingType.parque:
+                case BuildManager.BuildingType.playground:
                     HideAllAreas();
                     _currentPlayground = currentBuild.GetComponentInChildren<ParqueFunctionality>();
                     _currentPlayground.ShowArea();
@@ -170,7 +169,7 @@ namespace Managers
                 case BuildManager.BuildingType.road:
                     HideAllAreas();
                     MapManager.Instance.RoadToDestroy = currentBuild.gameObject;
-                    CarreteraPanel.SetActive(true);
+                    roadPanel.ShowPanel();
                     break;
 
                 case BuildManager.BuildingType.hospital:
@@ -182,7 +181,7 @@ namespace Managers
                         HospitalDescription, _currentHospital.CosteNivel, hospital: _currentHospital);
                     break;
 
-                case BuildManager.BuildingType.policia:
+                case BuildManager.BuildingType.police:
                     HideAllAreas();
                     _currentPolice = currentBuild.GetComponentInChildren<PoliciaFunctionality>();
                     _currentPolice.ShowArea();
@@ -243,27 +242,21 @@ namespace Managers
         public void ShowBuildPanel(bool value)
         {
             _isAPanelActive = value;
-            if (value) buildPanel.ShowBuildPanel();
-            else buildPanel.HideBuildPanel();
-            
-            // if (!value)
-            // {
-            //     PointAndClickManager.Instance.IsEnableRaycast = true;
-            // }
+            if (value) buildPanel.ShowPanel();
+            else buildPanel.HidePanel();
         }
 
         public void DisableAllPanels()
         {
             // TODO
             // CasaPanel.SetActive(false);
-            // CarreteraPanel.SetActive(false);
             // InfoMultiplierPanel.SetActive(false);
-            buildPanel.HideBuildPanel();
+            buildPanel.HidePanel();
+            roadPanel.HidePanel();
             pausePanel.SetActive(false);
             optionsPanel.SetActive(false);
             controlsPanel.SetActive(false);
             objectivesPanel.SetActive(false);
-            //PointAndClickManager.Instance.IsEnableRaycast = true;
             _isAPanelActive = false;
         }
         
@@ -332,9 +325,6 @@ namespace Managers
             MapManager.Instance.InitializeMap();
             DisableAllPanels();
             InitializeButtonListeners();
-            // TODO
-            // roadDestroyTMP.text = "DEMOLER (+" + (int)(BuildManager.Instance.RoadPrice * 0.8) + ")";
-            // destroyRoadButton.onClick.AddListener(delegate { MapManager.Instance.DestroyRoad(); });
             _isAPanelActive = false;
             Time.timeScale = 1;
             GameManager.Instance.ChangeState(GameState.Playing);
@@ -488,7 +478,7 @@ namespace Managers
                 Button_InfoMultiplierSubirNivel.onClick.AddListener(delegate { parque.SubirNivel(); });
 
                 InfoMultiplierDemolerText.text =
-                    "DEMOLER (+" + (int)(BuildManager.Instance.ParquePrice * 0.8 * parque.Level) + ")";
+                    "DEMOLER (+" + (int)(BuildManager.Instance.PlaygroundPrice * 0.8 * parque.Level) + ")";
                 Button_InfoMultiplierDemoler.onClick.RemoveAllListeners();
                 Button_InfoMultiplierDemoler.onClick.AddListener(delegate { parque.Demoler(); });
                 return;

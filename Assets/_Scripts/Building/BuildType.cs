@@ -1,5 +1,6 @@
 using Managers;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Buildings
 {
@@ -11,7 +12,7 @@ namespace Buildings
 
         #region Public Variables
     
-        public BuildManager.BuildingType Type;
+        public BuildManager.BuildingType type;
 
         #endregion
 

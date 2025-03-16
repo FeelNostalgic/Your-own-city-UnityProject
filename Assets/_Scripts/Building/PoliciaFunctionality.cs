@@ -96,7 +96,7 @@ public class PoliciaFunctionality : MonoBehaviour
             ResourcesManager.Instance.AddGold((int)(BuildManager.Instance.PolicePrice * 0.8f * _currentLevel));
             ResourcesManager.Instance.AddCosts(-_gastosPorSegundo);
             UpdateMultiplicadorCurrentVecinos(-(_currentMultiplicador-1));
-            GetComponentInParent<BuildType>().Type = BuildManager.BuildingType.none;
+            GetComponentInParent<BuildType>().type = BuildManager.BuildingType.none;
             BuildingsManager.Instance.Policia.Remove(this);
             UIManagerInGame.Instance.DisableAllPanels();
             Destroy(gameObject);
@@ -111,7 +111,7 @@ public class PoliciaFunctionality : MonoBehaviour
         {
             foreach (var v in _tilesVecinas)
             {
-                if (v != null && v.GetComponent<BuildType>().Type == BuildManager.BuildingType.casa && !_casasAfectadas.Contains(v) )
+                if (v != null && v.GetComponent<BuildType>().type == BuildManager.BuildingType.house && !_casasAfectadas.Contains(v) )
                 {
                     _casasAfectadas.Add(v);
                     v.GetComponentInChildren<CasaFunctionality>().MejorarMultiplicador(MULTIPLIER);
@@ -125,7 +125,7 @@ public class PoliciaFunctionality : MonoBehaviour
             switch (_areaEfecto)
             {
                 case 1:
-                    _tilesVecinas = MapManager.Instance.GetVecinos4(gameObject);
+                    _tilesVecinas = MapManager.Instance.Get4Neighbours(gameObject);
                     lineRendererPositions = BuildLineRenderer4();
                     break;
                 case 2:
