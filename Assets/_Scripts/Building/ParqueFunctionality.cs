@@ -83,7 +83,7 @@ namespace Buildings
             }
             else
             {
-                UIManagerInGame.Instance.UpdateFeedback("¡Gold insuficiente!");
+                UIManagerInGame.Instance.ShowNotEnoughGoldFeedback();
             }
         }
 
@@ -113,7 +113,7 @@ namespace Buildings
                     !_casasAfectadas.Contains(v))
                 {
                     _casasAfectadas.Add(v);
-                    v.GetComponentInChildren<CasaFunctionality>().MejorarMultiplicador(_currentMultiplicador - 1);
+                    v.GetComponentInChildren<HouseFunctionality>().UpgradeMultiplier(_currentMultiplicador - 1);
                 }
             }
         }
@@ -129,11 +129,11 @@ namespace Buildings
                     lineRendererPositions = BuildLineRenderer4();
                     break;
                 case 2:
-                    _tilesVecinas = MapManager.Instance.GetVecinos8(gameObject);
+                    _tilesVecinas = MapManager.Instance.Get8Neighbours(gameObject);
                     lineRendererPositions = BuildLineRenderer8();
                     break;
                 case 3:
-                    _tilesVecinas = MapManager.Instance.GetVecinos12(gameObject);
+                    _tilesVecinas = MapManager.Instance.Get12Neightbour(gameObject);
                     lineRendererPositions = BuildLineRenderer12();
                     break;
             }
@@ -160,7 +160,7 @@ namespace Buildings
         {
             foreach (var c in _casasAfectadas)
             {
-                c.GetComponentInChildren<CasaFunctionality>().MejorarMultiplicador(m);
+                c.GetComponentInChildren<HouseFunctionality>().UpgradeMultiplier(m);
             }
         }
 

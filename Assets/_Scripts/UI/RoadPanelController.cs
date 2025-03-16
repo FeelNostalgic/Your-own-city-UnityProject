@@ -1,10 +1,7 @@
-
-using System;
 using Managers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Localization;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace UI
@@ -15,36 +12,30 @@ namespace UI
 
 		[SerializeField] private Button destroyRoadButton;
 		[SerializeField] private TMP_Text destroyRoadTMP;
-		[FormerlySerializedAs("mystring")] [SerializeField] private LocalizedString myLocalizationString;
+		[SerializeField] private LocalizedString destroyLocalizedString;
 		
 		#endregion
 	
 		#region Public Variables
 
-		public int ReturnedValue => (int)(BuildManager.Instance.RoadPrice * 0.8);
+		public int DestroyPrice => (int)(BuildManager.Instance.RoadPrice * 0.8);
 		
 		#endregion
-
-		#region Private Variables
-
-		private AnimateUI _animateUI;
-
-		#endregion
-
+		
 		#region Unity Methods
 		
 		protected override void Awake()
 		{
 			base.Awake();
-			myLocalizationString.Arguments = new object[] { this };
-			myLocalizationString.StringChanged += UpdateString;
+			destroyLocalizedString.Arguments = new object[] { this };
+			destroyLocalizedString.StringChanged += UpdateString;
 			
 			destroyRoadButton.onClick.AddListener(delegate { MapManager.Instance.DestroyRoad(); });
 		}
 
 		private void OnDestroy()
 		{
-			myLocalizationString.StringChanged -= UpdateString;
+			destroyLocalizedString.StringChanged -= UpdateString;
 		}
 
 		#endregion

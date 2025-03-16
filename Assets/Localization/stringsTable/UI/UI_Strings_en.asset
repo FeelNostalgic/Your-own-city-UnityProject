@@ -119,7 +119,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 117094204829696
-    m_Localized: DESTROY (+{ReturnedValue})
+    m_Localized: DESTROY (+{DestroyPrice})
     m_Metadata:
       m_Items:
       - rid: 6115692955032617045
@@ -135,10 +135,41 @@ MonoBehaviour:
     m_Localized: Connects buildings to allow the traffic of inhabitants
     m_Metadata:
       m_Items: []
+  - m_Id: 509019873341440
+    m_Localized: LEVEL {Level}
+    m_Metadata:
+      m_Items:
+      - rid: 6115692955032617045
+  - m_Id: 509676835565568
+    m_Localized: LEVEL UP (-{LevelUpPrice})
+    m_Metadata:
+      m_Items:
+      - rid: 6115692955032617045
+  - m_Id: 514324808069120
+    m_Localized: Max. Inhabitants
+    m_Metadata:
+      m_Items: []
+  - m_Id: 514576587943936
+    m_Localized: Multiplier
+    m_Metadata:
+      m_Items: []
+  - m_Id: 514900249800704
+    m_Localized: Description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 514966117150720
+    m_Localized: "The house generates gold per second depending on the number of
+      inhabitants.\n \nLeveling up increases the maximum inhabitants"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 515535414226944
+    m_Localized: MAX LEVEL
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:
     - rid: 6115692955032617045
       type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
       data:
-        m_Entries: 00f07b1e7f6a0000
+        m_Entries: 00f07b1e7f6a000000f0bb6cf3ce010000f0bb628ccf0100

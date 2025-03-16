@@ -1,9 +1,11 @@
 using System;
+using System.Collections;
 using Buildings;
 using DG.Tweening;
 using TMPro;
 using UI;
 using UnityEngine;
+using UnityEngine.Localization;
 using UnityEngine.Localization.Settings;
 using UnityEngine.UI;
 using Utilities;
@@ -15,17 +17,19 @@ namespace Managers
     {
         #region Inspector Variables
 
-        [Header("Transition")] 
-        [SerializeField] private Image blackScreen;
+        [Header("Transition")] [SerializeField]
+        private Image blackScreen;
 
-        [Header("Pause panels")] 
-        [SerializeField] private GameObject pausePanel;
+        [Header("Pause panels")] [SerializeField]
+        private GameObject pausePanel;
+
         [SerializeField] private GameObject optionsPanel;
         [SerializeField] private GameObject controlsPanel;
         [SerializeField] private GameObject objectivesPanel;
 
-        [Header("Pause panels buttons")]
-        [SerializeField] private Button resumeButton;
+        [Header("Pause panels buttons")] [SerializeField]
+        private Button resumeButton;
+
         [SerializeField] private Button optionsButton;
         [SerializeField] private Button controlsButton;
         [SerializeField] private Button objectivesButton;
@@ -33,29 +37,23 @@ namespace Managers
         [SerializeField] private Button controlsBackButton;
         [SerializeField] private Button objectivesBackButton;
 
+        [Header("FeedbackStrings")] [SerializeField]
+        private LocalizedString roadNotConnectedToRoadFeedback;
+
+        [SerializeField] private LocalizedString roadNotConnectedToBuildingFeedback;
+        [SerializeField] private LocalizedString notEnoughGoldFeedback;
+
         [Header("Game Over Panel")] [SerializeField]
         private GameObject gameOverPanel;
-        
-        [Header("General Info")]
-        [SerializeField] private GeneralInfoController generalInfoPanel;
 
-        [Header("Buildings")]
-        [SerializeField] private UIPanel buildPanel;
+        [Header("General Info")] [SerializeField]
+        private GeneralInfoController generalInfoPanel;
 
-        [Header("Road")]
-        [SerializeField] private UIPanel roadPanel;
+        [Header("Build")] [SerializeField] private UIPanel buildPanel;
 
-        [Header("Casa")] [SerializeField] private GameObject CasaPanel;
-        [SerializeField] private TMP_Text CasaNivel;
-        [SerializeField] private TMP_Text CasaHabitantes;
-        [SerializeField] private TMP_Text CasaMaxHabitantes;
-        [SerializeField] private TMP_Text CasaGastosPorSegundo;
-        [SerializeField] private TMP_Text CasaMultiplier;
-        [SerializeField] private TMP_Text CasaGoldPorSegundo;
-        [SerializeField] private TMP_Text CasaCosteNivel;
-        [SerializeField] private Button Button_CasaSubirNivel;
-        [SerializeField] private Button Button_CasaDemoler;
-        [SerializeField] private TMP_Text CasaDemolerText;
+        [Header("Road")] [SerializeField] private UIPanel roadPanel;
+
+        [Header("House")] [SerializeField] private HousePanelController housePanel;
 
         [Header("InfoMultipliyer")] [SerializeField]
         private GameObject InfoMultiplierPanel;
@@ -86,29 +84,30 @@ namespace Managers
         #region Public Variables
 
         public bool IsAPanelActive => _isAPanelActive;
-        
+
         #endregion
 
         #region Private Variables
 
         private float _currentTime;
-        private CasaFunctionality _currentHouse;
         private ParqueFunctionality _currentPlayground;
         private HospitalFunctionality _currentHospital;
         private PoliciaFunctionality _currentPolice;
         private bool _isAPanelActive;
 
         private UIPanels _currentPanel = UIPanels.none;
-        private UIPanels _lastPanel;
+        private UIPanels _lastPanel = UIPanels.none;
         private GameObject _currentActivePanel;
 
         private enum UIPanels
         {
-            none,
+            none = 0,
             buildPanel,
             roadPanel,
             housePanel,
-            generalInfoPanel,
+            playgroundPanel,
+            hospitalPanel,
+            policePanel,
             pausePanel,
             optionsPanel,
             controlsPanel,
@@ -147,19 +146,19 @@ namespace Managers
             ChangeUIPanel(_lastPanel);
         }
 
-        public void ShowInfoPanel(BuildManager.BuildingType type, Collider currentBuild)
+        public void ShowInfoPanel(BuildManager.BuildingType type, GameObject selectedBuilding)
         {
             switch (type)
             {
                 case BuildManager.BuildingType.house:
                     HideAllAreas();
-                    _currentHouse = currentBuild.GetComponentInChildren<CasaFunctionality>();
-                    ConfigureHousePanel();
+                    housePanel.ConfigureHousePanel(selectedBuilding.GetComponentInChildren<HouseFunctionality>());
+                    ChangeUIPanel(UIPanels.housePanel);
                     break;
 
                 case BuildManager.BuildingType.playground:
                     HideAllAreas();
-                    _currentPlayground = currentBuild.GetComponentInChildren<ParqueFunctionality>();
+                    _currentPlayground = selectedBuilding.GetComponentInChildren<ParqueFunctionality>();
                     _currentPlayground.ShowArea();
                     ConfigureInfoMultiplierPanel(_currentPlayground.Level, _currentPlayground.GastosPorSegundo,
                         _currentPlayground.Multiplicador, _currentPlayground.AreaEfecto, _currentPlayground.CasaAfectadas,
@@ -168,13 +167,13 @@ namespace Managers
 
                 case BuildManager.BuildingType.road:
                     HideAllAreas();
-                    MapManager.Instance.RoadToDestroy = currentBuild.gameObject;
-                    roadPanel.ShowPanel();
+                    MapManager.Instance.RoadToDestroy = selectedBuilding.gameObject;
+                    ChangeUIPanel(UIPanels.roadPanel);
                     break;
 
                 case BuildManager.BuildingType.hospital:
                     HideAllAreas();
-                    _currentHospital = currentBuild.GetComponentInChildren<HospitalFunctionality>();
+                    _currentHospital = selectedBuilding.GetComponentInChildren<HospitalFunctionality>();
                     _currentHospital.ShowArea();
                     ConfigureInfoMultiplierPanel(_currentHospital.Level, _currentHospital.GastosPorSegundo,
                         _currentHospital.Multiplicador, _currentHospital.AreaEfecto, _currentHospital.CasaAfectadas,
@@ -183,42 +182,13 @@ namespace Managers
 
                 case BuildManager.BuildingType.police:
                     HideAllAreas();
-                    _currentPolice = currentBuild.GetComponentInChildren<PoliciaFunctionality>();
+                    _currentPolice = selectedBuilding.GetComponentInChildren<PoliciaFunctionality>();
                     _currentPolice.ShowArea();
                     ConfigureInfoMultiplierPanel(_currentPolice.Level, _currentPolice.GastosPorSegundo,
                         _currentPolice.Multiplicador, _currentPolice.AreaEfecto, _currentPolice.CasaAfectadas,
                         PoliciaDescription, _currentPolice.CosteNivel, policia: _currentPolice);
                     break;
             }
-        }
-
-        public void UpdateCasaHabitantes(CasaFunctionality casa, int habitantes, float multiplicador, int gastosPorSegundo, int goldPorSegundo)
-        {
-            if (_currentHouse != null && casa.transform.parent.name.Equals(_currentHouse.transform.parent.name))
-            {
-                CasaHabitantes.text = habitantes.ToString();
-                CasaGastosPorSegundo.text = gastosPorSegundo.ToString();
-                CasaGoldPorSegundo.text = goldPorSegundo.ToString();
-                CasaMultiplier.text = "X" + multiplicador.ToString().Replace(",", ".");
-            }
-        }
-
-        public void UpdateCasaNivel(int level, int coste, int maxHabitantes, float multiplicador, int gastos,
-            int goldPorSegundo)
-        {
-            CasaNivel.text = "NIVEL " + level;
-            CasaMaxHabitantes.text = maxHabitantes.ToString();
-            CasaGastosPorSegundo.text = gastos.ToString();
-            CasaMultiplier.text = "X" + multiplicador.ToString().Replace(",", ".");
-            CasaGoldPorSegundo.text = goldPorSegundo.ToString();
-            if (level > 2)
-            {
-                CasaCosteNivel.text = "NIVEL MAX";
-                Button_CasaSubirNivel.interactable = false;
-            }
-            else CasaCosteNivel.text = "SUBIR NIVEL X " + coste;
-
-            CasaDemolerText.text = "DEMOLER (+" + (int)(BuildManager.Instance.HousePrice * 0.8 * level) + ")";
         }
 
         public void UpdateInfoMultiplierNivel(int currentLevel, int gastosPorSegundo, float currentMultiplicador,
@@ -242,27 +212,44 @@ namespace Managers
         public void ShowBuildPanel(bool value)
         {
             _isAPanelActive = value;
-            if (value) buildPanel.ShowPanel();
-            else buildPanel.HidePanel();
+            if (value)
+            {
+                ChangeUIPanel(UIPanels.buildPanel);
+            }
+            else
+            {
+                ChangeUIPanel(UIPanels.none);
+                buildPanel.HidePanel();
+            }
         }
 
         public void DisableAllPanels()
         {
             // TODO
-            // CasaPanel.SetActive(false);
             // InfoMultiplierPanel.SetActive(false);
             buildPanel.HidePanel();
             roadPanel.HidePanel();
+            housePanel.HidePanel();
             pausePanel.SetActive(false);
             optionsPanel.SetActive(false);
             controlsPanel.SetActive(false);
             objectivesPanel.SetActive(false);
             _isAPanelActive = false;
         }
-        
-        public void UpdateFeedback(string info)
+
+        public void ShowRoadNotConnectedToRoadFeedback()
         {
-            generalInfoPanel.ShowFeedback(info);
+            UpdateFeedback(roadNotConnectedToRoadFeedback.GetLocalizedString());
+        }
+
+        public void ShowRoadNotConnectedToBuildingFeedback()
+        {
+            UpdateFeedback(roadNotConnectedToBuildingFeedback.GetLocalizedString());
+        }
+
+        public void ShowNotEnoughGoldFeedback()
+        {
+            UpdateFeedback(notEnoughGoldFeedback.GetLocalizedString());
         }
 
         public void HideAllAreas()
@@ -358,37 +345,107 @@ namespace Managers
         {
             _lastPanel = _currentPanel;
             _currentPanel = newPanel;
-            if (_currentActivePanel) _currentActivePanel.SetActive(false);
             switch (newPanel)
             {
                 case UIPanels.buildPanel:
+                    if (_lastPanel == UIPanels.buildPanel) return;
+                    buildPanel.ShowPanel();
                     break;
                 case UIPanels.roadPanel:
-                    break;
                 case UIPanels.housePanel:
+                    StartCoroutine(HideLastPanelAndWaitToShowNew());
                     break;
-                case UIPanels.generalInfoPanel:
-                    break;
+                case UIPanels.playgroundPanel:
+                case UIPanels.hospitalPanel:
+                case UIPanels.policePanel:
+                case UIPanels.gameOverPanel:
+                    throw new NotImplementedException();
                 case UIPanels.pausePanel:
+                    if (_currentActivePanel) _currentActivePanel.SetActive(false);
                     SetPanelActive(pausePanel);
                     break;
                 case UIPanels.optionsPanel:
+                    if (_currentActivePanel) _currentActivePanel.SetActive(false);
                     SetPanelActive(optionsPanel);
                     break;
                 case UIPanels.controlsPanel:
+                    if (_currentActivePanel) _currentActivePanel.SetActive(false);
                     SetPanelActive(controlsPanel);
                     break;
                 case UIPanels.objectivesPanel:
+                    if (_currentActivePanel) _currentActivePanel.SetActive(false);
                     SetPanelActive(objectivesPanel);
                     break;
-                case UIPanels.gameOverPanel:
-                    break;
                 case UIPanels.none:
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(newPanel), newPanel, null);
             }
-            
-            Debug.Log($"Changed UI Panel to {newPanel}");
+
+            Debug.Log($"Changed UI Panel from {_lastPanel} to {_currentPanel}");
+        }
+
+        private IEnumerator HideLastPanelAndWaitToShowNew()
+        {
+            switch (_lastPanel)
+            {
+                case UIPanels.buildPanel:
+                    buildPanel.HidePanel();
+                    yield return new WaitForSeconds(buildPanel.TimeBetweenAnimations);
+                    break;
+                case UIPanels.roadPanel:
+                    roadPanel.HidePanel();
+                    yield return new WaitForSeconds(roadPanel.TimeBetweenAnimations);
+                    break;
+                case UIPanels.housePanel:
+                    housePanel.HidePanel();
+                    yield return new WaitForSeconds(housePanel.TimeBetweenAnimations);
+                    break;
+                case UIPanels.playgroundPanel:
+                case UIPanels.hospitalPanel:
+                case UIPanels.policePanel:
+                    throw new NotImplementedException();
+                case UIPanels.none:
+                case UIPanels.pausePanel:
+                case UIPanels.optionsPanel:
+                case UIPanels.controlsPanel:
+                case UIPanels.objectivesPanel:
+                case UIPanels.gameOverPanel:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            switch (_currentPanel)
+            {
+                case UIPanels.buildPanel:
+                    buildPanel.ShowPanel();
+                    break;
+                case UIPanels.roadPanel:
+                    roadPanel.ShowPanel();
+                    break;
+                case UIPanels.housePanel:
+                    housePanel.ShowPanel();
+                    break;
+                case UIPanels.playgroundPanel:
+                case UIPanels.hospitalPanel:
+                case UIPanels.policePanel:
+                    throw new NotImplementedException();
+                case UIPanels.none:
+                case UIPanels.pausePanel:
+                case UIPanels.optionsPanel:
+                case UIPanels.controlsPanel:
+                case UIPanels.objectivesPanel:
+                case UIPanels.gameOverPanel:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private void UpdateFeedback(string info)
+        {
+            generalInfoPanel.ShowFeedback(info);
         }
 
         private static void PlayClickSound()
@@ -400,38 +457,6 @@ namespace Managers
         {
             newPanel.SetActive(true);
             _currentActivePanel = newPanel;
-        }
-
-        private void ConfigureHousePanel()
-        {
-            CasaNivel.text = "NIVEL " + _currentHouse.Level;
-            CasaHabitantes.text = _currentHouse.Habitantes.ToString();
-            CasaMaxHabitantes.text = _currentHouse.MaxHabitantes.ToString();
-            CasaGastosPorSegundo.text = _currentHouse.GastosPorSegundo.ToString();
-            CasaMultiplier.text = "X" + _currentHouse.Multiplicador.ToString().Replace(",", ".");
-            CasaGoldPorSegundo.text = ((int)(_currentHouse.CurrentGoldPorSegundo * _currentHouse.Multiplicador)).ToString();
-
-            if (_currentHouse.Level > 2)
-            {
-                CasaCosteNivel.text = "NIVEL MAX";
-                Button_CasaSubirNivel.interactable = false;
-            }
-            else
-            {
-                Button_CasaSubirNivel.interactable = true;
-                CasaCosteNivel.text = "SUBIR NIVEL X " + _currentHouse.CosteNivel;
-            }
-
-            Button_CasaSubirNivel.onClick.RemoveAllListeners();
-            Button_CasaSubirNivel.onClick.AddListener(delegate { _currentHouse.SubirNivel(); });
-
-            CasaDemolerText.text =
-                "DEMOLER (+" + (int)(BuildManager.Instance.HousePrice * 0.8 * _currentHouse.Level) + ")";
-            Button_CasaDemoler.onClick.RemoveAllListeners();
-            Button_CasaDemoler.onClick.AddListener(delegate { _currentHouse.Demoler(); });
-
-            _isAPanelActive = true;
-            CasaPanel.SetActive(true);
         }
 
         private void ConfigureInfoMultiplierPanel(int level, int gastosPorSegundo, float multiplicador, int areaEfecto,
@@ -507,7 +532,7 @@ namespace Managers
                 Button_InfoMultiplierDemoler.onClick.AddListener(delegate { policia.Demoler(); });
             }
         }
-        
+
         #endregion
     }
 }

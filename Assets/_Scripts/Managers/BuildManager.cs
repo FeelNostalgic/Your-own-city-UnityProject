@@ -1,12 +1,7 @@
 using System.Collections.Generic;
 using Buildings;
 using Utilities;
-using Unity.AI.Navigation;
-using UnityEditor.Localization;
 using UnityEngine;
-using UnityEngine.Localization;
-using UnityEngine.Localization.Settings;
-using UnityEngine.Serialization;
 
 namespace Managers
 {
@@ -27,11 +22,6 @@ namespace Managers
 
         [SerializeField] private float playgroundPrice;
         
-        [Header("FeedbackStrings")]
-        [SerializeField] private LocalizedString roadNotConnectedToRoadFeedback;
-        [SerializeField] private LocalizedString roadNotConnectedToBuildingFeedback;
-        [SerializeField] private LocalizedString notEnoughGoldFeedback;
-
         #endregion
 
         #region Public Variables
@@ -103,7 +93,7 @@ namespace Managers
                     }
                     else
                     {
-                        ShowRoadNotConnectedToRoadFeedback();
+                        UIManagerInGame.Instance.ShowRoadNotConnectedToRoadFeedback();
                     }
                 }
                 else
@@ -124,12 +114,12 @@ namespace Managers
                         return;
                     }
 
-                    ShowRoadNotConnectedToRoadFeedback();
+                    UIManagerInGame.Instance.ShowRoadNotConnectedToRoadFeedback();
                 }
             }
             else
             {
-                ShowNotEnoughGoldFeedback();
+                UIManagerInGame.Instance.ShowNotEnoughGoldFeedback();
             }
         }
 
@@ -141,20 +131,20 @@ namespace Managers
                 var neighbours = MapManager.Instance.Get4Neighbours(_currentTile, BuildingType.road);
                 if (neighbours.Count > 0)
                 {
-                    var tilePosition = MapManager.Instance.TilePosition(_currentTile.transform.position.x,
-                        _currentTile.transform.position.z);
+                    var tilePosition = MapManager.Instance.TilePosition(_currentTile.transform.position.x, _currentTile.transform.position.z);
                     var rotation = CalculateRotation(neighbours, tilePosition);
                     BuildBuilding((int)tilePosition.x, (int)tilePosition.y, BuildingType.house, rotation);
                     _currentTile.GetComponent<BuildType>().type = BuildingType.house;
                     ResourcesManager.Instance.AddGold((int)-housePrice);
                     UIManagerInGame.Instance.ShowBuildPanel(false);
+                    PointAndClickManager.Instance.DisableCurrentLineRendererSelected();
                     return;
                 }
 
-                ShowRoadNotConnectedToBuildingFeedback();
+                UIManagerInGame.Instance.ShowRoadNotConnectedToBuildingFeedback();
             }
 
-            ShowNotEnoughGoldFeedback();
+            UIManagerInGame.Instance.ShowNotEnoughGoldFeedback();
         }
 
         public void BuildPlayground()
@@ -175,10 +165,10 @@ namespace Managers
                     return;
                 }
 
-                ShowRoadNotConnectedToBuildingFeedback();
+                UIManagerInGame.Instance.ShowRoadNotConnectedToBuildingFeedback();
             }
 
-            ShowNotEnoughGoldFeedback();
+            UIManagerInGame.Instance.ShowNotEnoughGoldFeedback();
         }
 
         public void BuildHospital()
@@ -199,10 +189,10 @@ namespace Managers
                     return;
                 }
 
-                ShowRoadNotConnectedToBuildingFeedback();
+                UIManagerInGame.Instance.ShowRoadNotConnectedToBuildingFeedback();
             }
 
-            ShowNotEnoughGoldFeedback();
+            UIManagerInGame.Instance.ShowNotEnoughGoldFeedback();
         }
 
         public void BuildPolice()
@@ -223,10 +213,10 @@ namespace Managers
                     return;
                 }
 
-                ShowRoadNotConnectedToBuildingFeedback();
+                UIManagerInGame.Instance.ShowRoadNotConnectedToBuildingFeedback();
             }
 
-            ShowNotEnoughGoldFeedback();
+            UIManagerInGame.Instance.ShowNotEnoughGoldFeedback();
         }
 
         #endregion
@@ -274,22 +264,7 @@ namespace Managers
             newBuilding.transform.rotation = rotation;
             newBuilding.name = type + "[" + i + ", " + j + "]";
         }
-
-        private void ShowRoadNotConnectedToRoadFeedback()
-        {
-            UIManagerInGame.Instance.UpdateFeedback(roadNotConnectedToRoadFeedback.GetLocalizedString());
-        }
-
-        private void ShowRoadNotConnectedToBuildingFeedback()
-        {
-            UIManagerInGame.Instance.UpdateFeedback(roadNotConnectedToBuildingFeedback.GetLocalizedString());
-        }
-
-        private void ShowNotEnoughGoldFeedback()
-        {
-            UIManagerInGame.Instance.UpdateFeedback(notEnoughGoldFeedback.GetLocalizedString());
-        }
-
+        
         #endregion
     }
 }

@@ -116,7 +116,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 117094204829696
-    m_Localized: DESTRUIR (+{ReturnedValue})
+    m_Localized: DESTRUIR (+{DestroyPrice})
     m_Metadata:
       m_Items:
       - rid: 6115692955032617046
@@ -132,10 +132,41 @@ MonoBehaviour:
     m_Localized: "Conecta edificios para permitir la circulaci\xF3n de habitantes"
     m_Metadata:
       m_Items: []
+  - m_Id: 509019873341440
+    m_Localized: NIVEL {Level}
+    m_Metadata:
+      m_Items:
+      - rid: 6115692955032617046
+  - m_Id: 509676835565568
+    m_Localized: SUBIR NIVEL (-{LevelUpPrice})
+    m_Metadata:
+      m_Items:
+      - rid: 6115692955032617046
+  - m_Id: 514324808069120
+    m_Localized: "M\xE1x. Habitantes"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 514576587943936
+    m_Localized: Multiplicador
+    m_Metadata:
+      m_Items: []
+  - m_Id: 514900249800704
+    m_Localized: "Descripci\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 514966117150720
+    m_Localized: "La casa genera oro por segundo dependiendo del n\xFAmero de habitantes.\n
+      \nSubir de nivel aumenta los habitantes m\xE1ximos"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 515535414226944
+    m_Localized: "NIVEL M\xE1ximo"
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:
     - rid: 6115692955032617046
       type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
       data:
-        m_Entries: 00f07b1e7f6a0000
+        m_Entries: 00f07b1e7f6a000000f0bb6cf3ce010000f0bb628ccf0100

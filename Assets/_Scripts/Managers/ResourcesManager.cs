@@ -15,7 +15,7 @@ namespace Managers
 
         #region Public Variables
 
-        public int CurrentGold => _currentGold;
+        public int CurrentGold { get; private set; }
 
         public event Action<int> OnGoldUpdate;
         public event Action<int> OnResidentUpdate;
@@ -29,7 +29,6 @@ namespace Managers
         private int _currentInhabitants;
         private int _currentCostsPerSecond;
         private float _currentGoldPerSecond;
-        private int _currentGold;
 
         public ResourcesManager(int startGold)
         {
@@ -63,7 +62,7 @@ namespace Managers
                 AddGold(-_currentCostsPerSecond);
             }
 
-            if (_currentGold < -500 && GameManager.CurrentGameState == GameState.Playing)
+            if (CurrentGold < -500 && GameManager.CurrentGameState == GameState.Playing)
             {
                 GameOver();
             }
@@ -81,8 +80,8 @@ namespace Managers
 
         public void AddGold(int g)
         {
-            _currentGold += g;
-            OnGoldUpdate?.Invoke(_currentGold);
+            CurrentGold += g;
+            OnGoldUpdate?.Invoke(CurrentGold);
         }
 
         public void AddCosts(int g)
@@ -99,7 +98,7 @@ namespace Managers
 
         public void RestartAllInfo()
         {
-            AddGold(-_currentGold);
+            AddGold(-CurrentGold);
             AddGold(startGold);
             AddResident(-_currentInhabitants);
             AddGoldPerSecond(-_currentGoldPerSecond);

@@ -15,7 +15,7 @@ namespace Residents
 
         public int BaseGold => habitanteScriptableStats.habitanteScriptable.BaseGold;
         public float MultiplicadorGold => habitanteScriptableStats.habitanteScriptable.MultiplicadorGold;
-        public int GastosPorSegundo => habitanteScriptableStats.habitanteScriptable.GastosPorSegundo;
+        public int CostsPerSecond => habitanteScriptableStats.habitanteScriptable.GastosPorSegundo;
         public Color EmissionColor => _emissionColor;
         
         #endregion

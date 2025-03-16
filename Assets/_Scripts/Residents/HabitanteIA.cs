@@ -24,7 +24,7 @@ namespace Residents
         private Rigidbody _rb;
         private Vector3 _startPosition;
         private bool _targetNotFound;
-        private CasaFunctionality _targetFunctionalite;
+        private HouseFunctionality _targetFunctionalite;
 
         #endregion
 
@@ -61,7 +61,7 @@ namespace Residents
         public void BuildPath(GameObject target)
         {
             Target = target;
-            _targetFunctionalite = Target.GetComponent<CasaFunctionality>();
+            _targetFunctionalite = Target.GetComponent<HouseFunctionality>();
             _navAgent.SetDestination(target.transform.position);
             _navAgent.isStopped = false;
         }
@@ -74,7 +74,7 @@ namespace Residents
         {
             if (Target == null && !_targetNotFound) ReturnToStartPoint(); //Si se destruye la casa
             if (Target != null && !_targetNotFound &&
-                _targetFunctionalite.MaxHabitantes <= _targetFunctionalite.Habitantes)
+                _targetFunctionalite.MaxInhabitants <= _targetFunctionalite.Inhabitants)
                 ReturnToStartPoint(); //No hay hueco para el nuevo habitante
 
             if (!_targetNotFound)

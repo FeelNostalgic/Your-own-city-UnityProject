@@ -6,7 +6,7 @@ using Random = UnityEngine.Random;
 
 namespace Managers
 {
-    public class ResidentsManager : MonoBehaviourSinglenton<ResidentsManager>
+    public class InhabitantsManager : MonoBehaviourSinglenton<InhabitantsManager>
     {
         #region Inspector Variables
 

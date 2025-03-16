@@ -85,7 +85,7 @@ public class PoliciaFunctionality : MonoBehaviour
             }
             else
             {
-                UIManagerInGame.Instance.UpdateFeedback("¡Gold insuficiente!");
+                UIManagerInGame.Instance.ShowNotEnoughGoldFeedback();
             }
         }
 
@@ -114,7 +114,7 @@ public class PoliciaFunctionality : MonoBehaviour
                 if (v != null && v.GetComponent<BuildType>().type == BuildManager.BuildingType.house && !_casasAfectadas.Contains(v) )
                 {
                     _casasAfectadas.Add(v);
-                    v.GetComponentInChildren<CasaFunctionality>().MejorarMultiplicador(MULTIPLIER);
+                    v.GetComponentInChildren<HouseFunctionality>().UpgradeMultiplier(MULTIPLIER);
                 }
             }
         }
@@ -129,11 +129,11 @@ public class PoliciaFunctionality : MonoBehaviour
                     lineRendererPositions = BuildLineRenderer4();
                     break;
                 case 2:
-                    _tilesVecinas = MapManager.Instance.GetVecinos8(gameObject);
+                    _tilesVecinas = MapManager.Instance.Get8Neighbours(gameObject);
                     lineRendererPositions = BuildLineRenderer8();
                     break;
                 case 3:
-                    _tilesVecinas = MapManager.Instance.GetVecinos12(gameObject);
+                    _tilesVecinas = MapManager.Instance.Get12Neightbour(gameObject);
                     lineRendererPositions = BuildLineRenderer12();
                     break;
             }
@@ -158,7 +158,7 @@ public class PoliciaFunctionality : MonoBehaviour
         {
             foreach (var c in _casasAfectadas)
             {
-                c.GetComponentInChildren<CasaFunctionality>().MejorarMultiplicador(m);
+                c.GetComponentInChildren<HouseFunctionality>().UpgradeMultiplier(m);
             }
         }
 

@@ -28,13 +28,7 @@ namespace UI
         #region Public Variables
         //
         #endregion
-
-        #region Private Variables
-
-        private AnimateUI _animateUI;
-
-        #endregion
-
+        
         #region Unity Methods
 
         protected override void Awake()

@@ -95,7 +95,7 @@ namespace Managers
             BuildStartRoad();
             BuildDecoration();
             CameraController.Instance.StartingPosition();
-            ResidentsManager.Instance.RoadPosition = RoadSpawnPoint.transform.position;
+            InhabitantsManager.Instance.RoadPosition = RoadSpawnPoint.transform.position;
             IsMapCreated = true;
         }
         
@@ -121,66 +121,63 @@ namespace Managers
             return new Vector2(GetX_Index(x), GetZ_Index(z));
         }
 
-        #region GetVecinos
+        #region Negihbours
+        
         public List<GameObject> Get4Neighbours(GameObject tile, BuildManager.BuildingType type)
         {
-            var neightbour = new List<GameObject>();
+            var neighbours = new List<GameObject>();
             var x = (int)GetX_Index(tile.transform.position.x);
             var z = (int)GetZ_Index(tile.transform.position.z);
             
             //Right
             //Debug.Log(_MapTiles[x + 1, z].name);
-            if ((x+1) < MapSize && MapTiles[x + 1, z].GetComponent<BuildType>().type == type)
+            if (x+1 < MapSize && MapTiles[x + 1, z].GetComponent<BuildType>().type == type)
             {
-                neightbour.Add(MapTiles[x + 1, z]);
+                neighbours.Add(MapTiles[x + 1, z]);
             }
             //Left
             //Debug.Log(_MapTiles[x - 1, z].name);
-            if ((x-1) >= 0 && MapTiles[x - 1, z].GetComponent<BuildType>().type == type)
+            if (x-1 >= 0 && MapTiles[x - 1, z].GetComponent<BuildType>().type == type)
             {
-                neightbour.Add(MapTiles[x - 1, z]);
+                neighbours.Add(MapTiles[x - 1, z]);
             }
             //Up
             //Debug.Log(_MapTiles[x, z + 1].name);
-            if ((z+1) < MapSize && MapTiles[x, z + 1].GetComponent<BuildType>().type == type)
+            if (z+1 < MapSize && MapTiles[x, z + 1].GetComponent<BuildType>().type == type)
             {
-                neightbour.Add(MapTiles[x, z + 1]);
+                neighbours.Add(MapTiles[x, z + 1]);
             }
             //Down
             //Debug.Log(_MapTiles[x, z - 1].name);
-            if ((z-1) >= 0 && MapTiles[x, z - 1].GetComponent<BuildType>().type == type)
+            if (z-1 >= 0 && MapTiles[x, z - 1].GetComponent<BuildType>().type == type)
             {
-                neightbour.Add(MapTiles[x, z - 1]);
+                neighbours.Add(MapTiles[x, z - 1]);
             }
             
-            return neightbour;
+            return neighbours;
         }
         
         public List<GameObject> Get4Neighbours(GameObject tile)
         {
-            var neightbours = new List<GameObject>();
+            var neighbours = new List<GameObject>();
             var x = (int)GetX_Index(tile.transform.position.x);
             var z = (int)GetZ_Index(tile.transform.position.z);
             
             //Right
-            if ((x+1) < MapSize) neightbours.Add(MapTiles[x + 1, z]);
-            else neightbours.Add(null);
+            neighbours.Add(x + 1 < MapSize ? MapTiles[x + 1, z] : null);
             //Left
-            if ((x-1) >= 0) neightbours.Add(MapTiles[x - 1, z]);
-            else neightbours.Add(null);
+            neighbours.Add(x - 1 >= 0 ? MapTiles[x - 1, z] : null);
             //Up
-            if ((z+1) < MapSize) neightbours.Add(MapTiles[x, z + 1]);
-            else neightbours.Add(null);
+            neighbours.Add(z + 1 < MapSize ? MapTiles[x, z + 1] : null);
             //Down
-            if ((z-1) >= 0) neightbours.Add(MapTiles[x, z - 1]);
-            else neightbours.Add(null);
-            
-            return neightbours;
+            neighbours.Add(z - 1 >= 0 ? MapTiles[x, z - 1] : null);
+
+            return neighbours;
         }
 
-        public List<GameObject> GetVecinos8(GameObject tile)
+        public List<GameObject> Get8Neighbours(GameObject tile)
         {
-            var neightbours = new List<GameObject>();
+            var neighbours = new List<GameObject>();
             var x = (int)GetX_Index(tile.transform.position.x);
             var z = (int)GetZ_Index(tile.transform.position.z);
             
@@ -188,38 +185,38 @@ namespace Managers
             {
                 for (var j = z-1; j <= z+1; j++)
                 {
-                    if (i >= 0 && i < MapSize && j >= 0 && j < MapSize && MapTiles[i,j] != tile) neightbours.Add(MapTiles[i,j]);
-                    else neightbours.Add(null);
+                    if (i >= 0 && i < MapSize && j >= 0 && j < MapSize && MapTiles[i,j] != tile) neighbours.Add(MapTiles[i,j]);
+                    else neighbours.Add(null);
                 }
             }
             
-            return neightbours;
+            return neighbours;
         }
 
-        public List<GameObject> GetVecinos12(GameObject tile)
+        public List<GameObject> Get12Neightbour(GameObject tile)
         {
-            var neightbours = GetVecinos8(tile);
+            var neighbours = Get8Neighbours(tile);
             var x = (int)GetX_Index(tile.transform.position.x);
             var z = (int)GetZ_Index(tile.transform.position.z);
             //Right
-            if ((x+2) < MapSize)neightbours.Add(MapTiles[x + 2, z]);
-            else neightbours.Add(null);
+            if (x+2 < MapSize)neighbours.Add(MapTiles[x + 2, z]);
+            else neighbours.Add(null);
             //Left
-            if ((x-2) >= 0) neightbours.Add(MapTiles[x - 2, z]);
-            else neightbours.Add(null);
+            if (x-2 >= 0) neighbours.Add(MapTiles[x - 2, z]);
+            else neighbours.Add(null);
             //Up
-            if ((z+2) < MapSize) neightbours.Add(MapTiles[x, z + 2]);
-            else neightbours.Add(null);
+            if (z+2 < MapSize) neighbours.Add(MapTiles[x, z + 2]);
+            else neighbours.Add(null);
             //Down
-            if ((z-2) >= 0) neightbours.Add(MapTiles[x, z - 2]);
-            else neightbours.Add(null);
+            if (z-2 >= 0) neighbours.Add(MapTiles[x, z - 2]);
+            else neighbours.Add(null);
             
-            return neightbours;
+            return neighbours;
         }
 
-        public List<GameObject> GetVecinos25(GameObject tile)
+        public List<GameObject> Get25Neighbour(GameObject tile)
         {
-            var neightbours = new List<GameObject>();
+            var neighbours = new List<GameObject>();
             var x = (int)GetX_Index(tile.transform.position.x);
             var z = (int)GetZ_Index(tile.transform.position.z);
             
@@ -227,12 +224,12 @@ namespace Managers
             {
                 for (var j = z-2; j <= z+2; j++)
                 {
-                    if (i >= 0 && i < MapSize && j >= 0 && j < MapSize && MapTiles[i,j] != tile) neightbours.Add(MapTiles[i,j]);
-                    else neightbours.Add(null);
+                    if (i >= 0 && i < MapSize && j >= 0 && j < MapSize && MapTiles[i,j] != tile) neighbours.Add(MapTiles[i,j]);
+                    else neighbours.Add(null);
                 }
             }
             
-            return neightbours;
+            return neighbours;
         }
         #endregion
 
@@ -263,9 +260,9 @@ namespace Managers
             {
                 for (var j = 0; j < mapSize; j++)
                 {
-                    var newtile = BuildTile(i,j,Tile.baseT, mapParent);
-                    InicializateLineRenderer(newtile);
-                    MapTiles[i, j] = newtile;
+                    var newTile = BuildTile(i,j,Tile.baseT, mapParent);
+                    InicializateLineRenderer(newTile);
+                    MapTiles[i, j] = newTile;
                 }
             }
         }
@@ -277,11 +274,9 @@ namespace Managers
             {
                 for (var j = -borderSize; j < borderSize + mapSize; j++)
                 {
-                    if (checkPertenenciaMap(i,j))
-                    {
-                        var newtile = BuildTile(i, j, Tile.border, borderParent);
-                        _borderTiles[i + borderSize, j + borderSize] = newtile;
-                    }
+                    if (TileBelongsToMap(i, j)) continue;
+                    var newTile = BuildTile(i, j, Tile.border, borderParent);
+                    _borderTiles[i + borderSize, j + borderSize] = newTile;
                 }
             }
         }
@@ -292,11 +287,11 @@ namespace Managers
             RoadZ = positionY;
             for (var i = -borderSize; i < 0; i++)
             {
-                var newtile = BuildTile(i, positionY, Tile.road, roadParent);
-                if (i == -borderSize) RoadSpawnPoint = newtile;
-                newtile.layer = 0;
+                var newTile = BuildTile(i, positionY, Tile.road, roadParent);
+                if (i == -borderSize) RoadSpawnPoint = newTile;
+                newTile.layer = 0;
                 Destroy(_borderTiles[i + borderSize,positionY + borderSize]);
-                _borderTiles[i + borderSize, positionY + borderSize] = newtile;
+                _borderTiles[i + borderSize, positionY + borderSize] = newTile;
             }
         }
 
@@ -324,28 +319,28 @@ namespace Managers
             }
         }
         
-        private bool checkPertenenciaMap(int x, int y)
+        private bool TileBelongsToMap(int x, int y)
         {
-            return !(x >= 0 && y >= 0 && x < mapSize && y < mapSize);
+            return (x >= 0 && y >= 0 && x < mapSize && y < mapSize);
         }
 
         private float GetX_Index(float x)
         {
-            return (x / XOffset);
+            return x / XOffset;
         }
         
         private float GetZ_Index(float z)
         {
-            return (z / ZOffset);
+            return z / ZOffset;
         }
         
         private GameObject BuildTile(int i, int j, Tile type, Transform parent)
         {
             var position = new Vector3(i * x_Offset, 0, j * z_Offset);
-            var newtile = Instantiate(tiles[(int)type], position, Quaternion.identity, parent);
-            newtile.name = type + "[" + i + ", " + j + "]";
+            var newTile = Instantiate(tiles[(int)type], position, Quaternion.identity, parent);
+            newTile.name = type + "[" + i + ", " + j + "]";
 
-            return newtile;
+            return newTile;
         }
         
         private void DestroyRoadAtMap(int i, int j)

@@ -125,7 +125,7 @@ namespace Managers
             var buildType = _hit.collider.GetComponent<BuildType>().type;
             if (buildType != BuildManager.BuildingType.none)
             {
-                UIManagerInGame.Instance.ShowInfoPanel(buildType, _hit.collider);
+                UIManagerInGame.Instance.ShowInfoPanel(buildType, _hit.collider.gameObject);
             }
             else
             {

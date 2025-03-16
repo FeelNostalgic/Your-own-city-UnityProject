@@ -123,6 +123,34 @@ MonoBehaviour:
     m_Key: ROAD_DESCRIPTION
     m_Metadata:
       m_Items: []
+  - m_Id: 509019873341440
+    m_Key: LEVEL_TITLE
+    m_Metadata:
+      m_Items: []
+  - m_Id: 509676835565568
+    m_Key: LEVEL_UP_BUTTON
+    m_Metadata:
+      m_Items: []
+  - m_Id: 514324808069120
+    m_Key: MAX_INHABITANTS_LABEL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 514576587943936
+    m_Key: MULTIPLIER_LABEL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 514900249800704
+    m_Key: DESCRIPTION_LABEL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 514966117150720
+    m_Key: HOUSE_DESCRIPTION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 515535414226944
+    m_Key: MAX_LEVEL_LABEL
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -1,6 +1,5 @@
 using System;
 using DG.Tweening;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace UI
@@ -10,11 +9,12 @@ namespace UI
     {
         #region Inspector Variables
 
+        [Range(0, 2f), SerializeField] private float duration = 0.3f;
+        
         [Header("Position animation")] [SerializeField]
         private bool animatePosition;
 
         [SerializeField] private Vector2 startPosition;
-        [Range(0, 2f), SerializeField] private float positionDuration;
         [SerializeField] private Ease inEasePosition;
         [SerializeField] private Ease outEasePosition;
 
@@ -22,7 +22,6 @@ namespace UI
         private bool animateScale;
 
         [SerializeField] private Vector2 startScale = Vector2.one;
-        [Range(0, 2f), SerializeField] private float scaleDuration;
         [SerializeField] private Ease inEaseScale;
         [SerializeField] private Ease outEaseScale;
 
@@ -30,6 +29,8 @@ namespace UI
 
         #region Public Variables
 
+        public float Duration => duration;
+        
         public event Action OnShowAnimationPlay;
         public event Action OnShowAnimationCompleted;
         public event Action OnHideAnimationPlay;
@@ -75,13 +76,13 @@ namespace UI
 
             if (animatePosition)
             {
-                sequence.Append(_rectTransform.DOAnchorPos(_endPosition, positionDuration)
+                sequence.Append(_rectTransform.DOAnchorPos(_endPosition, duration)
                     .SetEase(inEasePosition));
             }
 
             if (animateScale)
             {
-                sequence.Join(_rectTransform.DOScale(_endScale, scaleDuration)
+                sequence.Join(_rectTransform.DOScale(_endScale, duration)
                     .SetEase(inEaseScale));
             }
 
@@ -98,13 +99,13 @@ namespace UI
 
             if (animatePosition)
             {
-                sequence.Append(_rectTransform.DOAnchorPos(startPosition, positionDuration)
+                sequence.Append(_rectTransform.DOAnchorPos(startPosition, duration)
                     .SetEase(outEasePosition));
             }
 
             if (animateScale)
             {
-                sequence.Join(_rectTransform.DOScale(startScale, scaleDuration)
+                sequence.Join(_rectTransform.DOScale(startScale, duration)
                     .SetEase(outEasePosition));
             }
 

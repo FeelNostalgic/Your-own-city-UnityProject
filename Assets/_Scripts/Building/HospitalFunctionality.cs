@@ -85,7 +85,7 @@ namespace Buildings
             }
             else
             {
-                UIManagerInGame.Instance.UpdateFeedback("¡Gold insuficiente!");
+                UIManagerInGame.Instance.ShowNotEnoughGoldFeedback();
             }
         }
 
@@ -115,7 +115,7 @@ namespace Buildings
                     !_casasAfectadas.Contains(v))
                 {
                     _casasAfectadas.Add(v);
-                    v.GetComponentInChildren<CasaFunctionality>().MejorarMultiplicador(MULTIPLIER);
+                    v.GetComponentInChildren<HouseFunctionality>().UpgradeMultiplier(MULTIPLIER);
                 }
             }
         }
@@ -126,15 +126,15 @@ namespace Buildings
             switch (_areaEfecto)
             {
                 case 1:
-                    _tilesVecinas = MapManager.Instance.GetVecinos8(transform.parent.gameObject);
+                    _tilesVecinas = MapManager.Instance.Get8Neighbours(transform.parent.gameObject);
                     lineRendererPositions = BuildLineRenderer8();
                     break;
                 case 2:
-                    _tilesVecinas = MapManager.Instance.GetVecinos12(transform.parent.gameObject);
+                    _tilesVecinas = MapManager.Instance.Get12Neightbour(transform.parent.gameObject);
                     lineRendererPositions = BuildLineRenderer12();
                     break;
                 case 3:
-                    _tilesVecinas = MapManager.Instance.GetVecinos25(transform.parent.gameObject);
+                    _tilesVecinas = MapManager.Instance.Get25Neighbour(transform.parent.gameObject);
                     lineRendererPositions = BuildLineRenderer25();
                     break;
             }
@@ -161,7 +161,7 @@ namespace Buildings
         {
             foreach (var c in _casasAfectadas)
             {
-                c.GetComponentInChildren<CasaFunctionality>().MejorarMultiplicador(m);
+                c.GetComponentInChildren<HouseFunctionality>().UpgradeMultiplier(m);
             }
         }
 
