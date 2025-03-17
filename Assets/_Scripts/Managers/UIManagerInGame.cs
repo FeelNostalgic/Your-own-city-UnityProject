@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using Buildings;
 using DG.Tweening;
 using TMPro;
@@ -83,7 +84,28 @@ namespace Managers
 
         #region Public Variables
 
-        public bool IsAPanelActive => _isAPanelActive;
+        public bool IsAPanelActive { get; private set; }
+
+        public enum HUDPanels
+        {
+            none = 0,
+            buildPanel,
+            roadPanel,
+            housePanel,
+            playgroundPanel,
+            hospitalPanel,
+            policePanel
+        }
+
+        public enum UIPanels
+        {
+            none = 0,
+            pausePanel,
+            optionsPanel,
+            controlsPanel,
+            objectivesPanel,
+            gameOverPanel
+        }
 
         #endregion
 
@@ -93,27 +115,13 @@ namespace Managers
         private ParqueFunctionality _currentPlayground;
         private HospitalFunctionality _currentHospital;
         private PoliciaFunctionality _currentPolice;
-        private bool _isAPanelActive;
 
-        private UIPanels _currentPanel = UIPanels.none;
-        private UIPanels _lastPanel = UIPanels.none;
-        private GameObject _currentActivePanel;
-
-        private enum UIPanels
-        {
-            none = 0,
-            buildPanel,
-            roadPanel,
-            housePanel,
-            playgroundPanel,
-            hospitalPanel,
-            policePanel,
-            pausePanel,
-            optionsPanel,
-            controlsPanel,
-            objectivesPanel,
-            gameOverPanel
-        }
+        private HUDPanels _currentHUDPanel;
+        private HUDPanels _lastHUDPanel;
+        private UIPanels _lastUIPanel;
+        private UIPanels _currentUIPanel;
+        private GameObject _currentActiveUIPanel;
+        private UIPanel _currentActiveHUDPanel;
 
         #endregion
 
@@ -143,7 +151,7 @@ namespace Managers
         public void BackPanel()
         {
             PlayClickSound();
-            ChangeUIPanel(_lastPanel);
+            ChangeHUDPanel(_lastHUDPanel);
         }
 
         public void ShowInfoPanel(BuildManager.BuildingType type, GameObject selectedBuilding)
@@ -153,7 +161,6 @@ namespace Managers
                 case BuildManager.BuildingType.house:
                     HideAllAreas();
                     housePanel.ConfigureHousePanel(selectedBuilding.GetComponentInChildren<HouseFunctionality>());
-                    ChangeUIPanel(UIPanels.housePanel);
                     break;
 
                 case BuildManager.BuildingType.playground:
@@ -168,7 +175,7 @@ namespace Managers
                 case BuildManager.BuildingType.road:
                     HideAllAreas();
                     MapManager.Instance.RoadToDestroy = selectedBuilding.gameObject;
-                    ChangeUIPanel(UIPanels.roadPanel);
+                    ChangeHUDPanel(HUDPanels.roadPanel);
                     break;
 
                 case BuildManager.BuildingType.hospital:
@@ -188,11 +195,14 @@ namespace Managers
                         _currentPolice.Multiplicador, _currentPolice.AreaEfecto, _currentPolice.CasaAfectadas,
                         PoliciaDescription, _currentPolice.CosteNivel, policia: _currentPolice);
                     break;
+                case BuildManager.BuildingType.none:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
         }
 
-        public void UpdateInfoMultiplierNivel(int currentLevel, int gastosPorSegundo, float currentMultiplicador,
-            int areaEfecto, int coste, int casasAfectadas, float price)
+        public void UpdateInfoMultiplierNivel(int currentLevel, int gastosPorSegundo, float currentMultiplicador, int areaEfecto, int coste, int casasAfectadas, float price)
         {
             InfoMultiplierNivel.text = "NIVEL " + currentLevel;
             InfoMultiplierGastorPorSegundo.text = gastosPorSegundo.ToString();
@@ -209,20 +219,6 @@ namespace Managers
             InfoMultiplierDemolerText.text = "DEMOLER (+" + (int)(price * 0.8 * currentLevel) + ")";
         }
 
-        public void ShowBuildPanel(bool value)
-        {
-            _isAPanelActive = value;
-            if (value)
-            {
-                ChangeUIPanel(UIPanels.buildPanel);
-            }
-            else
-            {
-                ChangeUIPanel(UIPanels.none);
-                buildPanel.HidePanel();
-            }
-        }
-
         public void DisableAllPanels()
         {
             // TODO
@@ -234,7 +230,11 @@ namespace Managers
             optionsPanel.SetActive(false);
             controlsPanel.SetActive(false);
             objectivesPanel.SetActive(false);
-            _isAPanelActive = false;
+
+            _lastUIPanel = UIPanels.none;
+            _lastHUDPanel = HUDPanels.none;
+
+            IsAPanelActive = false;
         }
 
         public void ShowRoadNotConnectedToRoadFeedback()
@@ -262,7 +262,7 @@ namespace Managers
         public void ShowFinalPanel(bool value)
         {
             DisableAllPanels();
-            _isAPanelActive = value;
+            IsAPanelActive = value;
             generalInfoPanel.gameObject.SetActive(!value);
             gameOverPanel.SetActive(value);
         }
@@ -278,7 +278,7 @@ namespace Managers
 
         public void UnpauseGame()
         {
-            _currentActivePanel.SetActive(false);
+            _currentActiveUIPanel.SetActive(false);
             Time.timeScale = 1;
             GameManager.Instance.ChangeState(GameState.Playing);
         }
@@ -312,7 +312,7 @@ namespace Managers
             MapManager.Instance.InitializeMap();
             DisableAllPanels();
             InitializeButtonListeners();
-            _isAPanelActive = false;
+            IsAPanelActive = false;
             Time.timeScale = 1;
             GameManager.Instance.ChangeState(GameState.Playing);
             AudioManager.Instance.PlayMainSound();
@@ -343,37 +343,26 @@ namespace Managers
 
         private void ChangeUIPanel(UIPanels newPanel)
         {
-            _lastPanel = _currentPanel;
-            _currentPanel = newPanel;
+            _lastUIPanel = _currentUIPanel;
+            _currentUIPanel = newPanel;
             switch (newPanel)
             {
-                case UIPanels.buildPanel:
-                    if (_lastPanel == UIPanels.buildPanel) return;
-                    buildPanel.ShowPanel();
-                    break;
-                case UIPanels.roadPanel:
-                case UIPanels.housePanel:
-                    StartCoroutine(HideLastPanelAndWaitToShowNew());
-                    break;
-                case UIPanels.playgroundPanel:
-                case UIPanels.hospitalPanel:
-                case UIPanels.policePanel:
                 case UIPanels.gameOverPanel:
                     throw new NotImplementedException();
                 case UIPanels.pausePanel:
-                    if (_currentActivePanel) _currentActivePanel.SetActive(false);
+                    if (_currentActiveUIPanel) _currentActiveUIPanel.SetActive(false);
                     SetPanelActive(pausePanel);
                     break;
                 case UIPanels.optionsPanel:
-                    if (_currentActivePanel) _currentActivePanel.SetActive(false);
+                    if (_currentActiveUIPanel) _currentActiveUIPanel.SetActive(false);
                     SetPanelActive(optionsPanel);
                     break;
                 case UIPanels.controlsPanel:
-                    if (_currentActivePanel) _currentActivePanel.SetActive(false);
+                    if (_currentActiveUIPanel) _currentActiveUIPanel.SetActive(false);
                     SetPanelActive(controlsPanel);
                     break;
                 case UIPanels.objectivesPanel:
-                    if (_currentActivePanel) _currentActivePanel.SetActive(false);
+                    if (_currentActiveUIPanel) _currentActiveUIPanel.SetActive(false);
                     SetPanelActive(objectivesPanel);
                     break;
                 case UIPanels.none:
@@ -382,65 +371,66 @@ namespace Managers
                     throw new ArgumentOutOfRangeException(nameof(newPanel), newPanel, null);
             }
 
-            Debug.Log($"Changed UI Panel from {_lastPanel} to {_currentPanel}");
+            Debug.Log($"Changed UI Panel from {_lastHUDPanel} to {_currentHUDPanel}");
+        }
+
+        public void ChangeHUDPanel(HUDPanels newPanel)
+        {
+            _lastHUDPanel = _currentHUDPanel;
+            _currentHUDPanel = newPanel;
+            switch (newPanel)
+            {
+                case HUDPanels.buildPanel:
+                    if(_currentActiveHUDPanel) _currentActiveHUDPanel.HidePanel();
+                    buildPanel.ShowPanel();
+                    _currentActiveHUDPanel = buildPanel;
+                    break;
+                case HUDPanels.roadPanel:
+                case HUDPanels.housePanel:
+                    StartCoroutine(HideLastPanelAndWaitToShowNew());
+                    break;
+                case HUDPanels.playgroundPanel:
+                case HUDPanels.hospitalPanel:
+                case HUDPanels.policePanel:
+                    throw new NotImplementedException();
+                case HUDPanels.none:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(newPanel), newPanel, null);
+            }
+
+            Debug.Log($"Changed HUD Panel from {_lastHUDPanel} to {_currentHUDPanel}");
         }
 
         private IEnumerator HideLastPanelAndWaitToShowNew()
         {
-            switch (_lastPanel)
+            //Hide last
+            if(_currentActiveHUDPanel) _currentActiveHUDPanel.HidePanel();
+            var timeToWait = _currentActiveHUDPanel ? _currentActiveHUDPanel.TimeBetweenAnimations : 0;
+            yield return new WaitForSeconds(timeToWait);
+            //Show current
+            switch (_currentHUDPanel)
             {
-                case UIPanels.buildPanel:
-                    buildPanel.HidePanel();
-                    yield return new WaitForSeconds(buildPanel.TimeBetweenAnimations);
+                case HUDPanels.buildPanel:
+                    _currentActiveHUDPanel = buildPanel;
                     break;
-                case UIPanels.roadPanel:
-                    roadPanel.HidePanel();
-                    yield return new WaitForSeconds(roadPanel.TimeBetweenAnimations);
+                case HUDPanels.roadPanel:
+                    _currentActiveHUDPanel = roadPanel;
                     break;
-                case UIPanels.housePanel:
-                    housePanel.HidePanel();
-                    yield return new WaitForSeconds(housePanel.TimeBetweenAnimations);
+                case HUDPanels.housePanel:
+                    _currentActiveHUDPanel = housePanel;
                     break;
-                case UIPanels.playgroundPanel:
-                case UIPanels.hospitalPanel:
-                case UIPanels.policePanel:
+                case HUDPanels.playgroundPanel:
+                case HUDPanels.hospitalPanel:
+                case HUDPanels.policePanel:
                     throw new NotImplementedException();
-                case UIPanels.none:
-                case UIPanels.pausePanel:
-                case UIPanels.optionsPanel:
-                case UIPanels.controlsPanel:
-                case UIPanels.objectivesPanel:
-                case UIPanels.gameOverPanel:
+                case HUDPanels.none:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 
-            switch (_currentPanel)
-            {
-                case UIPanels.buildPanel:
-                    buildPanel.ShowPanel();
-                    break;
-                case UIPanels.roadPanel:
-                    roadPanel.ShowPanel();
-                    break;
-                case UIPanels.housePanel:
-                    housePanel.ShowPanel();
-                    break;
-                case UIPanels.playgroundPanel:
-                case UIPanels.hospitalPanel:
-                case UIPanels.policePanel:
-                    throw new NotImplementedException();
-                case UIPanels.none:
-                case UIPanels.pausePanel:
-                case UIPanels.optionsPanel:
-                case UIPanels.controlsPanel:
-                case UIPanels.objectivesPanel:
-                case UIPanels.gameOverPanel:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            _currentActiveHUDPanel.ShowPanel();
         }
 
         private void UpdateFeedback(string info)
@@ -456,7 +446,7 @@ namespace Managers
         private void SetPanelActive(GameObject newPanel)
         {
             newPanel.SetActive(true);
-            _currentActivePanel = newPanel;
+            _currentActiveUIPanel = newPanel;
         }
 
         private void ConfigureInfoMultiplierPanel(int level, int gastosPorSegundo, float multiplicador, int areaEfecto,
@@ -490,7 +480,7 @@ namespace Managers
             if (hospital != null) ConfigureInfoMultiplierButtons(hospital: hospital);
             if (policia != null) ConfigureInfoMultiplierButtons(policia: policia);
 
-            _isAPanelActive = true;
+            IsAPanelActive = true;
             InfoMultiplierPanel.SetActive(true);
         }
 

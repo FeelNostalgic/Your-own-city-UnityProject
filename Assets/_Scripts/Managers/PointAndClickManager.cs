@@ -9,11 +9,11 @@ namespace Managers
     {
         [SerializeField] private LayerMask layerHitable;
 
-        private Camera _mainCamera;
+        private Camera _mainCamera; //Cached camera
         private Ray _ray;
         private RaycastHit _hit;
-        private LineRendererHighlight _currentHighlightedLineRenderer;
-        private LineRendererHighlight _selectedLineRenderer;
+        private static LineRendererHighlight _currentHighlightedLineRenderer;
+        private static LineRendererHighlight _selectedLineRenderer;
 
         #region Unity Methods
 
@@ -26,7 +26,7 @@ namespace Managers
         {
             MapManager.OnTileDelete += OnTileDeleted;
         }
-        
+
         private void Update()
         {
             if (GameManager.CurrentGameState == GameState.Playing)
@@ -44,7 +44,7 @@ namespace Managers
 
         #region Public Methods
 
-        public void DisableCurrentLineRendererSelected()
+        public static void DisableCurrentLineRendererSelected()
         {
             _selectedLineRenderer?.Deselect();
             _currentHighlightedLineRenderer?.Unhighlight();
@@ -100,37 +100,36 @@ namespace Managers
 
         private void HandleTileSelection()
         {
-            AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.clickOnMap);
-            SelectTile();
-        }
-
-        private void SelectTile()
-        {
             if (!_hit.collider.TryGetComponent<LineRendererHighlight>(out var newLineRenderer)) return;
-
-            if (newLineRenderer.HighlightState == LineRendererHighlight.HighlightType.selected) return;
-            _selectedLineRenderer?.Deselect();
-            newLineRenderer.Select();
-            _selectedLineRenderer = newLineRenderer;
-            //New selection then show new data
-            ProcessSelectedTile(); 
-        }
-
-        private void ProcessSelectedTile()
-        {
-            BuildManager.Instance.SetCurrentTile(_hit.collider.gameObject);
-            UIManagerInGame.Instance.DisableAllPanels();
-            UIManagerInGame.Instance.HideAllAreas();
-
             var buildType = _hit.collider.GetComponent<BuildType>().type;
-            if (buildType != BuildManager.BuildingType.none)
+
+            if (BuildManager.IsBuilding)
             {
-                UIManagerInGame.Instance.ShowInfoPanel(buildType, _hit.collider.gameObject);
+                if (buildType != BuildManager.BuildingType.none) return;
+                BuildManager.Instance.BuildBuilding(_hit.collider.gameObject);
             }
             else
             {
-                UIManagerInGame.Instance.ShowBuildPanel(true);
+                if (buildType == BuildManager.BuildingType.none) return;
+                if (HasSelectedTileChanged(newLineRenderer)) ShowSelectedTileInfo(buildType);
             }
+        }
+
+        private bool HasSelectedTileChanged(LineRendererHighlight newLineRenderer)
+        {
+            if (newLineRenderer.HighlightState == LineRendererHighlight.HighlightType.selected) return false;
+            AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.clickOnMap);
+            _selectedLineRenderer?.Deselect();
+            newLineRenderer.Select();
+            _selectedLineRenderer = newLineRenderer;
+            return true;
+        }
+
+        private void ShowSelectedTileInfo(BuildManager.BuildingType buildType)
+        {
+            UIManagerInGame.Instance.DisableAllPanels();
+            UIManagerInGame.Instance.ShowInfoPanel(buildType, _hit.collider.gameObject);
+            UIManagerInGame.Instance.HideAllAreas();
         }
 
         private void HandleKeyboardInput()
@@ -157,7 +156,7 @@ namespace Managers
             UIManagerInGame.Instance.DisableAllPanels();
         }
 
-        private void TogglePauseState()
+        private static void TogglePauseState()
         {
             switch (GameManager.CurrentGameState)
             {
@@ -169,13 +168,13 @@ namespace Managers
                     break;
             }
         }
-        
+
         private void OnTileDeleted(GameObject obj)
         {
             _selectedLineRenderer = null;
             _currentHighlightedLineRenderer = null;
         }
-        
+
         #endregion
     }
 }

@@ -5,23 +5,23 @@ namespace UI
 { 
 	public abstract class UIPanel : MonoBehaviour
 	{
-		public float TimeBetweenAnimations => AnimateUI.Duration;
+		public float TimeBetweenAnimations => OwnAnimateUI.Duration;
 		
-		protected AnimateUI AnimateUI;
+		protected AnimateUI OwnAnimateUI;
 		
 		protected virtual void Awake()
 		{
-			AnimateUI = GetComponent<AnimateUI>();
+			OwnAnimateUI = GetComponent<AnimateUI>();
 		}
 		
 		public void ShowPanel()
 		{
-			AnimateUI.Show();
+			OwnAnimateUI.Show();
 		}
 
 		public void HidePanel()
 		{
-			AnimateUI.Hide();
+			OwnAnimateUI.Hide();
 		}
 	}
 }

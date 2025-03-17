@@ -28,7 +28,7 @@ namespace Buildings
 
         #region Public Methods
 
-        public void AddCasa()
+        public void AddHouse()
         {
             foreach (var p in Parques)
             {

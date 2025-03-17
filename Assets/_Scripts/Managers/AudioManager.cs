@@ -54,23 +54,23 @@ namespace Managers
             switch (type)
             {
                 case SFX_Type.buildBuilding:
-                    sfxAudioSource.pitch = Random.Range(1,1.6f);
+                    sfxAudioSource.pitch = Random.Range(0.8f,1.3f);
                     PlaySFXSound(sfxAudioClips[0], sfxAudioSource);
                     break;
                 case SFX_Type.newResident:
-                    sfxAudioSource.pitch = Random.Range(1,1.6f);
+                    sfxAudioSource.pitch = Random.Range(0.9f,1.3f);
                     PlaySFXSound(sfxAudioClips[1], sfxAudioSource);
                     break;
                 case SFX_Type.detroyBuilding:
-                    sfxAudioSource.pitch = Random.Range(1,1.6f);
+                    sfxAudioSource.pitch = Random.Range(0.9f,1.3f);
                     PlaySFXSound(sfxAudioClips[2], sfxAudioSource);
                     break;
                 case SFX_Type.clickOnMap:
-                    sfxAudioSource.pitch = Random.Range(1,1.6f);
+                    sfxAudioSource.pitch = Random.Range(0.9f,1.3f);
                     PlaySFXSound(sfxAudioClips[3], sfxClickAudioSource);
                     break;
                 case SFX_Type.levelUp:
-                    sfxAudioSource.pitch = Random.Range(1,1.6f);
+                    sfxAudioSource.pitch = Random.Range(0.9f,1.3f);
                     PlaySFXSound(sfxAudioClips[4], sfxAudioSource);
                     break;
                 case SFX_Type.buttonClick:

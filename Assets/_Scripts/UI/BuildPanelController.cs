@@ -51,14 +51,16 @@ namespace UI
             SaveButtonImagesComponent();
             _buttonDefaultSprite = _buttonImages[BuildManager.BuildingType.road].sprite;
             _openPanelRectTransformTMP = openPanelButton.GetComponentInChildren<TMP_Text>().GetComponent<RectTransform>();
-            AnimateUI.OnShowAnimationCompleted += RotateOpenButton;
-            AnimateUI.OnHideAnimationCompleted += RotateOpenButton;
+            OwnAnimateUI.OnShowAnimationPlay += RotateOpenButton;
+            OwnAnimateUI.OnHideAnimationPlay += RotateOpenButton;
+            OwnAnimateUI.OnHideAnimationCompleted += ToggleActiveBuilding;
         }
         
         private void OnDestroy()
         {
-            AnimateUI.OnShowAnimationCompleted -= RotateOpenButton;
-            AnimateUI.OnHideAnimationCompleted -= RotateOpenButton;
+            OwnAnimateUI.OnShowAnimationPlay -= RotateOpenButton;
+            OwnAnimateUI.OnHideAnimationPlay -= RotateOpenButton;
+            OwnAnimateUI.OnHideAnimationCompleted -= ToggleActiveBuilding;
         }
 
         #endregion
@@ -67,13 +69,21 @@ namespace UI
 
         private void TogglePanel()
         {
-            if(AnimateUI.IsOpen) AnimateUI.Hide();
-            else AnimateUI.Show();
+            if (OwnAnimateUI.IsOpen)
+            {
+                OwnAnimateUI.Hide();
+                UIManagerInGame.Instance.ChangeHUDPanel(UIManagerInGame.HUDPanels.none);
+            }
+            else
+            {
+                UIManagerInGame.Instance.ChangeHUDPanel(UIManagerInGame.HUDPanels.buildPanel);
+                PointAndClickManager.DisableCurrentLineRendererSelected();
+            }
         }
 
         private void RotateOpenButton()
         {
-            _openPanelRectTransformTMP.rotation = Quaternion.Euler(0, 0, AnimateUI.IsOpen ? 180 : 0);
+            _openPanelRectTransformTMP.rotation = Quaternion.Euler(0, 0, OwnAnimateUI.IsOpen ? 180 : 0);
         }
         
         private void SetPricesInBuildPanel()
@@ -97,14 +107,23 @@ namespace UI
 
         private void ToggleBuildingType(BuildManager.BuildingType type)
         {
+            AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buttonClick);
             // Reset previous active button (if any)
-            if (BuildManager.Instance.ActiveBuildingType != BuildManager.BuildingType.none)
+            if (BuildManager.ActiveBuildingType != BuildManager.BuildingType.none)
             {
-                _buttonImages[BuildManager.Instance.ActiveBuildingType].sprite = _buttonDefaultSprite;
+                _buttonImages[BuildManager.ActiveBuildingType].sprite = _buttonDefaultSprite;
             }
     
             // Toggle the building type and update the button visual
-            var isActive = BuildManager.Instance.ToggleBuilding(type);
+            var isActive = BuildManager.ToggleBuilding(type);
+            _buttonImages[type].sprite = isActive ? buttonPressedSprite : _buttonDefaultSprite;
+        }
+        
+        private void ToggleActiveBuilding()
+        {
+            if (BuildManager.ActiveBuildingType == BuildManager.BuildingType.none) return;
+            var type = BuildManager.ActiveBuildingType;
+            var isActive = BuildManager.ToggleBuilding(BuildManager.ActiveBuildingType);
             _buttonImages[type].sprite = isActive ? buttonPressedSprite : _buttonDefaultSprite;
         }
         

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Buildings;
 using Utilities;
@@ -21,7 +22,7 @@ namespace Managers
         [SerializeField] private float policePrice;
 
         [SerializeField] private float playgroundPrice;
-        
+
         #endregion
 
         #region Public Variables
@@ -33,7 +34,8 @@ namespace Managers
         public float PlaygroundPrice => playgroundPrice;
         public float YBuilding => yBuilding;
 
-        public BuildingType ActiveBuildingType { get; private set; }
+        public static BuildingType ActiveBuildingType { get; private set; }
+        public static bool IsBuilding => ActiveBuildingType != BuildingType.none;
 
         public bool IsFirstRoadBuild
         {
@@ -67,24 +69,51 @@ namespace Managers
 
         #region Public Methods
 
-        public void SetCurrentTile(GameObject tile)
-        {
-            _currentTile = tile;
-        }
-
-        public bool ToggleBuilding(BuildingType type)
+        public static bool ToggleBuilding(BuildingType type)
         {
             if (type == ActiveBuildingType)
             {
                 ActiveBuildingType = BuildingType.none;
                 return false;
             }
+
             ActiveBuildingType = type;
             return true;
         }
-        public void BuildRoad()
+
+        public void BuildBuilding(GameObject tile)
         {
-            AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buttonClick);
+            _currentTile = tile;
+            switch (ActiveBuildingType)
+            {
+                case BuildingType.none:
+                    break;
+                case BuildingType.house:
+                    BuildHouse();
+                    break;
+                case BuildingType.playground:
+                    BuildPlayground();
+                    break;
+                case BuildingType.hospital:
+                    BuildHospital();
+                    break;
+                case BuildingType.police:
+                    BuildPolice();
+                    break;
+                case BuildingType.road:
+                    BuildRoad();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private void BuildRoad()
+        {
             if (ResourcesManager.Instance.CurrentGold >= roadPrice)
             {
                 //Check if is possible to build a road
@@ -99,7 +128,6 @@ namespace Managers
 
                         MapManager.Instance.NavMeshSurface.BuildNavMesh();
 
-                        UIManagerInGame.Instance.ShowBuildPanel(false);
                         ResourcesManager.Instance.AddGold((int)-roadPrice);
                         _isFirstRoadBuild = true;
                     }
@@ -121,7 +149,6 @@ namespace Managers
                         MapManager.Instance.NavMeshSurface
                             .UpdateNavMesh(MapManager.Instance.NavMeshSurface.navMeshData);
 
-                        UIManagerInGame.Instance.ShowBuildPanel(false);
                         ResourcesManager.Instance.AddGold((int)-roadPrice);
                         return;
                     }
@@ -135,9 +162,8 @@ namespace Managers
             }
         }
 
-        public void BuildHouse()
+        private void BuildHouse()
         {
-            AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buttonClick);
             if (ResourcesManager.Instance.CurrentGold >= housePrice)
             {
                 var neighbours = MapManager.Instance.Get4Neighbours(_currentTile, BuildingType.road);
@@ -145,23 +171,22 @@ namespace Managers
                 {
                     var tilePosition = MapManager.Instance.TilePosition(_currentTile.transform.position.x, _currentTile.transform.position.z);
                     var rotation = CalculateRotation(neighbours, tilePosition);
-                    BuildBuilding((int)tilePosition.x, (int)tilePosition.y, BuildingType.house, rotation);
+                    BuildBuildingAtMapTile((int)tilePosition.x, (int)tilePosition.y, BuildingType.house, rotation);
                     _currentTile.GetComponent<BuildType>().type = BuildingType.house;
                     ResourcesManager.Instance.AddGold((int)-housePrice);
-                    UIManagerInGame.Instance.ShowBuildPanel(false);
-                    PointAndClickManager.Instance.DisableCurrentLineRendererSelected();
+                    PointAndClickManager.DisableCurrentLineRendererSelected();
                     return;
                 }
 
                 UIManagerInGame.Instance.ShowRoadNotConnectedToBuildingFeedback();
+                return;
             }
 
             UIManagerInGame.Instance.ShowNotEnoughGoldFeedback();
         }
 
-        public void BuildPlayground()
+        private void BuildPlayground()
         {
-            AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buttonClick);
             if (ResourcesManager.Instance.CurrentGold >= playgroundPrice)
             {
                 var neighbours = MapManager.Instance.Get4Neighbours(_currentTile, BuildingType.road);
@@ -170,22 +195,21 @@ namespace Managers
                     var tilePosition = MapManager.Instance.TilePosition(_currentTile.transform.position.x,
                         _currentTile.transform.position.z);
                     var rotation = CalculateRotation(neighbours, tilePosition);
-                    BuildBuilding((int)tilePosition.x, (int)tilePosition.y, BuildingType.playground, rotation);
+                    BuildBuildingAtMapTile((int)tilePosition.x, (int)tilePosition.y, BuildingType.playground, rotation);
                     _currentTile.GetComponent<BuildType>().type = BuildingType.playground;
                     ResourcesManager.Instance.AddGold((int)-playgroundPrice);
-                    UIManagerInGame.Instance.ShowBuildPanel(false);
                     return;
                 }
 
                 UIManagerInGame.Instance.ShowRoadNotConnectedToBuildingFeedback();
+                return;
             }
 
             UIManagerInGame.Instance.ShowNotEnoughGoldFeedback();
         }
 
-        public void BuildHospital()
+        private void BuildHospital()
         {
-            AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buttonClick);
             if (ResourcesManager.Instance.CurrentGold >= hospitalPrice)
             {
                 var neighbours = MapManager.Instance.Get4Neighbours(_currentTile, BuildingType.road);
@@ -194,22 +218,21 @@ namespace Managers
                     var tilePosition = MapManager.Instance.TilePosition(_currentTile.transform.position.x,
                         _currentTile.transform.position.z);
                     var rotation = CalculateRotation(neighbours, tilePosition);
-                    BuildBuilding((int)tilePosition.x, (int)tilePosition.y, BuildingType.hospital, rotation);
+                    BuildBuildingAtMapTile((int)tilePosition.x, (int)tilePosition.y, BuildingType.hospital, rotation);
                     _currentTile.GetComponent<BuildType>().type = BuildingType.hospital;
                     ResourcesManager.Instance.AddGold((int)-hospitalPrice);
-                    UIManagerInGame.Instance.ShowBuildPanel(false);
                     return;
                 }
 
                 UIManagerInGame.Instance.ShowRoadNotConnectedToBuildingFeedback();
+                return;
             }
 
             UIManagerInGame.Instance.ShowNotEnoughGoldFeedback();
         }
 
-        public void BuildPolice()
+        private void BuildPolice()
         {
-            AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buttonClick);
             if (ResourcesManager.Instance.CurrentGold >= policePrice)
             {
                 var neighbours = MapManager.Instance.Get4Neighbours(_currentTile, BuildingType.road);
@@ -218,22 +241,18 @@ namespace Managers
                     var tilePosition = MapManager.Instance.TilePosition(_currentTile.transform.position.x,
                         _currentTile.transform.position.z);
                     var rotation = CalculateRotation(neighbours, tilePosition);
-                    BuildBuilding((int)tilePosition.x, (int)tilePosition.y, BuildingType.police, rotation);
+                    BuildBuildingAtMapTile((int)tilePosition.x, (int)tilePosition.y, BuildingType.police, rotation);
                     _currentTile.GetComponent<BuildType>().type = BuildingType.police;
                     ResourcesManager.Instance.AddGold((int)-policePrice);
-                    UIManagerInGame.Instance.ShowBuildPanel(false);
                     return;
                 }
 
                 UIManagerInGame.Instance.ShowRoadNotConnectedToBuildingFeedback();
+                return;
             }
 
             UIManagerInGame.Instance.ShowNotEnoughGoldFeedback();
         }
-
-        #endregion
-
-        #region Private Methods
 
         private static Quaternion CalculateRotation(List<GameObject> vecinos, Vector2 position)
         {
@@ -267,7 +286,7 @@ namespace Managers
             return Quaternion.identity;
         }
 
-        private void BuildBuilding(int i, int j, BuildingType type, Quaternion rotation)
+        private void BuildBuildingAtMapTile(int i, int j, BuildingType type, Quaternion rotation)
         {
             AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buildBuilding);
             var newBuilding = Instantiate(buildingsPrefab[(int)type - 1], MapManager.Instance.MapTiles[i, j].transform);
@@ -276,7 +295,7 @@ namespace Managers
             newBuilding.transform.rotation = rotation;
             newBuilding.name = type + "[" + i + ", " + j + "]";
         }
-        
+
         #endregion
     }
 }

@@ -61,7 +61,7 @@ namespace UI
             levelUpLocalizedString.StringChanged += UpdateLevelUpButtonString;
             destroyLocalizedString.StringChanged += UpdateDestroyButtonTMP;
 
-            AnimateUI.OnShowAnimationPlay += ConfigureHousePanel;
+            OwnAnimateUI.OnShowAnimationPlay += ConfigureHousePanel;
         }
 
         private void OnDestroy()
@@ -70,7 +70,7 @@ namespace UI
             levelUpLocalizedString.StringChanged -= UpdateLevelUpButtonString;
             destroyLocalizedString.StringChanged -= UpdateDestroyButtonTMP;
             
-            AnimateUI.OnShowAnimationPlay -= ConfigureHousePanel;
+            OwnAnimateUI.OnShowAnimationPlay -= ConfigureHousePanel;
         }
 
         #endregion
@@ -79,10 +79,10 @@ namespace UI
 
         public void ConfigureHousePanel(HouseFunctionality house)
         {
-            // If hit same house just ignore
-            if (_house.IsNotNull() && _house.gameObject.name.Equals(house.gameObject.name)) return;
-            
+            // If hit same house when is opened just ignore
+            if (OwnAnimateUI.IsOpen && _house.IsNotNull() && _house.gameObject.name.Equals(house.gameObject.name)) return;
             _house = house;
+            UIManagerInGame.Instance.ChangeHUDPanel(UIManagerInGame.HUDPanels.housePanel);
         }
         
         #endregion

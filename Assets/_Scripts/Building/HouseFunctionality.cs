@@ -2,6 +2,7 @@ using System;
 using Residents;
 using Managers;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace Buildings
@@ -10,9 +11,9 @@ namespace Buildings
     {
         #region Inspector Variables
 
-        [SerializeField] private Light[] Lights;
-        [Range(1, 50)] [SerializeField] private int MinSecondsBetweenHabitantes;
-        [Range(2, 100)] [SerializeField] private int MaxSecondsBetweenHabitantes;
+        [FormerlySerializedAs("Lights")] [SerializeField] private Light[] lights;
+        [FormerlySerializedAs("MinSecondsBetweenHabitantes")] [Range(1, 50)] [SerializeField] private int minSecondsBetweenHabitantes;
+        [FormerlySerializedAs("MaxSecondsBetweenHabitantes")] [Range(2, 100)] [SerializeField] private int maxSecondsBetweenHabitantes;
 
         #endregion
 
@@ -58,7 +59,7 @@ namespace Buildings
             CurrentGoldPerSecond = 0;
             MaxInhabitants = 1;
             LevelPrice = (int)(BuildManager.Instance.HousePrice * 2.5f);
-            BuildingsManager.Instance.AddCasa();
+            BuildingsManager.Instance.AddHouse();
         }
         
         private void Update()
@@ -142,6 +143,11 @@ namespace Buildings
             ResourcesManager.Instance.AddGoldPerSecond((CurrentGoldPerSecond * Multiplier));
         }
 
+        public override string ToString()
+        {
+            return $"{gameObject.name}: Level {Level}, Inhabitants: {Inhabitants}, Current Gold Per Second: {CurrentGoldPerSecond}, Max Inhabitants: {MaxInhabitants}, Level Price: {LevelPrice}, Costs per second: {CostsPerSecond}";
+        }
+
         #endregion
 
         #region Private Methods
@@ -151,7 +157,7 @@ namespace Buildings
             if (_timerToSpawnHabitante < 0)
             {
                 InhabitantsManager.Instance.SummonHabitante(transform.gameObject);
-                _secondsBetweenSpawns = Random.Range(MinSecondsBetweenHabitantes, MaxSecondsBetweenHabitantes);
+                _secondsBetweenSpawns = Random.Range(minSecondsBetweenHabitantes, maxSecondsBetweenHabitantes);
                 _timerToSpawnHabitante = _secondsBetweenSpawns;
             }
             else
@@ -170,7 +176,7 @@ namespace Buildings
 
         private void UpdateLight(Color c)
         {
-            var l = Lights[_currentLight];
+            var l = lights[_currentLight];
             _currentLight++;
             l.color = c;
             l.enabled = true;

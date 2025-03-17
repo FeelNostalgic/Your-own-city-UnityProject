@@ -81,10 +81,10 @@ namespace Controllers
             if (Input.GetMouseButtonDown(1))
             {
                 Cursor.lockState = CursorLockMode.Locked;
-                PointAndClickManager.Instance.DisableCurrentLineRendererSelected();
                 Cursor.visible = false;
+                PointAndClickManager.DisableCurrentLineRendererSelected();
+                UIManagerInGame.Instance.DisableAllPanels();
                 _canNavigate = true;
-                UIManagerInGame.Instance.ShowBuildPanel(false);
             }
 
             if (!Input.GetMouseButtonUp(1)) return;
