@@ -30,6 +30,7 @@ namespace UI
         #region Public Variables
 
         public float Duration => duration;
+        public bool IsOpen { get; private set; }
         
         public event Action OnShowAnimationPlay;
         public event Action OnShowAnimationCompleted;
@@ -87,7 +88,11 @@ namespace UI
             }
 
             sequence.OnPlay(() => OnShowAnimationPlay?.Invoke())
-                .OnComplete(() => OnShowAnimationCompleted?.Invoke());
+                .OnComplete(() =>
+                {
+                    IsOpen = true;
+                    OnShowAnimationCompleted?.Invoke();
+                });
 
             sequence.Play();
         }
@@ -112,6 +117,7 @@ namespace UI
             sequence.OnPlay(() => OnHideAnimationPlay?.Invoke());
             sequence.OnComplete(() =>
             {
+                IsOpen = false;
                 gameObject.SetActive(true);
                 OnHideAnimationCompleted?.Invoke();
             });

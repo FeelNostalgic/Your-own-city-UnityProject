@@ -33,6 +33,8 @@ namespace Managers
         public float PlaygroundPrice => playgroundPrice;
         public float YBuilding => yBuilding;
 
+        public BuildingType ActiveBuildingType { get; private set; }
+
         public bool IsFirstRoadBuild
         {
             set => _isFirstRoadBuild = value;
@@ -70,6 +72,16 @@ namespace Managers
             _currentTile = tile;
         }
 
+        public bool ToggleBuilding(BuildingType type)
+        {
+            if (type == ActiveBuildingType)
+            {
+                ActiveBuildingType = BuildingType.none;
+                return false;
+            }
+            ActiveBuildingType = type;
+            return true;
+        }
         public void BuildRoad()
         {
             AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buttonClick);

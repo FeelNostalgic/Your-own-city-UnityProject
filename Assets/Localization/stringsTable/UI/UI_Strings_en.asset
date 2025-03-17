@@ -119,7 +119,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 117094204829696
-    m_Localized: DESTROY (+{DestroyPrice})
+    m_Localized: DEMOLISH (+{DestroyPrice})
     m_Metadata:
       m_Items:
       - rid: 6115692955032617045
@@ -164,6 +164,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 515535414226944
     m_Localized: MAX LEVEL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 787866409758720
+    m_Localized: DEMOLISH
     m_Metadata:
       m_Items: []
   references:
