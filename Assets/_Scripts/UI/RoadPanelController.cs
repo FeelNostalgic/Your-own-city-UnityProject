@@ -30,7 +30,7 @@ namespace UI
 			destroyLocalizedString.Arguments = new object[] { this };
 			destroyLocalizedString.StringChanged += UpdateString;
 			
-			destroyRoadButton.onClick.AddListener(delegate { MapManager.Instance.DestroyRoad(); });
+			destroyRoadButton.onClick.AddListener(MapManager.Instance.DemolishRoad);
 		}
 
 		private void OnDestroy()
@@ -41,7 +41,7 @@ namespace UI
 		#endregion
 		
 		#region Private Methods
-
+		
 		private void UpdateString(string s)
 		{
 			destroyRoadTMP.text = s;

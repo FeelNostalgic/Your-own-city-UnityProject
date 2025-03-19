@@ -219,6 +219,14 @@ namespace Managers
             InfoMultiplierDemolerText.text = "DEMOLER (+" + (int)(price * 0.8 * currentLevel) + ")";
         }
 
+        public void DisableAllHUDExceptBuildPanel()
+        {
+            if (_currentHUDPanel == HUDPanels.buildPanel) return;
+            roadPanel.HidePanel();
+            housePanel.HidePanel();
+            // InfoMultiplierPanel.SetActive(false);
+        }
+
         public void DisableAllPanels()
         {
             // TODO
@@ -293,7 +301,7 @@ namespace Managers
         public void RestartButton()
         {
             PlayClickSound();
-            MapManager.Instance.DestroyAll();
+            MapManager.Instance.DestroyAllMap();
             BuildingsManager.Instance.RestartBuildings();
             ResourcesManager.Instance.RestartAllInfo();
             InitializeGame();
@@ -381,7 +389,7 @@ namespace Managers
             switch (newPanel)
             {
                 case HUDPanels.buildPanel:
-                    if(_currentActiveHUDPanel) _currentActiveHUDPanel.HidePanel();
+                    if (_currentActiveHUDPanel) _currentActiveHUDPanel.HidePanel();
                     buildPanel.ShowPanel();
                     _currentActiveHUDPanel = buildPanel;
                     break;
@@ -405,7 +413,7 @@ namespace Managers
         private IEnumerator HideLastPanelAndWaitToShowNew()
         {
             //Hide last
-            if(_currentActiveHUDPanel) _currentActiveHUDPanel.HidePanel();
+            if (_currentActiveHUDPanel) _currentActiveHUDPanel.HidePanel();
             var timeToWait = _currentActiveHUDPanel ? _currentActiveHUDPanel.TimeBetweenAnimations : 0;
             yield return new WaitForSeconds(timeToWait);
             //Show current

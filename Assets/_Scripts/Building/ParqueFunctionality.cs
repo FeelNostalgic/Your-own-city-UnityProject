@@ -90,7 +90,7 @@ namespace Buildings
         public void Demoler()
         {
             AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buttonClick);
-            AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.detroyBuilding);
+            AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.demolishBuilding);
             ResourcesManager.Instance.AddGold((int)(BuildManager.Instance.PlaygroundPrice * 0.8f * _currentLevel));
             ResourcesManager.Instance.AddCosts(-_gastosPorSegundo);
             UpdateMultiplicadorCurrentVecinos(-(_currentMultiplicador - 1));

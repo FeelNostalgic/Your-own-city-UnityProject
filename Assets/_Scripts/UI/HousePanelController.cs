@@ -110,11 +110,11 @@ namespace UI
             }
 
             houseLevelUpButton.onClick.RemoveAllListeners();
-            houseLevelUpButton.onClick.AddListener(_house.LevelUp);
+            houseLevelUpButton.onClick.AddListener(LevelUpHouse);
 
             DestroyPrice = (int)(BuildManager.Instance.HousePrice * 0.8f * _house.Level);
             houseDestroyButton.onClick.RemoveAllListeners();
-            houseDestroyButton.onClick.AddListener(_house.DestroyHouse);
+            houseDestroyButton.onClick.AddListener(DemolishHouse);
             
             levelLocalizedString.RefreshString();
             levelUpLocalizedString.RefreshString();
@@ -130,6 +130,18 @@ namespace UI
             houseCostsPerSecondTMP.text = _house.CostsPerSecond.ToString();
             houseMultiplierTMP.text = "X" + _house.Multiplier.ToString(CultureInfo.InvariantCulture).Replace(",", ".");
             houseGoldPerSecondTMP.text = ((int)(_house.CurrentGoldPerSecond * _house.Multiplier)).ToString();
+        }
+
+        private void DemolishHouse()
+        {
+            AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buttonClick);
+            _house.Demolish();
+        }
+
+        private void LevelUpHouse()
+        {
+            AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buttonClick);
+            _house.LevelUp();
         }
         
         private void UpdateHouseLevel()

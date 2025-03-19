@@ -25,7 +25,7 @@ namespace Managers
 
         public enum SFX_Type
         {
-            buildBuilding, newResident, detroyBuilding, clickOnMap, levelUp, buttonClick, GameOver
+            buildBuilding, newResident, demolishBuilding, clickOnMap, levelUp, buttonClick, GameOver
         }
         #endregion
 
@@ -61,7 +61,7 @@ namespace Managers
                     sfxAudioSource.pitch = Random.Range(0.9f,1.3f);
                     PlaySFXSound(sfxAudioClips[1], sfxAudioSource);
                     break;
-                case SFX_Type.detroyBuilding:
+                case SFX_Type.demolishBuilding:
                     sfxAudioSource.pitch = Random.Range(0.9f,1.3f);
                     PlaySFXSound(sfxAudioClips[2], sfxAudioSource);
                     break;

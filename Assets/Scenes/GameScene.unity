@@ -5860,7 +5860,7 @@ GameObject:
   - component: {fileID: 538839036}
   - component: {fileID: 538839035}
   m_Layer: 5
-  m_Name: DestroyButton
+  m_Name: DemolishButtonPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6402,7 +6402,7 @@ GameObject:
   - component: {fileID: 629834896}
   - component: {fileID: 629834895}
   m_Layer: 5
-  m_Name: DestroyButton
+  m_Name: DemolishButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15937,7 +15937,7 @@ GameObject:
   - component: {fileID: 1638220052}
   - component: {fileID: 1638220051}
   m_Layer: 5
-  m_Name: DestroyButtonTMP
+  m_Name: DemolishButtonTMP
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -19836,8 +19836,8 @@ MonoBehaviour:
   mapParent: {fileID: 110102398}
   borderSize: 8
   borderParent: {fileID: 301473177}
-  MinNumDecoration: 60
-  MaxNumDecoration: 100
+  minNumDecoration: 60
+  maxNumDecoration: 100
   decorationGameObjectsList:
   - {fileID: 133315574343518775, guid: c686f3c752f87d64eb6c6f40523de77c, type: 3}
   - {fileID: 4043545458002573737, guid: 54d33b1665ac2ec40b8139df73558063, type: 3}
@@ -19848,12 +19848,12 @@ MonoBehaviour:
   - {fileID: 8904033633966870613, guid: 26c87ad6afa8286449fe523aeb061137, type: 3}
   - {fileID: 2557980090441809142, guid: a53780873dbbaa0468746781308097a3, type: 3}
   roadParent: {fileID: 1433732830}
-  x_Offset: 7.4
-  z_Offset: 7.44
-  tiles:
-  - {fileID: 6668447304161390209, guid: 753bfb46c5ac8854f9211abe09f0bd35, type: 3}
-  - {fileID: 7262446258781504982, guid: 29752be4eb6b52d4f9fdd82710a25328, type: 3}
-  - {fileID: 3217078993687623953, guid: e028e76dfda22cc4e92bf38fda0a3f50, type: 3}
+  xOffset: 7.4
+  zOffset: 7.44
+  baseTilePrefab: {fileID: 6668447304161390209, guid: 753bfb46c5ac8854f9211abe09f0bd35, type: 3}
+  borderTilePrefab: {fileID: 7262446258781504982, guid: 29752be4eb6b52d4f9fdd82710a25328, type: 3}
+  baseMaterial: {fileID: 2100000, guid: 2a9115627ed3ff24aaf045ed03059692, type: 2}
+  roadMaterial: {fileID: 2100000, guid: 610d9c5cab35028438ff29aa3b6abecd, type: 2}
 --- !u!1 &1997940476
 GameObject:
   m_ObjectHideFlags: 0
@@ -20429,6 +20429,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buttonPressedSprite: {fileID: 21300002, guid: 997c5c17c1c4b8e45b6a1c47799ddeb0, type: 3}
   openPanelButton: {fileID: 1491531890}
+  demolishButton: {fileID: 629834895}
   roadButton: {fileID: 1580529252}
   houseButton: {fileID: 1089817044}
   playgroundButton: {fileID: 606469585}

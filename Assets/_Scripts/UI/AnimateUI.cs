@@ -72,6 +72,7 @@ namespace UI
 
         public void Show()
         {
+            if (IsOpen) return;
             gameObject.SetActive(true);
             var sequence = DOTween.Sequence();
 
@@ -99,9 +100,9 @@ namespace UI
 
         public void Hide()
         {
+            if (!IsOpen) return;
             var sequence = DOTween.Sequence();
-
-
+            
             if (animatePosition)
             {
                 sequence.Append(_rectTransform.DOAnchorPos(startPosition, duration)

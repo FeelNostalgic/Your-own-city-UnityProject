@@ -35,8 +35,8 @@ namespace Managers
         public float YBuilding => yBuilding;
 
         public static BuildingType ActiveBuildingType { get; private set; }
-        public static bool IsBuilding => ActiveBuildingType != BuildingType.none;
-
+        public static BuildingStatus Status { get; private set; }
+        
         public bool IsFirstRoadBuild
         {
             set => _isFirstRoadBuild = value;
@@ -50,6 +50,11 @@ namespace Managers
             hospital,
             police,
             road
+        }
+
+        public enum BuildingStatus
+        {
+            none, demolishing, building
         }
 
         #endregion
@@ -73,12 +78,23 @@ namespace Managers
         {
             if (type == ActiveBuildingType)
             {
+                Debug.Log("Building is not active");
+                Status = BuildingStatus.none;
                 ActiveBuildingType = BuildingType.none;
                 return false;
             }
-
+            
+            Debug.Log($"Building is active with {type}");
+            Status = BuildingStatus.building;
             ActiveBuildingType = type;
             return true;
+        }
+        
+        public static bool ToggleDemolish()
+        {
+            Status = Status == BuildingStatus.demolishing ? BuildingStatus.none : BuildingStatus.demolishing;
+
+            return Status == BuildingStatus.demolishing;
         }
 
         public void BuildBuilding(GameObject tile)
@@ -123,11 +139,8 @@ namespace Managers
                     var tilePosition = MapManager.Instance.TilePosition(_currentTile.transform.position.x, _currentTile.transform.position.z);
                     if (tilePosition.x == 0 && Mathf.Approximately(tilePosition.y, MapManager.Instance.RoadZ))
                     {
-                        var newTile = MapManager.Instance.BuildRoadAtMap((int)tilePosition.x, (int)tilePosition.y);
+                        var newTile = MapManager.Instance.ChangeTileToRoad((int)tilePosition.x, (int)tilePosition.y);
                         newTile.GetComponent<BuildType>().type = BuildingType.road;
-
-                        MapManager.Instance.NavMeshSurface.BuildNavMesh();
-
                         ResourcesManager.Instance.AddGold((int)-roadPrice);
                         _isFirstRoadBuild = true;
                     }
@@ -143,7 +156,7 @@ namespace Managers
                     {
                         var tilePosition = MapManager.Instance.TilePosition(_currentTile.transform.position.x,
                             _currentTile.transform.position.z);
-                        var newTile = MapManager.Instance.BuildRoadAtMap((int)tilePosition.x, (int)tilePosition.y);
+                        var newTile = MapManager.Instance.ChangeTileToRoad((int)tilePosition.x, (int)tilePosition.y);
                         newTile.GetComponent<BuildType>().type = BuildingType.road;
 
                         MapManager.Instance.NavMeshSurface

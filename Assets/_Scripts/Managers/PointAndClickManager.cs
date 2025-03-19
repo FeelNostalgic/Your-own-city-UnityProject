@@ -7,7 +7,13 @@ namespace Managers
 {
     public class PointAndClickManager : MonoBehaviourSinglenton<PointAndClickManager>
     {
+        #region Inspector Variables
+
         [SerializeField] private LayerMask layerHitable;
+        
+        #endregion
+        
+        #region Private Variables
 
         private Camera _mainCamera; //Cached camera
         private Ray _ray;
@@ -15,18 +21,15 @@ namespace Managers
         private static LineRendererHighlight _currentHighlightedLineRenderer;
         private static LineRendererHighlight _selectedLineRenderer;
 
+        #endregion
+        
         #region Unity Methods
 
         private void Awake()
         {
             _mainCamera = Helpers.Camera;
         }
-
-        private void Start()
-        {
-            MapManager.OnTileDelete += OnTileDeleted;
-        }
-
+        
         private void Update()
         {
             if (GameManager.CurrentGameState == GameState.Playing)
@@ -87,6 +90,7 @@ namespace Managers
                     _currentHighlightedLineRenderer = newLineRenderer;
                     return;
                 case LineRendererHighlight.HighlightType.highlighted:
+                    _currentHighlightedLineRenderer.UpdateColor();
                     return;
                 case LineRendererHighlight.HighlightType.none:
                     _currentHighlightedLineRenderer?.Unhighlight();
@@ -103,19 +107,26 @@ namespace Managers
             if (!_hit.collider.TryGetComponent<LineRendererHighlight>(out var newLineRenderer)) return;
             var buildType = _hit.collider.GetComponent<BuildType>().type;
 
-            if (BuildManager.IsBuilding)
+            switch (BuildManager.Status)
             {
-                if (buildType != BuildManager.BuildingType.none) return;
-                BuildManager.Instance.BuildBuilding(_hit.collider.gameObject);
-            }
-            else
-            {
-                if (buildType == BuildManager.BuildingType.none) return;
-                if (HasSelectedTileChanged(newLineRenderer)) ShowSelectedTileInfo(buildType);
+                case BuildManager.BuildingStatus.building:
+                    if (buildType != BuildManager.BuildingType.none) return;
+                    BuildManager.Instance.BuildBuilding(_hit.collider.gameObject);
+                    break;
+                case BuildManager.BuildingStatus.demolishing:
+                    if (buildType == BuildManager.BuildingType.none) return;
+                    MapManager.Instance.DemolishBuilding(buildType, _hit.collider.gameObject);
+                    break;
+                case BuildManager.BuildingStatus.none:
+                    if (buildType == BuildManager.BuildingType.none) return;
+                    if (HasSelectedTileChanged(newLineRenderer)) ShowSelectedTileInfo(buildType);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 
-        private bool HasSelectedTileChanged(LineRendererHighlight newLineRenderer)
+        private static bool HasSelectedTileChanged(LineRendererHighlight newLineRenderer)
         {
             if (newLineRenderer.HighlightState == LineRendererHighlight.HighlightType.selected) return false;
             AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.clickOnMap);
@@ -168,13 +179,7 @@ namespace Managers
                     break;
             }
         }
-
-        private void OnTileDeleted(GameObject obj)
-        {
-            _selectedLineRenderer = null;
-            _currentHighlightedLineRenderer = null;
-        }
-
+        
         #endregion
     }
 }
