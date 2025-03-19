@@ -205,8 +205,7 @@ namespace Managers
                 var neighbours = MapManager.Instance.Get4Neighbours(_currentTile, BuildingType.road);
                 if (neighbours.Count > 0)
                 {
-                    var tilePosition = MapManager.Instance.TilePosition(_currentTile.transform.position.x,
-                        _currentTile.transform.position.z);
+                    var tilePosition = MapManager.Instance.TilePosition(_currentTile.transform.position.x, _currentTile.transform.position.z);
                     var rotation = CalculateRotation(neighbours, tilePosition);
                     BuildBuildingAtMapTile((int)tilePosition.x, (int)tilePosition.y, BuildingType.playground, rotation);
                     _currentTile.GetComponent<BuildType>().type = BuildingType.playground;
@@ -303,8 +302,7 @@ namespace Managers
         {
             AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buildBuilding);
             var newBuilding = Instantiate(buildingsPrefab[(int)type - 1], MapManager.Instance.MapTiles[i, j].transform);
-            newBuilding.transform.position = new Vector3(newBuilding.transform.position.x, yBuilding,
-                newBuilding.transform.position.z);
+            newBuilding.transform.position = new Vector3(newBuilding.transform.position.x, yBuilding, newBuilding.transform.position.z);
             newBuilding.transform.rotation = rotation;
             newBuilding.name = type + "[" + i + ", " + j + "]";
         }

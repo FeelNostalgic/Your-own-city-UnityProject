@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Buildings
 {
-    public class BuildingsManager : MonoBehaviourSinglenton<BuildingsManager>
+    public class BuildingsManager : Singlenton<BuildingsManager>
     {
         #region Inspector Variables
 
@@ -12,9 +12,9 @@ namespace Buildings
 
         #region Public Variables
 
-        [HideInInspector] public List<ParqueFunctionality> Parques;
-        [HideInInspector] public List<HospitalFunctionality> Hospitales;
-        [HideInInspector] public List<PoliciaFunctionality> Policia;
+        public List<PlaygroundFunctionality> Playgrounds { get; private set; } = new();
+        public List<HospitalFunctionality> Hospitals { get; private set; } = new();
+        public List<PoliceFunctionality> Police { get; private set; } = new();
 
         #endregion
 
@@ -23,52 +23,52 @@ namespace Buildings
         #endregion
 
         #region Unity Methods
-
+        
         #endregion
 
         #region Public Methods
 
         public void AddHouse()
         {
-            foreach (var p in Parques)
+            foreach (var p in Playgrounds)
             {
-                p.UpdateMultiplicadorNewVecinos();
+                p.UpdateMultiplierNewNeighbours();
             }
 
-            foreach (var h in Hospitales)
+            foreach (var h in Hospitals)
             {
-                h.UpdateMultiplicadorNewVecinos();
+                h.UpdateMultiplierNewNeighbours();
             }
 
-            foreach (var p in Policia)
+            foreach (var p in Police)
             {
-                p.UpdateMultiplicadorNewVecinos();
+                p.UpdateMultiplierNewNeighbours();
             }
         }
 
         public void RemoveCasa(GameObject casa)
         {
-            foreach (var p in Parques)
+            foreach (var p in Playgrounds)
             {
-                p.RemoveCasa(casa);
+                p.RemoveHouseFromAffectedHouses(casa);
             }
 
-            foreach (var h in Hospitales)
+            foreach (var h in Hospitals)
             {
-                h.RemoveCasa(casa);
+                h.RemoveHouseFromAffectedHouses(casa);
             }
 
-            foreach (var p in Policia)
+            foreach (var p in Police)
             {
-                p.RemoveCasa(casa);
+                p.RemoveHouseFromAffectedHouses(casa);
             }
         }
 
         public void RestartBuildings()
         {
-            Parques = new List<ParqueFunctionality>();
-            Hospitales = new List<HospitalFunctionality>();
-            Policia = new List<PoliciaFunctionality>();
+            Playgrounds = new List<PlaygroundFunctionality>();
+            Hospitals = new List<HospitalFunctionality>();
+            Police = new List<PoliceFunctionality>();
         }
 
         #endregion

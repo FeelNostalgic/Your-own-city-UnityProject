@@ -1,440 +1,182 @@
-using System.Collections.Generic;
 using Managers;
 using UnityEngine;
 
 namespace Buildings
 {
-    public class HospitalFunctionality : MonoBehaviour
+    public class HospitalFunctionality : MultiplierBuildingFunctionality
     {
-        #region Inspector Variables
-
-        [SerializeField] private Light[] Lights;
-        [SerializeField] private int GastorPorSegundoIniciales;
-        [SerializeField] private float MultiplicadorInicial;
-        
-        #endregion
-
-        #region Public Variables
-
-        public int Level => _currentLevel;
-        public int GastosPorSegundo => _gastosPorSegundo;
-        public float Multiplicador => _currentMultiplicador;
-        public int AreaEfecto => _areaEfecto;
-        public int CasaAfectadas => _casasAfectadas.Count;
-        public int CosteNivel => _costeNivel;
-
-        #endregion
-
-        #region Private Variables
-
-        private int _currentLevel;
-        private int _gastosPorSegundo;
-        private float _currentMultiplicador;
-        private int _areaEfecto;
-        private int _costeNivel;
-        private List<GameObject> _casasAfectadas;
-        private List<GameObject> _tilesVecinas;
-        private const float MULTIPLIER = 0.3f;
-        private LineRenderer _lineRenderer;
-
-        #endregion
-
         #region Unity Methods
 
-        private void Start()
+        protected override void Start()
         {
-            _lineRenderer = GetComponent<LineRenderer>();
-            BuildingsManager.Instance.Hospitales.Add(this);
-            _casasAfectadas = new List<GameObject>();
-            _tilesVecinas = new List<GameObject>();
-            _currentLevel = 1;
-            _gastosPorSegundo = GastorPorSegundoIniciales;
-            _currentMultiplicador = 1 + MultiplicadorInicial;
-            _areaEfecto = 1;
-            _costeNivel = (int)(BuildManager.Instance.HospitalPrice * 2f);
-            ResourcesManager.Instance.AddCosts(_gastosPorSegundo);
-            UpdateArea();
-            UpdateMultiplicadorNewVecinos();
-            Lights[_currentLevel-1].enabled = true;
+            _buildingPrice = BuildManager.Instance.HospitalPrice;
+            base.Start();
         }
 
         #endregion
 
-        #region Public Methods
+        #region Protected Methods
 
-        public void SubirNivel()
+        protected override void RegisterBuilding()
         {
-            AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buttonClick);
-            if (ResourcesManager.Instance.CurrentGold > _costeNivel)
-            {
-                AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.levelUp);
-                ResourcesManager.Instance.AddGold(-_costeNivel);
-                _areaEfecto++;
-                _currentLevel++;
-                Lights[_currentLevel-1].enabled = true;
-                _costeNivel = (int)(_costeNivel * 2.2f);
-                _currentMultiplicador += MULTIPLIER;
-                ResourcesManager.Instance.AddCosts((int)(_gastosPorSegundo * 0.25f));
-                _gastosPorSegundo = (int)(_gastosPorSegundo * 1.25f);
-                UpdateArea();
-                UpdateMultiplicadorCurrentVecinos(MULTIPLIER);
-                UpdateMultiplicadorNewVecinos();
-                UIManagerInGame.Instance.UpdateInfoMultiplierNivel(_currentLevel, _gastosPorSegundo, _currentMultiplicador,
-                    _areaEfecto, _costeNivel, _casasAfectadas.Count, BuildManager.Instance.HospitalPrice);
-                ShowArea();
-            }
-            else
-            {
-                UIManagerInGame.Instance.ShowNotEnoughGoldFeedback();
-            }
+            BuildingsManager.Instance.Hospitals.Add(this);
         }
 
-        public void Demoler()
+        protected override void UnregisterBuilding()
         {
-            AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buttonClick);
-            AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.demolishBuilding);
-            ResourcesManager.Instance.AddGold((int)(BuildManager.Instance.HospitalPrice * 0.8f * _currentLevel));
-            ResourcesManager.Instance.AddCosts(-_gastosPorSegundo);
-            UpdateMultiplicadorCurrentVecinos(-(_currentMultiplicador - 1));
-            GetComponentInParent<BuildType>().type = BuildManager.BuildingType.none;
-            BuildingsManager.Instance.Hospitales.Remove(this);
-            UIManagerInGame.Instance.DisableAllPanels();
-            Destroy(gameObject);
+            BuildingsManager.Instance.Hospitals.Remove(this);
         }
 
-        public void RemoveCasa(GameObject casa)
-        {
-            if (_casasAfectadas.Contains(casa)) _casasAfectadas.Remove(casa);
-        }
+        #region Build line renderer
 
-        public void UpdateMultiplicadorNewVecinos()
-        {
-            foreach (var v in _tilesVecinas)
-            {
-                if (v != null && v.GetComponent<BuildType>().type == BuildManager.BuildingType.house &&
-                    !_casasAfectadas.Contains(v))
-                {
-                    _casasAfectadas.Add(v);
-                    v.GetComponentInChildren<HouseFunctionality>().UpgradeMultiplier(MULTIPLIER);
-                }
-            }
-        }
-
-        public void UpdateArea()
+        protected override Vector3[] BuildLineRenderer()
         {
             Vector3[] lineRendererPositions = null;
-            switch (_areaEfecto)
+            switch (_effectArea)
             {
                 case 1:
-                    _tilesVecinas = MapManager.Instance.Get8Neighbours(transform.parent.gameObject);
-                    lineRendererPositions = BuildLineRenderer8();
+                    _neighbourTiles = MapManager.Instance.Get8Neighbours(GetParentGameObject());
+                    lineRendererPositions = BuildLineRenderer8Neighbours();
                     break;
                 case 2:
-                    _tilesVecinas = MapManager.Instance.Get12Neightbour(transform.parent.gameObject);
-                    lineRendererPositions = BuildLineRenderer12();
+                    _neighbourTiles = MapManager.Instance.Get12Neightbour(GetParentGameObject());
+                    lineRendererPositions = BuildLineRenderer12Neighbours();
                     break;
                 case 3:
-                    _tilesVecinas = MapManager.Instance.Get25Neighbour(transform.parent.gameObject);
-                    lineRendererPositions = BuildLineRenderer25();
+                    _neighbourTiles = MapManager.Instance.Get25Neighbour(GetParentGameObject());
+                    lineRendererPositions = BuildLineRenderer25Neighbours();
                     break;
             }
 
-            _lineRenderer.SetPositions(lineRendererPositions);
-            HideArea();
+            return lineRendererPositions;
         }
 
-        public void ShowArea()
+        private Vector3[] BuildLineRenderer25Neighbours()
         {
-            _lineRenderer.enabled = true;
-        }
+            _lineRenderer.positionCount = 36;
+            var positions = new Vector3[_lineRenderer.positionCount];
+            var linePositions = new Vector3[4];
+            var i = 0;
+            if (_neighbourTiles[0] != null)
+            {
+                _neighbourTiles[0].GetComponent<LineRenderer>().GetPositions(linePositions);
+                positions[i++] = linePositions[3];
+                positions[i++] = linePositions[0];
+                positions[i++] = linePositions[1];
+            }
 
-        public void HideArea()
-        {
-            _lineRenderer.enabled = false;
+            if (_neighbourTiles[1] != null)
+            {
+                _neighbourTiles[1].GetComponent<LineRenderer>().GetPositions(linePositions);
+                positions[i++] = linePositions[0];
+                positions[i++] = linePositions[1];
+            }
+
+            if (_neighbourTiles[2] != null)
+            {
+                _neighbourTiles[2].GetComponent<LineRenderer>().GetPositions(linePositions);
+                positions[i++] = linePositions[0];
+                positions[i++] = linePositions[1];
+            }
+
+            if (_neighbourTiles[3] != null)
+            {
+                _neighbourTiles[3].GetComponent<LineRenderer>().GetPositions(linePositions);
+                positions[i++] = linePositions[0];
+                positions[i++] = linePositions[1];
+            }
+
+            if (_neighbourTiles[4] != null)
+            {
+                _neighbourTiles[4].GetComponent<LineRenderer>().GetPositions(linePositions);
+                positions[i++] = linePositions[0];
+                positions[i++] = linePositions[1];
+                positions[i++] = linePositions[2];
+            }
+
+            if (_neighbourTiles[9] != null)
+            {
+                _neighbourTiles[9].GetComponent<LineRenderer>().GetPositions(linePositions);
+                positions[i++] = linePositions[1];
+                positions[i++] = linePositions[2];
+            }
+
+            if (_neighbourTiles[14] != null)
+            {
+                _neighbourTiles[14].GetComponent<LineRenderer>().GetPositions(linePositions);
+                positions[i++] = linePositions[1];
+                positions[i++] = linePositions[2];
+            }
+
+            if (_neighbourTiles[19] != null)
+            {
+                _neighbourTiles[19].GetComponent<LineRenderer>().GetPositions(linePositions);
+                positions[i++] = linePositions[1];
+                positions[i++] = linePositions[2];
+            }
+
+            if (_neighbourTiles[24] != null)
+            {
+                _neighbourTiles[24].GetComponent<LineRenderer>().GetPositions(linePositions);
+                positions[i++] = linePositions[1];
+                positions[i++] = linePositions[2];
+                positions[i++] = linePositions[3];
+            }
+
+            if (_neighbourTiles[23] != null)
+            {
+                _neighbourTiles[23].GetComponent<LineRenderer>().GetPositions(linePositions);
+                positions[i++] = linePositions[2];
+                positions[i++] = linePositions[3];
+            }
+
+            if (_neighbourTiles[22] != null)
+            {
+                _neighbourTiles[22].GetComponent<LineRenderer>().GetPositions(linePositions);
+                positions[i++] = linePositions[2];
+                positions[i++] = linePositions[3];
+            }
+
+            if (_neighbourTiles[21] != null)
+            {
+                _neighbourTiles[21].GetComponent<LineRenderer>().GetPositions(linePositions);
+                positions[i++] = linePositions[2];
+                positions[i++] = linePositions[3];
+            }
+
+            if (_neighbourTiles[20] != null)
+            {
+                _neighbourTiles[20].GetComponent<LineRenderer>().GetPositions(linePositions);
+                positions[i++] = linePositions[2];
+                positions[i++] = linePositions[3];
+                positions[i++] = linePositions[0];
+            }
+
+            if (_neighbourTiles[15] != null)
+            {
+                _neighbourTiles[15].GetComponent<LineRenderer>().GetPositions(linePositions);
+                positions[i++] = linePositions[3];
+                positions[i++] = linePositions[0];
+            }
+
+            if (_neighbourTiles[10] != null)
+            {
+                _neighbourTiles[10].GetComponent<LineRenderer>().GetPositions(linePositions);
+                positions[i++] = linePositions[3];
+                positions[i++] = linePositions[0];
+            }
+
+            if (_neighbourTiles[5] != null)
+            {
+                _neighbourTiles[5].GetComponent<LineRenderer>().GetPositions(linePositions);
+                positions[i++] = linePositions[3];
+                positions[i++] = linePositions[0];
+            }
+
+            return positions;
         }
 
         #endregion
-
-        #region Private Methods
-
-        private void UpdateMultiplicadorCurrentVecinos(float m)
-        {
-            foreach (var c in _casasAfectadas)
-            {
-                c.GetComponentInChildren<HouseFunctionality>().UpgradeMultiplier(m);
-            }
-        }
-
-        private Vector3[] BuildLineRenderer8()
-        {
-            _lineRenderer.positionCount = 20;
-            Vector3[] positions = new Vector3[_lineRenderer.positionCount];
-            var linePositions = new Vector3[4];
-            int i = 0;
-            if (_tilesVecinas[0] != null)
-            {
-                _tilesVecinas[0].GetComponent<LineRenderer>().GetPositions(linePositions);
-                positions[i++] = linePositions[3];
-                positions[i++] = linePositions[0];
-                positions[i++] = linePositions[1];
-            }
-
-            if (_tilesVecinas[1] != null)
-            {
-                _tilesVecinas[1].GetComponent<LineRenderer>().GetPositions(linePositions);
-                positions[i++] = linePositions[0];
-                positions[i++] = linePositions[1];
-            }
-
-            if (_tilesVecinas[2] != null)
-            {
-                _tilesVecinas[2].GetComponent<LineRenderer>().GetPositions(linePositions);
-                positions[i++] = linePositions[0];
-                positions[i++] = linePositions[1];
-                positions[i++] = linePositions[2];
-            }
-
-            if (_tilesVecinas[5] != null)
-            {
-                _tilesVecinas[5].GetComponent<LineRenderer>().GetPositions(linePositions);
-                positions[i++] = linePositions[1];
-                positions[i++] = linePositions[2];
-            }
-
-            if (_tilesVecinas[8] != null)
-            {
-                _tilesVecinas[8].GetComponent<LineRenderer>().GetPositions(linePositions);
-                positions[i++] = linePositions[1];
-                positions[i++] = linePositions[2];
-                positions[i++] = linePositions[3];
-            }
-
-            if (_tilesVecinas[7] != null)
-            {
-                _tilesVecinas[7].GetComponent<LineRenderer>().GetPositions(linePositions);
-                positions[i++] = linePositions[2];
-                positions[i++] = linePositions[3];
-            }
-
-            if (_tilesVecinas[6] != null)
-            {
-                _tilesVecinas[6].GetComponent<LineRenderer>().GetPositions(linePositions);
-                positions[i++] = linePositions[2];
-                positions[i++] = linePositions[3];
-                positions[i++] = linePositions[0];
-            }
-
-            if (_tilesVecinas[3] != null)
-            {
-                _tilesVecinas[3].GetComponent<LineRenderer>().GetPositions(linePositions);
-                positions[i++] = linePositions[3];
-                positions[i++] = linePositions[0];
-            }
-
-            return positions;
-        }
-
-        private Vector3[] BuildLineRenderer12()
-        {
-            _lineRenderer.positionCount = 28;
-            Vector3[] positions = new Vector3[_lineRenderer.positionCount];
-            var linePositions = new Vector3[4];
-            int i = 0;
-            if (_tilesVecinas[0] != null)
-            {
-                _tilesVecinas[0].GetComponent<LineRenderer>().GetPositions(linePositions);
-                positions[i++] = linePositions[3];
-                positions[i++] = linePositions[0];
-                positions[i++] = linePositions[1];
-            }
-
-            if (_tilesVecinas[10] != null)
-            {
-                _tilesVecinas[10].GetComponent<LineRenderer>().GetPositions(linePositions);
-                positions[i++] = linePositions[3];
-                positions[i++] = linePositions[0];
-                positions[i++] = linePositions[1];
-                positions[i++] = linePositions[2];
-            }
-
-            if (_tilesVecinas[2] != null)
-            {
-                _tilesVecinas[2].GetComponent<LineRenderer>().GetPositions(linePositions);
-                positions[i++] = linePositions[0];
-                positions[i++] = linePositions[1];
-                positions[i++] = linePositions[2];
-            }
-
-            if (_tilesVecinas[11] != null)
-            {
-                _tilesVecinas[11].GetComponent<LineRenderer>().GetPositions(linePositions);
-                positions[i++] = linePositions[0];
-                positions[i++] = linePositions[1];
-                positions[i++] = linePositions[2];
-                positions[i++] = linePositions[3];
-            }
-
-            if (_tilesVecinas[8] != null)
-            {
-                _tilesVecinas[8].GetComponent<LineRenderer>().GetPositions(linePositions);
-                positions[i++] = linePositions[1];
-                positions[i++] = linePositions[2];
-                positions[i++] = linePositions[3];
-            }
-
-            if (_tilesVecinas[9] != null)
-            {
-                _tilesVecinas[9].GetComponent<LineRenderer>().GetPositions(linePositions);
-                positions[i++] = linePositions[1];
-                positions[i++] = linePositions[2];
-                positions[i++] = linePositions[3];
-                positions[i++] = linePositions[0];
-            }
-
-            if (_tilesVecinas[6] != null)
-            {
-                _tilesVecinas[6].GetComponent<LineRenderer>().GetPositions(linePositions);
-                positions[i++] = linePositions[2];
-                positions[i++] = linePositions[3];
-                positions[i++] = linePositions[0];
-            }
-
-            if (_tilesVecinas[12] != null)
-            {
-                _tilesVecinas[12].GetComponent<LineRenderer>().GetPositions(linePositions);
-                positions[i++] = linePositions[2];
-                positions[i++] = linePositions[3];
-                positions[i++] = linePositions[0];
-                positions[i++] = linePositions[1];
-            }
-
-            return positions;
-        }
-
-        private Vector3[] BuildLineRenderer25()
-        {
-            _lineRenderer.positionCount = 36;
-            Vector3[] positions = new Vector3[_lineRenderer.positionCount];
-            var linePositions = new Vector3[4];
-            int i = 0;
-            if (_tilesVecinas[0] != null)
-            {
-                _tilesVecinas[0].GetComponent<LineRenderer>().GetPositions(linePositions);
-                positions[i++] = linePositions[3];
-                positions[i++] = linePositions[0];
-                positions[i++] = linePositions[1];
-            }
-
-            if (_tilesVecinas[1] != null)
-            {
-                _tilesVecinas[1].GetComponent<LineRenderer>().GetPositions(linePositions);
-                positions[i++] = linePositions[0];
-                positions[i++] = linePositions[1];
-            }
-
-            if (_tilesVecinas[2] != null)
-            {
-                _tilesVecinas[2].GetComponent<LineRenderer>().GetPositions(linePositions);
-                positions[i++] = linePositions[0];
-                positions[i++] = linePositions[1];
-            }
-
-            if (_tilesVecinas[3] != null)
-            {
-                _tilesVecinas[3].GetComponent<LineRenderer>().GetPositions(linePositions);
-                positions[i++] = linePositions[0];
-                positions[i++] = linePositions[1];
-            }
-
-            if (_tilesVecinas[4] != null)
-            {
-                _tilesVecinas[4].GetComponent<LineRenderer>().GetPositions(linePositions);
-                positions[i++] = linePositions[0];
-                positions[i++] = linePositions[1];
-                positions[i++] = linePositions[2];
-            }
-
-            if (_tilesVecinas[9] != null)
-            {
-                _tilesVecinas[9].GetComponent<LineRenderer>().GetPositions(linePositions);
-                positions[i++] = linePositions[1];
-                positions[i++] = linePositions[2];
-            }
-
-            if (_tilesVecinas[14] != null)
-            {
-                _tilesVecinas[14].GetComponent<LineRenderer>().GetPositions(linePositions);
-                positions[i++] = linePositions[1];
-                positions[i++] = linePositions[2];
-            }
-
-            if (_tilesVecinas[19] != null)
-            {
-                _tilesVecinas[19].GetComponent<LineRenderer>().GetPositions(linePositions);
-                positions[i++] = linePositions[1];
-                positions[i++] = linePositions[2];
-            }
-
-            if (_tilesVecinas[24] != null)
-            {
-                _tilesVecinas[24].GetComponent<LineRenderer>().GetPositions(linePositions);
-                positions[i++] = linePositions[1];
-                positions[i++] = linePositions[2];
-                positions[i++] = linePositions[3];
-            }
-
-            if (_tilesVecinas[23] != null)
-            {
-                _tilesVecinas[23].GetComponent<LineRenderer>().GetPositions(linePositions);
-                positions[i++] = linePositions[2];
-                positions[i++] = linePositions[3];
-            }
-
-            if (_tilesVecinas[22] != null)
-            {
-                _tilesVecinas[22].GetComponent<LineRenderer>().GetPositions(linePositions);
-                positions[i++] = linePositions[2];
-                positions[i++] = linePositions[3];
-            }
-
-            if (_tilesVecinas[21] != null)
-            {
-                _tilesVecinas[21].GetComponent<LineRenderer>().GetPositions(linePositions);
-                positions[i++] = linePositions[2];
-                positions[i++] = linePositions[3];
-            }
-
-            if (_tilesVecinas[20] != null)
-            {
-                _tilesVecinas[20].GetComponent<LineRenderer>().GetPositions(linePositions);
-                positions[i++] = linePositions[2];
-                positions[i++] = linePositions[3];
-                positions[i++] = linePositions[0];
-            }
-
-            if (_tilesVecinas[15] != null)
-            {
-                _tilesVecinas[15].GetComponent<LineRenderer>().GetPositions(linePositions);
-                positions[i++] = linePositions[3];
-                positions[i++] = linePositions[0];
-            }
-
-            if (_tilesVecinas[10] != null)
-            {
-                _tilesVecinas[10].GetComponent<LineRenderer>().GetPositions(linePositions);
-                positions[i++] = linePositions[3];
-                positions[i++] = linePositions[0];
-            }
-
-            if (_tilesVecinas[5] != null)
-            {
-                _tilesVecinas[5].GetComponent<LineRenderer>().GetPositions(linePositions);
-                positions[i++] = linePositions[3];
-                positions[i++] = linePositions[0];
-            }
-
-            return positions;
-        }
 
         #endregion
     }

@@ -891,9 +891,9 @@ RectTransform:
   - {fileID: 663063398}
   m_Father: {fileID: 1916489626}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 237.5, y: -192.61249}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &86087096
@@ -2097,6 +2097,7 @@ GameObject:
   - component: {fileID: 190268517}
   - component: {fileID: 190268519}
   - component: {fileID: 190268518}
+  - component: {fileID: 190268520}
   m_Layer: 5
   m_Name: DescriptionTitleTMP
   m_TagString: Untagged
@@ -2220,6 +2221,46 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 190268516}
   m_CullTransparentMesh: 1
+--- !u!114 &190268520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 190268516}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56eb0353ae6e5124bb35b17aff880f16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_StringReference:
+    m_TableReference:
+      m_TableCollectionName: GUID:e8ce51a54b8de4f4fb863651e7d6487c
+    m_TableEntryReference:
+      m_KeyId: 514900249800704
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  m_FormatArguments: []
+  m_UpdateString:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 190268518}
+        m_TargetAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
+        m_MethodName: set_text
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 1
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &200060778
 GameObject:
   m_ObjectHideFlags: 0
@@ -3856,7 +3897,7 @@ GameObject:
   - component: {fileID: 312952308}
   - component: {fileID: 312952307}
   m_Layer: 5
-  m_Name: DestroyHousedButton
+  m_Name: DestroyMultiplierBuildingButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3877,9 +3918,9 @@ RectTransform:
   - {fileID: 1571122653}
   m_Father: {fileID: 917188748}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 194, y: -129.59999}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 335, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &312952307
@@ -4015,7 +4056,7 @@ GameObject:
   - component: {fileID: 337657149}
   - component: {fileID: 337657148}
   m_Layer: 5
-  m_Name: LevelUpHouseButtonTMP
+  m_Name: LevelUpMultiplierBuildingButtonTMP
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6312,7 +6353,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: CASA
+  m_text: Playground
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 05b3a5ee1187c9341879ab9456efb266, type: 2}
   m_sharedMaterial: {fileID: 4894095553914302692, guid: 05b3a5ee1187c9341879ab9456efb266, type: 2}
@@ -11194,7 +11235,7 @@ GameObject:
   - component: {fileID: 1075216091}
   - component: {fileID: 1075216090}
   m_Layer: 5
-  m_Name: LevelUpHouseButton
+  m_Name: LevelUpMultiplierBuildingButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11215,9 +11256,9 @@ RectTransform:
   - {fileID: 337657147}
   m_Father: {fileID: 917188748}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 194, y: -43.199997}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 335, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1075216090
@@ -11872,9 +11913,9 @@ RectTransform:
   - {fileID: 401662505}
   m_Father: {fileID: 1916489626}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 237.5, y: -46.5225}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -0.000061035, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1217308854
@@ -12249,13 +12290,15 @@ GameObject:
   - component: {fileID: 1262027091}
   - component: {fileID: 1262027094}
   - component: {fileID: 1262027093}
+  - component: {fileID: 1262027096}
+  - component: {fileID: 1262027095}
   m_Layer: 5
   m_Name: InfoMultiplierPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1262027091
 RectTransform:
   m_ObjectHideFlags: 0
@@ -12277,7 +12320,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -187.5, y: 0}
+  m_AnchoredPosition: {x: -187.5, y: 50}
   m_SizeDelta: {x: 400, y: 864}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1262027093
@@ -12318,6 +12361,143 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1262027090}
   m_CullTransparentMesh: 1
+--- !u!114 &1262027095
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1262027090}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75648375e77cc7d4fa2f8f9774ce90f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  duration: 0.3
+  animatePosition: 1
+  startPosition: {x: 220, y: 50}
+  inEasePosition: 6
+  outEasePosition: 5
+  animateScale: 0
+  startScale: {x: 1, y: 1}
+  inEaseScale: 0
+  outEaseScale: 0
+--- !u!114 &1262027096
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1262027090}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 134688b821ee5dc4581362c6e3c02105, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  multiplierTitleTMP: {fileID: 607727350}
+  multiplierLevelTMP: {fileID: 477850233}
+  multiplierCostsPerSecondTMP: {fileID: 401662506}
+  multiplierMultiplierTMP: {fileID: 1003712619}
+  multiplierEffectAreaTMP: {fileID: 663063399}
+  multiplierAffectedHousesTMP: {fileID: 386155397}
+  multiplierDescriptionTMP: {fileID: 512455524}
+  multiplierLevelUpButtonTMP: {fileID: 337657148}
+  multiplierLevelUpButton: {fileID: 1075216090}
+  multiplierDestroyButtonTMP: {fileID: 1571122654}
+  multiplierDestroyButton: {fileID: 312952307}
+  levelLocalizedString:
+    m_TableReference:
+      m_TableCollectionName: GUID:e8ce51a54b8de4f4fb863651e7d6487c
+    m_TableEntryReference:
+      m_KeyId: 509019873341440
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  maxLevelLocalizedString:
+    m_TableReference:
+      m_TableCollectionName: GUID:e8ce51a54b8de4f4fb863651e7d6487c
+    m_TableEntryReference:
+      m_KeyId: 515535414226944
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  levelUpLocalizedString:
+    m_TableReference:
+      m_TableCollectionName: GUID:e8ce51a54b8de4f4fb863651e7d6487c
+    m_TableEntryReference:
+      m_KeyId: 509676835565568
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  destroyLocalizedString:
+    m_TableReference:
+      m_TableCollectionName: GUID:e8ce51a54b8de4f4fb863651e7d6487c
+    m_TableEntryReference:
+      m_KeyId: 117094204829696
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  multiplierPlaygroundTitleLocalizedString:
+    m_TableReference:
+      m_TableCollectionName: GUID:e8ce51a54b8de4f4fb863651e7d6487c
+    m_TableEntryReference:
+      m_KeyId: 112569012187136
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  multiplierPoliceTitleLocalizedString:
+    m_TableReference:
+      m_TableCollectionName: GUID:e8ce51a54b8de4f4fb863651e7d6487c
+    m_TableEntryReference:
+      m_KeyId: 112640747368448
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  multiplierHospitalTitleLocalizedString:
+    m_TableReference:
+      m_TableCollectionName: GUID:e8ce51a54b8de4f4fb863651e7d6487c
+    m_TableEntryReference:
+      m_KeyId: 112617389289472
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  playgroundDescription:
+    m_TableReference:
+      m_TableCollectionName: GUID:e8ce51a54b8de4f4fb863651e7d6487c
+    m_TableEntryReference:
+      m_KeyId: 1574116477628416
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  policeDescription:
+    m_TableReference:
+      m_TableCollectionName: GUID:e8ce51a54b8de4f4fb863651e7d6487c
+    m_TableEntryReference:
+      m_KeyId: 1574156071858176
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  hospitalDescription:
+    m_TableReference:
+      m_TableCollectionName: GUID:e8ce51a54b8de4f4fb863651e7d6487c
+    m_TableEntryReference:
+      m_KeyId: 1574185725587456
+      m_Key: 
+    m_FallbackState: 0
+    m_WaitForCompletion: 0
+    m_LocalVariables: []
+  references:
+    version: 2
+    RefIds: []
 --- !u!1 &1318399653
 GameObject:
   m_ObjectHideFlags: 0
@@ -14000,9 +14180,9 @@ RectTransform:
   - {fileID: 1003712618}
   m_Father: {fileID: 1916489626}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 237.5, y: -119.5675}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -0.000061035, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1461739414
@@ -15484,7 +15664,7 @@ GameObject:
   - component: {fileID: 1571122655}
   - component: {fileID: 1571122654}
   m_Layer: 5
-  m_Name: DestroyButtonTMP
+  m_Name: DestroyMultiplierBuildingTMP
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16645,9 +16825,9 @@ RectTransform:
   - {fileID: 386155396}
   m_Father: {fileID: 1916489626}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 237.5, y: -265.6575}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: -0.000061035, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1677855326
@@ -17606,7 +17786,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1816524618}
-  - component: {fileID: 1816524619}
   m_Layer: 0
   m_Name: BuildingManager
   m_TagString: Untagged
@@ -17629,21 +17808,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1866783090}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1816524619
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1816524617}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 32160768ee11fa644917741d1f9f598f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Parques: []
-  Hospitales: []
-  Policia: []
 --- !u!1 &1818245726
 GameObject:
   m_ObjectHideFlags: 0
@@ -20294,45 +20458,7 @@ MonoBehaviour:
   buildPanel: {fileID: 2051442361}
   roadPanel: {fileID: 1644256056}
   housePanel: {fileID: 172536003}
-  InfoMultiplierPanel: {fileID: 0}
-  InfoMultiplierTitulo: {fileID: 0}
-  InfoMultiplierNivel: {fileID: 0}
-  InfoMultiplierGastorPorSegundo: {fileID: 0}
-  InfoMultiplierMultiplicador: {fileID: 0}
-  InfoMultiplierAreaEfecto: {fileID: 0}
-  InfoMultiplierCasaAfectadas: {fileID: 0}
-  InfoMultiplierDesciptionText: {fileID: 0}
-  Button_InfoMultiplierSubirNivel: {fileID: 0}
-  InfoMultiplierCosteNivelText: {fileID: 0}
-  Button_InfoMultiplierDemoler: {fileID: 0}
-  InfoMultiplierDemolerText: {fileID: 0}
-  ParqueDescription: 'Aumenta el Gold producido por las casas en su area de efecto.
-
-
-    Area
-    1: 4 casillas
-
-    Area 2: 8 casillas
-
-    Area 3: 12 casillas'
-  HospitalDescription: 'Aumenta el Gold producido por las casas en su area de efecto.
-
-
-    Area
-    1: 8 casillas
-
-    Area 2: 12 casillas
-
-    Area 3: 25 casillas'
-  PoliciaDescription: 'Aumenta el Gold producido por las casas en su area de efecto.
-
-
-    Area
-    1: 4 casillas
-
-    Area 2: 8 casillas
-
-    Area 3: 12 casillas'
+  infoMultiplierPanel: {fileID: 1262027096}
   references:
     version: 2
     RefIds: []

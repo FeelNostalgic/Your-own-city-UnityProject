@@ -140,7 +140,6 @@ namespace Managers
         {
             UIManagerInGame.Instance.DisableAllPanels();
             UIManagerInGame.Instance.ShowInfoPanel(buildType, _hit.collider.gameObject);
-            UIManagerInGame.Instance.HideAllAreas();
         }
 
         private void HandleKeyboardInput()

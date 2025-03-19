@@ -167,6 +167,42 @@ MonoBehaviour:
     m_Localized: DEMOLER
     m_Metadata:
       m_Items: []
+  - m_Id: 1574116477628416
+    m_Localized: 'Aumenta el oro producido por las casas en su area de efecto.
+
+
+      Nivel
+      1: 4 casillas
+
+      Nivel 2: 8 casillas
+
+      Nivel 3: 12 casillas'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1574156071858176
+    m_Localized: 'Aumenta el oro producido por las casas en su area de efecto.
+
+
+      Nivel
+      1: 4 casillas
+
+      Nivel 2: 8 casillas
+
+      Nivel 3: 12 casillas'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1574185725587456
+    m_Localized: 'Aumenta el oro producido por las casas en su area de efecto.
+
+
+      Nivel
+      1: 8 casillas
+
+      Nivel 2: 12 casillas
+
+      Nivel 3: 25 casillas'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

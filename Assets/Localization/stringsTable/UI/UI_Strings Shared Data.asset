@@ -155,6 +155,18 @@ MonoBehaviour:
     m_Key: DESTROY_LABEL
     m_Metadata:
       m_Items: []
+  - m_Id: 1574116477628416
+    m_Key: PLAYGROUND_DESCRIPTION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1574156071858176
+    m_Key: POLICE_DESCRIPTION
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1574185725587456
+    m_Key: HOSPITAL_DESCRIPTION
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

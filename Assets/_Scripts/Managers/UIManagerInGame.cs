@@ -56,30 +56,9 @@ namespace Managers
 
         [Header("House")] [SerializeField] private HousePanelController housePanel;
 
-        [Header("InfoMultipliyer")] [SerializeField]
-        private GameObject InfoMultiplierPanel;
-
-        [SerializeField] private TMP_Text InfoMultiplierTitulo;
-        [SerializeField] private TMP_Text InfoMultiplierNivel;
-        [SerializeField] private TMP_Text InfoMultiplierGastorPorSegundo;
-        [SerializeField] private TMP_Text InfoMultiplierMultiplicador;
-        [SerializeField] private TMP_Text InfoMultiplierAreaEfecto;
-        [SerializeField] private TMP_Text InfoMultiplierCasaAfectadas;
-        [SerializeField] private TMP_Text InfoMultiplierDesciptionText;
-        [SerializeField] private Button Button_InfoMultiplierSubirNivel;
-        [SerializeField] private TMP_Text InfoMultiplierCosteNivelText;
-        [SerializeField] private Button Button_InfoMultiplierDemoler;
-        [SerializeField] private TMP_Text InfoMultiplierDemolerText;
-
-        [Header("Parque")] [TextArea(2, 5)] [SerializeField]
-        private string ParqueDescription;
-
-        [Header("Hospital")] [TextArea(2, 5)] [SerializeField]
-        private string HospitalDescription;
-
-        [Header("Policia")] [TextArea(2, 5)] [SerializeField]
-        private string PoliciaDescription;
-
+        [Header("Info Multiplier")]
+        [SerializeField] private MultiplierPanelController infoMultiplierPanel;
+        
         #endregion
 
         #region Public Variables
@@ -92,12 +71,10 @@ namespace Managers
             buildPanel,
             roadPanel,
             housePanel,
-            playgroundPanel,
-            hospitalPanel,
-            policePanel
+            multiplierPanel
         }
 
-        public enum UIPanels
+        private enum UIPanels
         {
             none = 0,
             pausePanel,
@@ -112,9 +89,7 @@ namespace Managers
         #region Private Variables
 
         private float _currentTime;
-        private ParqueFunctionality _currentPlayground;
-        private HospitalFunctionality _currentHospital;
-        private PoliciaFunctionality _currentPolice;
+        private MultiplierBuildingFunctionality _currentMultiplierBuilding;
 
         private HUDPanels _currentHUDPanel;
         private HUDPanels _lastHUDPanel;
@@ -159,78 +134,34 @@ namespace Managers
             switch (type)
             {
                 case BuildManager.BuildingType.house:
-                    HideAllAreas();
                     housePanel.ConfigureHousePanel(selectedBuilding.GetComponentInChildren<HouseFunctionality>());
                     break;
-
                 case BuildManager.BuildingType.playground:
-                    HideAllAreas();
-                    _currentPlayground = selectedBuilding.GetComponentInChildren<ParqueFunctionality>();
-                    _currentPlayground.ShowArea();
-                    ConfigureInfoMultiplierPanel(_currentPlayground.Level, _currentPlayground.GastosPorSegundo,
-                        _currentPlayground.Multiplicador, _currentPlayground.AreaEfecto, _currentPlayground.CasaAfectadas,
-                        ParqueDescription, _currentPlayground.CosteNivel, parque: _currentPlayground);
+                case BuildManager.BuildingType.hospital:
+                case BuildManager.BuildingType.police:
+                    infoMultiplierPanel.ConfigureMultiplierPanel(selectedBuilding.GetComponentInChildren<MultiplierBuildingFunctionality>());
                     break;
-
                 case BuildManager.BuildingType.road:
-                    HideAllAreas();
                     MapManager.Instance.RoadToDestroy = selectedBuilding.gameObject;
                     ChangeHUDPanel(HUDPanels.roadPanel);
                     break;
-
-                case BuildManager.BuildingType.hospital:
-                    HideAllAreas();
-                    _currentHospital = selectedBuilding.GetComponentInChildren<HospitalFunctionality>();
-                    _currentHospital.ShowArea();
-                    ConfigureInfoMultiplierPanel(_currentHospital.Level, _currentHospital.GastosPorSegundo,
-                        _currentHospital.Multiplicador, _currentHospital.AreaEfecto, _currentHospital.CasaAfectadas,
-                        HospitalDescription, _currentHospital.CosteNivel, hospital: _currentHospital);
-                    break;
-
-                case BuildManager.BuildingType.police:
-                    HideAllAreas();
-                    _currentPolice = selectedBuilding.GetComponentInChildren<PoliciaFunctionality>();
-                    _currentPolice.ShowArea();
-                    ConfigureInfoMultiplierPanel(_currentPolice.Level, _currentPolice.GastosPorSegundo,
-                        _currentPolice.Multiplicador, _currentPolice.AreaEfecto, _currentPolice.CasaAfectadas,
-                        PoliciaDescription, _currentPolice.CosteNivel, policia: _currentPolice);
-                    break;
-                case BuildManager.BuildingType.none:
-                    break;
                 default:
+                case BuildManager.BuildingType.none:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
         }
-
-        public void UpdateInfoMultiplierNivel(int currentLevel, int gastosPorSegundo, float currentMultiplicador, int areaEfecto, int coste, int casasAfectadas, float price)
-        {
-            InfoMultiplierNivel.text = "NIVEL " + currentLevel;
-            InfoMultiplierGastorPorSegundo.text = gastosPorSegundo.ToString();
-            InfoMultiplierMultiplicador.text = "X" + currentMultiplicador.ToString().Replace(",", ".");
-            InfoMultiplierAreaEfecto.text = areaEfecto.ToString();
-            InfoMultiplierCasaAfectadas.text = casasAfectadas.ToString();
-            if (currentLevel > 2)
-            {
-                InfoMultiplierCosteNivelText.text = "NIVEL MAX";
-                Button_InfoMultiplierSubirNivel.interactable = false;
-            }
-            else InfoMultiplierCosteNivelText.text = "SUBIR NIVEL X " + coste;
-
-            InfoMultiplierDemolerText.text = "DEMOLER (+" + (int)(price * 0.8 * currentLevel) + ")";
-        }
-
+        
         public void DisableAllHUDExceptBuildPanel()
         {
             if (_currentHUDPanel == HUDPanels.buildPanel) return;
             roadPanel.HidePanel();
             housePanel.HidePanel();
-            // InfoMultiplierPanel.SetActive(false);
+            infoMultiplierPanel.HidePanel();
         }
 
         public void DisableAllPanels()
         {
-            // TODO
-            // InfoMultiplierPanel.SetActive(false);
+            infoMultiplierPanel.HidePanel();
             buildPanel.HidePanel();
             roadPanel.HidePanel();
             housePanel.HidePanel();
@@ -259,14 +190,7 @@ namespace Managers
         {
             UpdateFeedback(notEnoughGoldFeedback.GetLocalizedString());
         }
-
-        public void HideAllAreas()
-        {
-            if (_currentPolice != null) _currentPolice.HideArea();
-            if (_currentHospital != null) _currentHospital.HideArea();
-            if (_currentPlayground != null) _currentPlayground.HideArea();
-        }
-
+        
         public void ShowFinalPanel(bool value)
         {
             DisableAllPanels();
@@ -395,12 +319,9 @@ namespace Managers
                     break;
                 case HUDPanels.roadPanel:
                 case HUDPanels.housePanel:
+                case HUDPanels.multiplierPanel:
                     StartCoroutine(HideLastPanelAndWaitToShowNew());
                     break;
-                case HUDPanels.playgroundPanel:
-                case HUDPanels.hospitalPanel:
-                case HUDPanels.policePanel:
-                    throw new NotImplementedException();
                 case HUDPanels.none:
                     break;
                 default:
@@ -428,10 +349,9 @@ namespace Managers
                 case HUDPanels.housePanel:
                     _currentActiveHUDPanel = housePanel;
                     break;
-                case HUDPanels.playgroundPanel:
-                case HUDPanels.hospitalPanel:
-                case HUDPanels.policePanel:
-                    throw new NotImplementedException();
+                case HUDPanels.multiplierPanel:
+                    _currentActiveHUDPanel = infoMultiplierPanel;
+                    break;
                 case HUDPanels.none:
                     break;
                 default:
@@ -456,81 +376,7 @@ namespace Managers
             newPanel.SetActive(true);
             _currentActiveUIPanel = newPanel;
         }
-
-        private void ConfigureInfoMultiplierPanel(int level, int gastosPorSegundo, float multiplicador, int areaEfecto,
-            int casasAfectadas, string descriptionText, int costeNivel, ParqueFunctionality parque = null,
-            HospitalFunctionality hospital = null, PoliciaFunctionality policia = null)
-        {
-            if (parque != null) InfoMultiplierTitulo.text = "PARQUE";
-            if (hospital != null) InfoMultiplierTitulo.text = "HOSPITAL";
-            if (policia != null) InfoMultiplierTitulo.text = "POLICIA";
-
-            InfoMultiplierNivel.text = "NIVEL " + level;
-            InfoMultiplierGastorPorSegundo.text = gastosPorSegundo.ToString();
-            InfoMultiplierMultiplicador.text = "X" + multiplicador.ToString().Replace(",", ".");
-            InfoMultiplierAreaEfecto.text = areaEfecto.ToString();
-            InfoMultiplierCasaAfectadas.text = casasAfectadas.ToString();
-
-            if (level > 2)
-            {
-                InfoMultiplierCosteNivelText.text = "NIVEL MAX";
-                Button_InfoMultiplierSubirNivel.interactable = false;
-            }
-            else
-            {
-                Button_InfoMultiplierSubirNivel.interactable = true;
-                InfoMultiplierCosteNivelText.text = "SUBIR NIVEL X " + costeNivel;
-            }
-
-            InfoMultiplierDesciptionText.text = descriptionText;
-
-            if (parque != null) ConfigureInfoMultiplierButtons(parque: parque);
-            if (hospital != null) ConfigureInfoMultiplierButtons(hospital: hospital);
-            if (policia != null) ConfigureInfoMultiplierButtons(policia: policia);
-
-            IsAPanelActive = true;
-            InfoMultiplierPanel.SetActive(true);
-        }
-
-        private void ConfigureInfoMultiplierButtons(ParqueFunctionality parque = null,
-            HospitalFunctionality hospital = null, PoliciaFunctionality policia = null)
-        {
-            if (parque != null)
-            {
-                Button_InfoMultiplierSubirNivel.onClick.RemoveAllListeners();
-                Button_InfoMultiplierSubirNivel.onClick.AddListener(delegate { parque.SubirNivel(); });
-
-                InfoMultiplierDemolerText.text =
-                    "DEMOLER (+" + (int)(BuildManager.Instance.PlaygroundPrice * 0.8 * parque.Level) + ")";
-                Button_InfoMultiplierDemoler.onClick.RemoveAllListeners();
-                Button_InfoMultiplierDemoler.onClick.AddListener(delegate { parque.Demoler(); });
-                return;
-            }
-
-            if (hospital != null)
-            {
-                Button_InfoMultiplierSubirNivel.onClick.RemoveAllListeners();
-                Button_InfoMultiplierSubirNivel.onClick.AddListener(delegate { hospital.SubirNivel(); });
-
-                InfoMultiplierDemolerText.text =
-                    "DEMOLER (+" + (int)(BuildManager.Instance.HospitalPrice * 0.8 * hospital.Level) + ")";
-                Button_InfoMultiplierDemoler.onClick.RemoveAllListeners();
-                Button_InfoMultiplierDemoler.onClick.AddListener(delegate { hospital.Demoler(); });
-                return;
-            }
-
-            if (policia != null)
-            {
-                Button_InfoMultiplierSubirNivel.onClick.RemoveAllListeners();
-                Button_InfoMultiplierSubirNivel.onClick.AddListener(delegate { policia.SubirNivel(); });
-
-                InfoMultiplierDemolerText.text =
-                    "DEMOLER (+" + (int)(BuildManager.Instance.PolicePrice * 0.8 * policia.Level) + ")";
-                Button_InfoMultiplierDemoler.onClick.RemoveAllListeners();
-                Button_InfoMultiplierDemoler.onClick.AddListener(delegate { policia.Demoler(); });
-            }
-        }
-
+        
         #endregion
     }
 }

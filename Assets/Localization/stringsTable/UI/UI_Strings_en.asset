@@ -170,6 +170,42 @@ MonoBehaviour:
     m_Localized: DEMOLISH
     m_Metadata:
       m_Items: []
+  - m_Id: 1574116477628416
+    m_Localized: 'Increases the gold produced by houses in its area of effect.
+
+
+      Level
+      1: 4 squares
+
+      Level 2: 8 squares
+
+      Level 3: 12 squares'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1574156071858176
+    m_Localized: 'Increases the gold produced by houses in its area of effect.
+
+
+      Level
+      1: 4 squares
+
+      Level 2: 8 squares
+
+      Level 3: 12 squares'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1574185725587456
+    m_Localized: 'Increases the gold produced by houses in its area of effect.
+
+
+      Level
+      1: 8 squares
+
+      Level 2: 12 squares
+
+      Level 3: 25 squares'
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:
