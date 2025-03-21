@@ -1,8 +1,11 @@
+using Buildings;
+using Commons;
 using Managers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Localization;
 using UnityEngine.UI;
+using Utilities;
 
 namespace UI
 { 
@@ -21,6 +24,12 @@ namespace UI
 		public int DestroyPrice => (int)(BuildManager.Instance.RoadPrice * 0.8);
 		
 		#endregion
+
+		#region Private Variables
+
+		private RoadFunctionality _road;
+
+		#endregion
 		
 		#region Unity Methods
 		
@@ -30,17 +39,35 @@ namespace UI
 			destroyLocalizedString.Arguments = new object[] { this };
 			destroyLocalizedString.StringChanged += UpdateString;
 			
-			destroyRoadButton.onClick.AddListener(MapManager.Instance.DemolishRoad);
+			OwnAnimateUI.OnShowAnimationPlay += ConfigurePanel;
 		}
 
 		private void OnDestroy()
 		{
 			destroyLocalizedString.StringChanged -= UpdateString;
+			OwnAnimateUI.OnShowAnimationPlay -= ConfigurePanel;
 		}
 
 		#endregion
+
+		#region Public Methods
+
+		public override void ConfigurePanel(Building roadFunctionality)
+		{
+			if (OwnAnimateUI.IsOpen && _road.IsNotNull() && _road.gameObject.name.Equals(roadFunctionality.gameObject.name)) return;
+			_road = (RoadFunctionality) roadFunctionality;
+			UIManagerInGame.Instance.ChangeHUDPanel(HUDPanels.roadPanel);
+		}
+		
+		#endregion
 		
 		#region Private Methods
+
+		private void ConfigurePanel()
+		{
+			destroyRoadButton.onClick.RemoveAllListeners();
+			destroyRoadButton.onClick.AddListener(_road.Demolish);
+		}
 		
 		private void UpdateString(string s)
 		{
