@@ -1,5 +1,6 @@
 
 using System;
+using Commons;
 using UnityEngine;
 using Utilities;
 
@@ -72,11 +73,5 @@ namespace Managers
 		#region Private Methods
 		//
 		#endregion
-	}
-
-	[Serializable]
-	public enum GameState
-	{
-		NotStarted, Starting, Paused, Playing, GameOver, Win
 	}
 }
