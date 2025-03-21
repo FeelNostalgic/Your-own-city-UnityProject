@@ -1,9 +1,8 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using Buildings;
+using Commons;
 using DG.Tweening;
-using TMPro;
 using UI;
 using UnityEngine;
 using UnityEngine.Localization;
@@ -54,25 +53,16 @@ namespace Managers
 
         [Header("Road")] [SerializeField] private UIPanel roadPanel;
 
-        [Header("House")] [SerializeField] private HousePanelController housePanel;
+        [Header("House")] [SerializeField] private UIPanel housePanel;
 
-        [Header("Info Multiplier")]
-        [SerializeField] private MultiplierPanelController infoMultiplierPanel;
-        
+        [Header("Info Multiplier")] [SerializeField]
+        private UIPanel infoMultiplierPanel;
+
         #endregion
 
         #region Public Variables
 
         public bool IsAPanelActive { get; private set; }
-
-        public enum HUDPanels
-        {
-            none = 0,
-            buildPanel,
-            roadPanel,
-            housePanel,
-            multiplierPanel
-        }
 
         private enum UIPanels
         {
@@ -114,11 +104,6 @@ namespace Managers
                 .Play();
         }
 
-        private void Update()
-        {
-            //UpdateTime();
-        }
-
         #endregion
 
         #region Public Methods
@@ -129,28 +114,27 @@ namespace Managers
             ChangeHUDPanel(_lastHUDPanel);
         }
 
-        public void ShowInfoPanel(BuildManager.BuildingType type, GameObject selectedBuilding)
+        public void ShowInfoPanel(TileFunctionality tile)
         {
-            switch (type)
+            switch (tile.BuildingType)
             {
-                case BuildManager.BuildingType.house:
-                    housePanel.ConfigureHousePanel(selectedBuilding.GetComponentInChildren<HouseFunctionality>());
+                case BuildingType.house:
+                    housePanel.ConfigurePanel((HouseFunctionality)tile.Building);
                     break;
-                case BuildManager.BuildingType.playground:
-                case BuildManager.BuildingType.hospital:
-                case BuildManager.BuildingType.police:
-                    infoMultiplierPanel.ConfigureMultiplierPanel(selectedBuilding.GetComponentInChildren<MultiplierBuildingFunctionality>());
+                case BuildingType.playground:
+                case BuildingType.hospital:
+                case BuildingType.police:
+                    infoMultiplierPanel.ConfigurePanel((MultiplierBuildingFunctionality)tile.Building);
                     break;
-                case BuildManager.BuildingType.road:
-                    MapManager.Instance.RoadToDestroy = selectedBuilding.gameObject;
-                    ChangeHUDPanel(HUDPanels.roadPanel);
+                case BuildingType.road:
+                    roadPanel.ConfigurePanel((RoadFunctionality)tile.Building);
                     break;
                 default:
-                case BuildManager.BuildingType.none:
-                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+                case BuildingType.none:
+                    throw new ArgumentOutOfRangeException(nameof(tile.BuildingType), tile.BuildingType, null);
             }
         }
-        
+
         public void DisableAllHUDExceptBuildPanel()
         {
             if (_currentHUDPanel == HUDPanels.buildPanel) return;
@@ -190,7 +174,7 @@ namespace Managers
         {
             UpdateFeedback(notEnoughGoldFeedback.GetLocalizedString());
         }
-        
+
         public void ShowFinalPanel(bool value)
         {
             DisableAllPanels();
@@ -376,7 +360,7 @@ namespace Managers
             newPanel.SetActive(true);
             _currentActiveUIPanel = newPanel;
         }
-        
+
         #endregion
     }
 }

@@ -1,5 +1,6 @@
 using System.Globalization;
 using Buildings;
+using Commons;
 using Managers;
 using TMPro;
 using UnityEngine;
@@ -61,35 +62,35 @@ namespace UI
             levelUpLocalizedString.StringChanged += UpdateLevelUpButtonString;
             destroyLocalizedString.StringChanged += UpdateDestroyButtonTMP;
 
-            OwnAnimateUI.OnShowAnimationPlay += ConfigureHousePanel;
+            OwnAnimateUI.OnShowAnimationPlay += ConfigurePanel;
         }
-
+        
         private void OnDestroy()
         {
             levelLocalizedString.StringChanged -= UpdateLevelString;
             levelUpLocalizedString.StringChanged -= UpdateLevelUpButtonString;
             destroyLocalizedString.StringChanged -= UpdateDestroyButtonTMP;
             
-            OwnAnimateUI.OnShowAnimationPlay -= ConfigureHousePanel;
+            OwnAnimateUI.OnShowAnimationPlay -= ConfigurePanel;
         }
 
         #endregion
 
         #region Public Methods
-
-        public void ConfigureHousePanel(HouseFunctionality house)
+        
+        public override void ConfigurePanel(Building buildingData)
         {
             // If hit same house when is opened just ignore
-            if (OwnAnimateUI.IsOpen && _house.IsNotNull() && _house.gameObject.name.Equals(house.gameObject.name)) return;
-            _house = house;
-            UIManagerInGame.Instance.ChangeHUDPanel(UIManagerInGame.HUDPanels.housePanel);
+            if (OwnAnimateUI.IsOpen && _house.IsNotNull() && _house.gameObject.name.Equals(buildingData.gameObject.name)) return;
+            _house = (HouseFunctionality)buildingData;
+            UIManagerInGame.Instance.ChangeHUDPanel(HUDPanels.housePanel);
         }
         
         #endregion
 
         #region Private Methods
 
-        private void ConfigureHousePanel()
+        private void ConfigurePanel()
         {
             Level = _house.Level;
             houseInhabitantsTMP.text = _house.Inhabitants.ToString();

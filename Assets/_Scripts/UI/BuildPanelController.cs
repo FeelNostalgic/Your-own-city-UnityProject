@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Buildings;
+using Commons;
 using Managers;
 using TMPro;
 using UnityEngine;
@@ -40,7 +42,7 @@ namespace UI
         
         private RectTransform _openPanelRectTransformTMP;
         private Sprite _buttonDefaultSprite;
-        private readonly Dictionary<BuildManager.BuildingType, Image> _buttonImages = new();
+        private readonly Dictionary<BuildingType, Image> _buttonImages = new();
         private Image _demolishButtonImage;
         
         #endregion
@@ -53,7 +55,7 @@ namespace UI
             SetPricesInBuildPanel();
             InitializeButtonListeners();
             GetButtonImagesComponent();
-            _buttonDefaultSprite = _buttonImages[BuildManager.BuildingType.road].sprite;
+            _buttonDefaultSprite = _buttonImages[BuildingType.road].sprite;
             _demolishButtonImage = demolishButton.GetComponent<Image>();
             _openPanelRectTransformTMP = openPanelButton.GetComponentInChildren<TMP_Text>().GetComponent<RectTransform>();
             OwnAnimateUI.OnShowAnimationPlay += RotateOpenButton;
@@ -70,6 +72,15 @@ namespace UI
 
         #endregion
 
+        #region Public Methods
+
+        public override void ConfigurePanel(Building buildingData)
+        {
+            //
+        }
+
+        #endregion
+        
         #region Private Methods
         
         private void SetPricesInBuildPanel()
@@ -86,11 +97,11 @@ namespace UI
             openPanelButton.onClick.AddListener(TogglePanel);
             demolishButton.onClick.AddListener(ToggleDemolish);
             
-            roadButton.onClick.AddListener(()=>ToggleBuildingType(BuildManager.BuildingType.road));
-            houseButton.onClick.AddListener(()=>ToggleBuildingType(BuildManager.BuildingType.house));
-            playgroundButton.onClick.AddListener(()=>ToggleBuildingType(BuildManager.BuildingType.playground));
-            hospitalButton.onClick.AddListener(()=>ToggleBuildingType(BuildManager.BuildingType.hospital));
-            policeButton.onClick.AddListener(()=>ToggleBuildingType(BuildManager.BuildingType.police));
+            roadButton.onClick.AddListener(()=>ToggleBuildingType(BuildingType.road));
+            houseButton.onClick.AddListener(()=>ToggleBuildingType(BuildingType.house));
+            playgroundButton.onClick.AddListener(()=>ToggleBuildingType(BuildingType.playground));
+            hospitalButton.onClick.AddListener(()=>ToggleBuildingType(BuildingType.hospital));
+            policeButton.onClick.AddListener(()=>ToggleBuildingType(BuildingType.police));
         }
 
         private void TogglePanel()
@@ -99,11 +110,11 @@ namespace UI
             if (OwnAnimateUI.IsOpen)
             {
                 OwnAnimateUI.Hide();
-                UIManagerInGame.Instance.ChangeHUDPanel(UIManagerInGame.HUDPanels.none);
+                UIManagerInGame.Instance.ChangeHUDPanel(HUDPanels.none);
             }
             else
             {
-                UIManagerInGame.Instance.ChangeHUDPanel(UIManagerInGame.HUDPanels.buildPanel);
+                UIManagerInGame.Instance.ChangeHUDPanel(HUDPanels.buildPanel);
                 PointAndClickManager.DisableCurrentLineRendererSelected();
             }
         }
@@ -111,7 +122,7 @@ namespace UI
         private void ToggleDemolish()
         {
             PlayClickSound();
-            if (BuildManager.Status == BuildManager.BuildingStatus.building)
+            if (BuildManager.Status == BuildingStatus.building)
             {
                 _buttonImages[BuildManager.ActiveBuildingType].sprite = _buttonDefaultSprite;
                 BuildManager.ToggleBuilding(BuildManager.ActiveBuildingType);
@@ -125,13 +136,13 @@ namespace UI
             _openPanelRectTransformTMP.rotation = Quaternion.Euler(0, 0, OwnAnimateUI.IsOpen ? 180 : 0);
         }
         
-        private void ToggleBuildingType(BuildManager.BuildingType type)
+        private void ToggleBuildingType(BuildingType type)
         {
             PlayClickSound();
-            if (BuildManager.Status == BuildManager.BuildingStatus.demolishing) _demolishButtonImage.sprite = _buttonDefaultSprite;
+            if (BuildManager.Status == BuildingStatus.demolishing) _demolishButtonImage.sprite = _buttonDefaultSprite;
             
             // Reset previous active button (if any)
-            if (BuildManager.ActiveBuildingType != BuildManager.BuildingType.none)
+            if (BuildManager.ActiveBuildingType != BuildingType.none)
             {
                 _buttonImages[BuildManager.ActiveBuildingType].sprite = _buttonDefaultSprite;
             }
@@ -143,7 +154,7 @@ namespace UI
         
         private void SetBuildingModeToNone()
         {
-            if (BuildManager.ActiveBuildingType == BuildManager.BuildingType.none) return;
+            if (BuildManager.ActiveBuildingType == BuildingType.none) return;
             var type = BuildManager.ActiveBuildingType;
             var isActive = BuildManager.ToggleBuilding(BuildManager.ActiveBuildingType);
             _buttonImages[type].sprite = isActive ? buttonPressedSprite : _buttonDefaultSprite;
@@ -151,11 +162,11 @@ namespace UI
         
         private void GetButtonImagesComponent()
         {
-            _buttonImages.Add(BuildManager.BuildingType.road, roadButton.GetComponent<Image>());
-            _buttonImages.Add(BuildManager.BuildingType.house, houseButton.GetComponent<Image>());
-            _buttonImages.Add(BuildManager.BuildingType.playground, playgroundButton.GetComponent<Image>());
-            _buttonImages.Add(BuildManager.BuildingType.hospital, hospitalButton.GetComponent<Image>());
-            _buttonImages.Add(BuildManager.BuildingType.police, policeButton.GetComponent<Image>());
+            _buttonImages.Add(BuildingType.road, roadButton.GetComponent<Image>());
+            _buttonImages.Add(BuildingType.house, houseButton.GetComponent<Image>());
+            _buttonImages.Add(BuildingType.playground, playgroundButton.GetComponent<Image>());
+            _buttonImages.Add(BuildingType.hospital, hospitalButton.GetComponent<Image>());
+            _buttonImages.Add(BuildingType.police, policeButton.GetComponent<Image>());
         }
 
         private void PlayClickSound()

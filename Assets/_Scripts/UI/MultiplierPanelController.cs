@@ -2,6 +2,7 @@
 using System;
 using System.Globalization;
 using Buildings;
+using Commons;
 using Managers;
 using TMPro;
 using UnityEngine;
@@ -75,38 +76,38 @@ namespace UI
 			levelUpLocalizedString.StringChanged += UpdateLevelUpButtonString;
 			destroyLocalizedString.StringChanged += UpdateDestroyButtonTMP;
 
-			OwnAnimateUI.OnShowAnimationPlay += ConfigureMultiplierPanel;
+			OwnAnimateUI.OnShowAnimationPlay += ConfigurePanel;
 		}
-
+		
 		private void OnDestroy()
 		{
 			levelLocalizedString.StringChanged -= UpdateLevelString;
 			levelUpLocalizedString.StringChanged -= UpdateLevelUpButtonString;
 			destroyLocalizedString.StringChanged -= UpdateDestroyButtonTMP;
             
-			OwnAnimateUI.OnShowAnimationPlay -= ConfigureMultiplierPanel;
+			OwnAnimateUI.OnShowAnimationPlay -= ConfigurePanel;
 		}
 		
 		#endregion
 
 		#region Public Methods
 		
-		public void ConfigureMultiplierPanel(MultiplierBuildingFunctionality multiplier)
+		public override void ConfigurePanel(Building multiplier)
 		{
 			// If hit same multiplier when is opened just ignore
 			if (OwnAnimateUI.IsOpen && _multiplierBuilding.IsNotNull() && _multiplierBuilding.gameObject.name.Equals(multiplier.gameObject.name)) return;
 			if(_multiplierBuilding) OwnAnimateUI.OnHideAnimationPlay -= _multiplierBuilding.HideArea;
-			OwnAnimateUI.OnHideAnimationPlay += multiplier.HideArea;
-			_multiplierBuilding = multiplier;
+			OwnAnimateUI.OnHideAnimationPlay += ((MultiplierBuildingFunctionality)multiplier).HideArea;
+			_multiplierBuilding = (MultiplierBuildingFunctionality) multiplier;
 			
-			UIManagerInGame.Instance.ChangeHUDPanel(UIManagerInGame.HUDPanels.multiplierPanel);
+			UIManagerInGame.Instance.ChangeHUDPanel(HUDPanels.multiplierPanel);
 		}
 		
 		#endregion
 
 		#region Private Methods
 		
-		private void ConfigureMultiplierPanel()
+		private void ConfigurePanel()
         {
             _multiplierBuilding.ShowArea();
 	        SetTitle();
@@ -146,18 +147,18 @@ namespace UI
 		{
 			switch (_multiplierBuilding.BuildingType)
 			{
-				case BuildManager.BuildingType.playground:
+				case BuildingType.playground:
 					multiplierTitleTMP.text = multiplierPlaygroundTitleLocalizedString.GetLocalizedString();
 					break;
-				case BuildManager.BuildingType.hospital:
+				case BuildingType.hospital:
 					multiplierTitleTMP.text = multiplierHospitalTitleLocalizedString.GetLocalizedString();
 					break;
-				case BuildManager.BuildingType.police:
+				case BuildingType.police:
 					multiplierTitleTMP.text = multiplierPoliceTitleLocalizedString.GetLocalizedString();
 					break;
-				case BuildManager.BuildingType.road:
-				case BuildManager.BuildingType.house:
-				case BuildManager.BuildingType.none:
+				case BuildingType.road:
+				case BuildingType.house:
+				case BuildingType.none:
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
@@ -167,18 +168,18 @@ namespace UI
 		{
 			switch (_multiplierBuilding.BuildingType)
 			{
-				case BuildManager.BuildingType.playground:
+				case BuildingType.playground:
 					multiplierDescriptionTMP.text = playgroundDescription.GetLocalizedString();
 					break;
-				case BuildManager.BuildingType.hospital:
+				case BuildingType.hospital:
 					multiplierDescriptionTMP.text = hospitalDescription.GetLocalizedString();
 					break;
-				case BuildManager.BuildingType.police:
+				case BuildingType.police:
 					multiplierDescriptionTMP.text = policeDescription.GetLocalizedString();
 					break;
-				case BuildManager.BuildingType.road:
-				case BuildManager.BuildingType.house:
-				case BuildManager.BuildingType.none:
+				case BuildingType.road:
+				case BuildingType.house:
+				case BuildingType.none:
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
