@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using Controllers;
 using Buildings;
+using Commons;
 using Utilities;
 using Unity.AI.Navigation;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace Managers
@@ -24,21 +24,17 @@ namespace Managers
 
         [SerializeField] private Transform borderParent;
 
-        [FormerlySerializedAs("MinNumDecoration")] [SerializeField] [Range(2, 100)]
-        private int minNumDecoration;
+        [SerializeField] [Range(2, 100)] private int minNumDecoration;
 
-        [FormerlySerializedAs("MaxNumDecoration")] [SerializeField] [Range(2, 100)]
-        private int maxNumDecoration;
+        [SerializeField] [Range(2, 100)] private int maxNumDecoration;
 
         [SerializeField] private List<GameObject> decorationGameObjectsList;
 
         [Header("Road")] [SerializeField] private Transform roadParent;
 
-        [FormerlySerializedAs("x_Offset")] [Header("Offsets")] [SerializeField]
-        private float xOffset;
+        [Header("Offsets")] [SerializeField] private float xOffset;
 
-        [FormerlySerializedAs("z_Offset")] [SerializeField]
-        private float zOffset;
+        [SerializeField] private float zOffset;
 
         [Header("Tiles")] [SerializeField] private GameObject baseTilePrefab;
         [SerializeField] private GameObject borderTilePrefab;
@@ -53,7 +49,7 @@ namespace Managers
         public int MapSize => mapSize;
         public float XOffset => xOffset;
         public float ZOffset => zOffset;
-        public int RoadZ { get; private set; }
+        public static int RoadJ { get; private set; }
 
         public GameObject[,] MapTiles { get; private set; }
 
@@ -62,20 +58,15 @@ namespace Managers
         public int BorderSize => borderSize;
         public bool IsMapCreated { get; private set; }
 
-        public GameObject RoadToDestroy
-        {
-            set => _currentRoadToDestroy = value;
-        }
-
-        public NavMeshSurface NavMeshSurface { get; private set; }
-
         #endregion
 
         #region Private Variables
 
-        private GameObject[,] _borderTiles;
-        private GameObject _currentRoadToDestroy;
-        private MeshRenderer[,] _mapTilesRenders;
+        private static GameObject[,] _borderTiles;
+        private static MeshRenderer[,] _mapTilesMeshRenderers;
+        private static TileFunctionality[,] _mapTilesFunctionality;
+
+        private NavMeshSurface _navMeshSurface;
 
         private enum Tile
         {
@@ -90,7 +81,7 @@ namespace Managers
 
         private void Awake()
         {
-            NavMeshSurface = roadParent.GetComponent<NavMeshSurface>();
+            _navMeshSurface = GetComponentInChildren<NavMeshSurface>();
         }
 
         #endregion
@@ -108,118 +99,166 @@ namespace Managers
             IsMapCreated = true;
         }
 
-        public GameObject ChangeTileToRoad(int i, int j)
+        public void ChangeTileToRoad(int i, int j)
         {
-            AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buildBuilding);
-            _mapTilesRenders[i, j].material = roadMaterial;
+            _mapTilesMeshRenderers[i, j].material = roadMaterial;
             MapTiles[i, j].transform.SetParent(roadParent);
             SetTileName(Tile.road, i, j);
-            NavMeshSurface.BuildNavMesh();
-            return MapTiles[i, j];
+            _navMeshSurface.BuildNavMesh();
         }
 
-        public void DemolishBuilding(BuildManager.BuildingType type, GameObject building)
+        /// <summary>
+        /// Set I,J tile map position to new building
+        /// </summary>
+        /// <param name="i"></param>
+        /// <param name="j"></param>
+        /// <param name="building"></param>
+        /// <param name="buildingType"></param>
+        public static void SetTileToNewBuilding(int i, int j, Building building, BuildingType buildingType)
         {
-            switch (type)
+            _mapTilesFunctionality[i, j].BuildingType = buildingType;
+            _mapTilesFunctionality[i, j].Building = building;
+        }
+
+        public void DemolishBuilding(TileFunctionality tileToDemolish)
+        {
+            AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.demolishBuilding);
+            var (i, j) = tileToDemolish.MapPosition;
+
+            switch (tileToDemolish.BuildingType)
             {
-                case BuildManager.BuildingType.house:
-                case BuildManager.BuildingType.playground:
-                case BuildManager.BuildingType.hospital:
-                case BuildManager.BuildingType.police:
-                    building.GetComponentInChildren<IBuilding>().Demolish();
-                    building.GetComponent<BuildType>().type = BuildManager.BuildingType.none;
+                case BuildingType.house:
+                case BuildingType.playground:
+                case BuildingType.hospital:
+                case BuildingType.police:
+                case BuildingType.road:
+                    _mapTilesFunctionality[i, j].Building.Demolish();
+                    SetTileToNewBuilding(i, j, null, BuildingType.none);
                     break;
-                case BuildManager.BuildingType.road:
-                    _currentRoadToDestroy = building;
-                    DemolishRoad();
-                    break;
-                case BuildManager.BuildingType.none:
+                case BuildingType.none:
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+                    throw new ArgumentOutOfRangeException(nameof(tileToDemolish.BuildingType), tileToDemolish.BuildingType, null);
             }
         }
 
-        public void DemolishRoad()
+        public void DemolishRoad(Vector3 positionInWorld)
         {
-            AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.demolishBuilding);
-            ChangeRoadTileToBase((int)GetX_Index(_currentRoadToDestroy.transform.position.x), (int)GetZ_Index(_currentRoadToDestroy.transform.position.z));
-            NavMeshSurface.UpdateNavMesh(NavMeshSurface.navMeshData);
+            var (i, j) = GetTilePositionInMap(positionInWorld.x, positionInWorld.z);
+            ChangeRoadTileToBase(i, j);
+            _navMeshSurface.UpdateNavMesh(_navMeshSurface.navMeshData);
         }
 
-        public Vector2 TilePosition(float x, float z)
+        /// <summary>
+        /// Return a Vector2 with I,J tile map position
+        /// </summary>
+        /// <param name="x">Tile x position in world</param>
+        /// <param name="z">Tile z position in world</param>
+        /// <returns></returns>
+        public Vector2Int GetTilePositionInMap(float x, float z)
         {
-            return new Vector2(GetX_Index(x), GetZ_Index(z));
+            return new Vector2Int(GetI(x), GetJ(z));
+        }
+
+        public TileFunctionality GetTile(Vector3 tilePosition)
+        {
+            var positionInMap = GetTilePositionInMap(tilePosition.x, tilePosition.z);
+            return _mapTilesFunctionality[positionInMap.x, positionInMap.y];
+        }
+
+        public bool TryGetTile(Vector3 tilePosition, out TileFunctionality tile)
+        {
+           var (i,j) = GetTilePositionInMap(tilePosition.x, tilePosition.z);
+            if (!TileBelongsToMap(i,j))
+            {
+                tile = null;
+                return false;
+            }
+
+            tile = _mapTilesFunctionality[i, j];
+            return true;
+        }
+
+        public bool TryGetTile(int i, int j, out TileFunctionality tile)
+        {
+            if (!TileBelongsToMap(new Vector2Int(i, j)))
+            {
+                tile = null;
+                return false;
+            }
+
+            tile = _mapTilesFunctionality[i, j];
+            return true;
         }
 
         #region Negihbours
 
-        public List<GameObject> Get4Neighbours(GameObject tile, BuildManager.BuildingType type)
+        public List<TileFunctionality> Get4Neighbours(TileFunctionality tile, BuildingType type)
         {
-            var neighbours = new List<GameObject>();
-            var x = (int)GetX_Index(tile.transform.position.x);
-            var z = (int)GetZ_Index(tile.transform.position.z);
+            var neighbours = new List<TileFunctionality>();
+            var i = GetI(tile.transform.position.x);
+            var j = GetJ(tile.transform.position.z);
 
             //Right
             //Debug.Log(_MapTiles[x + 1, z].name);
-            if (x + 1 < MapSize && MapTiles[x + 1, z].GetComponent<BuildType>().type == type)
+            if (i + 1 < MapSize && _mapTilesFunctionality[i + 1, j].BuildingType == type)
             {
-                neighbours.Add(MapTiles[x + 1, z]);
+                neighbours.Add(_mapTilesFunctionality[i + 1, j]);
             }
 
             //Left
             //Debug.Log(_MapTiles[x - 1, z].name);
-            if (x - 1 >= 0 && MapTiles[x - 1, z].GetComponent<BuildType>().type == type)
+            if (i - 1 >= 0 && _mapTilesFunctionality[i - 1, j].BuildingType == type)
             {
-                neighbours.Add(MapTiles[x - 1, z]);
+                neighbours.Add(_mapTilesFunctionality[i - 1, j]);
             }
 
             //Up
             //Debug.Log(_MapTiles[x, z + 1].name);
-            if (z + 1 < MapSize && MapTiles[x, z + 1].GetComponent<BuildType>().type == type)
+            if (j + 1 < MapSize && _mapTilesFunctionality[i, j + 1].BuildingType == type)
             {
-                neighbours.Add(MapTiles[x, z + 1]);
+                neighbours.Add(_mapTilesFunctionality[i, j + 1]);
             }
 
             //Down
             //Debug.Log(_MapTiles[x, z - 1].name);
-            if (z - 1 >= 0 && MapTiles[x, z - 1].GetComponent<BuildType>().type == type)
+            if (j - 1 >= 0 && _mapTilesFunctionality[i, j - 1].BuildingType == type)
             {
-                neighbours.Add(MapTiles[x, z - 1]);
+                neighbours.Add(_mapTilesFunctionality[i, j - 1]);
             }
 
             return neighbours;
         }
 
-        public List<GameObject> Get4Neighbours(GameObject tile)
+        public List<TileFunctionality> Get4Neighbours(Vector3 tilePosition)
         {
-            var neighbours = new List<GameObject>();
-            var x = (int)GetX_Index(tile.transform.position.x);
-            var z = (int)GetZ_Index(tile.transform.position.z);
+            var neighbours = new List<TileFunctionality>();
+            var tile = GetTile(tilePosition);
+            var (i, j) = tile.MapPosition;
 
             //Right
-            neighbours.Add(x + 1 < MapSize ? MapTiles[x + 1, z] : null);
+            neighbours.Add(i + 1 < MapSize ? _mapTilesFunctionality[i + 1, j] : null);
             //Left
-            neighbours.Add(x - 1 >= 0 ? MapTiles[x - 1, z] : null);
+            neighbours.Add(i - 1 >= 0 ? _mapTilesFunctionality[i - 1, j] : null);
             //Up
-            neighbours.Add(z + 1 < MapSize ? MapTiles[x, z + 1] : null);
+            neighbours.Add(j + 1 < MapSize ? _mapTilesFunctionality[i, j + 1] : null);
             //Down
-            neighbours.Add(z - 1 >= 0 ? MapTiles[x, z - 1] : null);
+            neighbours.Add(j - 1 >= 0 ? _mapTilesFunctionality[i, j - 1] : null);
 
             return neighbours;
         }
 
-        public List<GameObject> Get8Neighbours(GameObject tile)
+        public List<TileFunctionality> Get8Neighbours(Vector3 tilePosition)
         {
-            var neighbours = new List<GameObject>();
-            var x = (int)GetX_Index(tile.transform.position.x);
-            var z = (int)GetZ_Index(tile.transform.position.z);
+            var neighbours = new List<TileFunctionality>();
+            var tile = GetTile(tilePosition);
+            var (i, j) = tile.MapPosition;
 
-            for (var i = x - 1; i <= x + 1; i++)
+            for (var x = i - 1; x <= i + 1; x++)
             {
-                for (var j = z - 1; j <= z + 1; j++)
+                for (var z = j - 1; z <= j + 1; z++)
                 {
-                    if (i >= 0 && i < MapSize && j >= 0 && j < MapSize && MapTiles[i, j] != tile) neighbours.Add(MapTiles[i, j]);
+                    if (x >= 0 && x < MapSize && z >= 0 && z < MapSize && _mapTilesFunctionality[x, z] != tile) neighbours.Add(_mapTilesFunctionality[x, z]);
                     else neighbours.Add(null);
                 }
             }
@@ -227,38 +266,40 @@ namespace Managers
             return neighbours;
         }
 
-        public List<GameObject> Get12Neightbour(GameObject tile)
+        public List<TileFunctionality> Get12Neighbours(Vector3 tilePosition)
         {
-            var neighbours = Get8Neighbours(tile);
-            var x = (int)GetX_Index(tile.transform.position.x);
-            var z = (int)GetZ_Index(tile.transform.position.z);
+            var neighbours = Get8Neighbours(tilePosition);
+            var tile = GetTile(tilePosition);
+            var i = GetI(tile.transform.position.x);
+            var j = GetJ(tile.transform.position.z);
+
             //Right
-            if (x + 2 < MapSize) neighbours.Add(MapTiles[x + 2, z]);
+            if (i + 2 < MapSize) neighbours.Add(_mapTilesFunctionality[i + 2, j]);
             else neighbours.Add(null);
             //Left
-            if (x - 2 >= 0) neighbours.Add(MapTiles[x - 2, z]);
+            if (i - 2 >= 0) neighbours.Add(_mapTilesFunctionality[i - 2, j]);
             else neighbours.Add(null);
             //Up
-            if (z + 2 < MapSize) neighbours.Add(MapTiles[x, z + 2]);
+            if (j + 2 < MapSize) neighbours.Add(_mapTilesFunctionality[i, j + 2]);
             else neighbours.Add(null);
             //Down
-            if (z - 2 >= 0) neighbours.Add(MapTiles[x, z - 2]);
+            if (j - 2 >= 0) neighbours.Add(_mapTilesFunctionality[i, j - 2]);
             else neighbours.Add(null);
 
             return neighbours;
         }
 
-        public List<GameObject> Get25Neighbour(GameObject tile)
+        public List<TileFunctionality> Get25Neighbour(Vector3 tilePosition)
         {
-            var neighbours = new List<GameObject>();
-            var x = (int)GetX_Index(tile.transform.position.x);
-            var z = (int)GetZ_Index(tile.transform.position.z);
+            var tile = GetTile(tilePosition);
+            var neighbours = new List<TileFunctionality>();
+            var (i, j) = tile.MapPosition;
 
-            for (var i = x - 2; i <= x + 2; i++)
+            for (var x = i - 2; x <= i + 2; x++)
             {
-                for (var j = z - 2; j <= z + 2; j++)
+                for (var z = j - 2; z <= j + 2; z++)
                 {
-                    if (i >= 0 && i < MapSize && j >= 0 && j < MapSize && MapTiles[i, j] != tile) neighbours.Add(MapTiles[i, j]);
+                    if (x >= 0 && x < MapSize && z >= 0 && z < MapSize && _mapTilesFunctionality[x, z] != tile) neighbours.Add(_mapTilesFunctionality[x, z]);
                     else neighbours.Add(null);
                 }
             }
@@ -270,20 +311,9 @@ namespace Managers
 
         public void DestroyAllMap()
         {
-            foreach (var mapTile in mapParent.GetComponentsInChildren<BuildType>())
-            {
-                DestroyImmediate(mapTile.gameObject);
-            }
-
-            foreach (var borderTile in borderParent.GetComponentsInChildren<BoxCollider>())
-            {
-                DestroyImmediate(borderTile.gameObject);
-            }
-
-            foreach (var roadTile in roadParent.GetComponentsInChildren<BuildType>())
-            {
-                DestroyImmediate(roadTile.gameObject);
-            }
+            Helpers.DestroyChildren(mapParent);
+            Helpers.DestroyChildren(borderParent);
+            Helpers.DestroyChildren(roadParent);
         }
 
         #endregion
@@ -292,18 +322,26 @@ namespace Managers
 
         private void BuildMap()
         {
-            MapTiles = new GameObject[mapSize, mapSize];
-            _mapTilesRenders = new MeshRenderer[mapSize, mapSize];
+            InitializeMapArrays();
             for (var i = 0; i < mapSize; i++)
             {
                 for (var j = 0; j < mapSize; j++)
                 {
                     var newTile = BuildNewTile(i, j, Tile.baseTile, mapParent);
                     InicializateLineRenderer(newTile);
-                    _mapTilesRenders[i, j] = newTile.GetComponentInChildren<MeshRenderer>();
+                    _mapTilesMeshRenderers[i, j] = newTile.GetComponentInChildren<MeshRenderer>();
+                    _mapTilesFunctionality[i, j] = newTile.GetComponent<TileFunctionality>();
+                    _mapTilesFunctionality[i, j].MapPosition = new Vector2Int(i, j);
                     MapTiles[i, j] = newTile;
                 }
             }
+        }
+
+        private void InitializeMapArrays()
+        {
+            MapTiles = new GameObject[mapSize, mapSize];
+            _mapTilesMeshRenderers = new MeshRenderer[mapSize, mapSize];
+            _mapTilesFunctionality = new TileFunctionality[mapSize, mapSize];
         }
 
         private void BuildBorder()
@@ -323,7 +361,7 @@ namespace Managers
         private void BuildStartRoad()
         {
             var positionY = Random.Range(3, mapSize - 3);
-            RoadZ = positionY;
+            RoadJ = positionY;
             for (var i = -borderSize; i < 0; i++)
             {
                 var newTile = BuildNewTile(i, positionY, Tile.road, roadParent);
@@ -358,19 +396,38 @@ namespace Managers
             }
         }
 
-        private bool TileBelongsToMap(int x, int y)
+        private bool TileBelongsToMap(Vector2Int tile)
         {
-            return (x >= 0 && y >= 0 && x < mapSize && y < mapSize);
+            return TileBelongsToMap(tile.x, tile.y);
         }
 
-        private float GetX_Index(float x)
+        private bool TileBelongsToMap(int i, int j)
         {
-            return x / XOffset;
+            return i >= 0 && j >= 0 && i < mapSize && j < mapSize;
         }
 
-        private float GetZ_Index(float z)
+        /// <summary>
+        /// World position to I map
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
+        private int GetI(float x)
         {
-            return z / ZOffset;
+            var result = x / xOffset;
+            // Debug.Log($"Round: {x} / {xOffset} = {result} ((int) {Mathf.RoundToInt(result)})");
+            return Mathf.RoundToInt(result);
+        }
+
+        /// <summary>
+        /// World position to J map
+        /// </summary>
+        /// <param name="z"></param>
+        /// <returns></returns>
+        private int GetJ(float z)
+        {
+            var result = z / ZOffset;
+            // Debug.Log($"{z} / {zOffset} = {result} ((int) {Mathf.RoundToInt(result)})");
+            return Mathf.RoundToInt(result);
         }
 
         private GameObject BuildNewTile(int i, int j, Tile type, Transform parent)
@@ -388,6 +445,7 @@ namespace Managers
                 case Tile.road:
                     newTile = Instantiate(baseTilePrefab, position, Quaternion.identity, parent);
                     newTile.GetComponentInChildren<MeshRenderer>().material = roadMaterial;
+                    // Build roadFunctionality
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
@@ -400,12 +458,10 @@ namespace Managers
 
         private void ChangeRoadTileToBase(int i, int j)
         {
-            if (i == 0 && j == RoadZ) BuildManager.Instance.IsFirstRoadBuild = false;
-            _mapTilesRenders[i, j].material = baseMaterial;
-            MapTiles[i, j].GetComponent<BuildType>().type = BuildManager.BuildingType.none;
+            if (i == 0 && j == RoadJ) BuildManager.Instance.IsFirstRoadBuild = false;
+            _mapTilesMeshRenderers[i, j].material = baseMaterial;
             MapTiles[i, j].transform.SetParent(mapParent);
             SetTileName(Tile.baseTile, i, j);
-            UIManagerInGame.Instance.DisableAllHUDExceptBuildPanel();
         }
 
         private void SetTileName(Tile type, int i, int j)

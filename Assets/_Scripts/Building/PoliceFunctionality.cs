@@ -1,5 +1,4 @@
 using Managers;
-using UnityEngine;
 
 namespace Buildings
 {
@@ -26,12 +25,7 @@ namespace Buildings
         {
             BuildingsManager.Instance.Police.Remove(this);
         }
-
-        protected override GameObject GetParentGameObject()
-        {
-            return gameObject;
-        }
-
+        
         #endregion
     }
 }

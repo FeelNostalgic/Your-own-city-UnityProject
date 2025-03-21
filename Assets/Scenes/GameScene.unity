@@ -18533,6 +18533,17 @@ MonoBehaviour:
   - {fileID: 1426059444569244415, guid: d204eb06fa053004b97575b975644615, type: 3}
   - {fileID: 274762369246031829, guid: f1f5182c151403a4d806f7c2ae78eb95, type: 3}
   - {fileID: 3397431177956392776, guid: afca841e32637fb489770984acb16039, type: 3}
+  buildingPrefabs:
+  - type: 1
+    buildingPrefab: {fileID: 4295975608700063983, guid: 42a62f8468e126140a43e607b22752dc, type: 3}
+  - type: 2
+    buildingPrefab: {fileID: 1426059444569244415, guid: d204eb06fa053004b97575b975644615, type: 3}
+  - type: 3
+    buildingPrefab: {fileID: 274762369246031829, guid: f1f5182c151403a4d806f7c2ae78eb95, type: 3}
+  - type: 4
+    buildingPrefab: {fileID: 3397431177956392776, guid: afca841e32637fb489770984acb16039, type: 3}
+  - type: 5
+    buildingPrefab: {fileID: 3217078993687623953, guid: e028e76dfda22cc4e92bf38fda0a3f50, type: 3}
   yBuilding: 13.65
   housePrice: 400
   roadPrice: 150

@@ -44,12 +44,27 @@ namespace Utilities
 			return _results.Count > 0;
 		}
 
+		public static void DestroyChildren(Transform parent)
+		{
+			foreach (var child in parent.GetComponentsInChildren<GameObject>())
+			{
+				Object.Destroy(child);
+			}
+		}
+		
+		public static void DestroyImmediateChildren(Transform parent)
+		{
+			foreach (var child in parent.GetComponentsInChildren<GameObject>())
+			{
+				Object.DestroyImmediate(child);
+			}
+		}
+
 		public static Vector2 GetWorldPositionOfCanvasElement(RectTransform element)
 		{
 			RectTransformUtility.ScreenPointToWorldPointInRectangle(element, element.position, Camera, out var result);
 			return result;
 		}
-
 
 		public static string GetLocalizedString(string tableName, string key)
 		{

@@ -35,15 +35,15 @@ namespace Buildings
             switch (_effectArea)
             {
                 case 1:
-                    _neighbourTiles = MapManager.Instance.Get8Neighbours(GetParentGameObject());
+                    _neighbourTiles = MapManager.Instance.Get8Neighbours(ParentPosition());
                     lineRendererPositions = BuildLineRenderer8Neighbours();
                     break;
                 case 2:
-                    _neighbourTiles = MapManager.Instance.Get12Neightbour(GetParentGameObject());
+                    _neighbourTiles = MapManager.Instance.Get12Neighbours(ParentPosition());
                     lineRendererPositions = BuildLineRenderer12Neighbours();
                     break;
                 case 3:
-                    _neighbourTiles = MapManager.Instance.Get25Neighbour(GetParentGameObject());
+                    _neighbourTiles = MapManager.Instance.Get25Neighbour(ParentPosition());
                     lineRendererPositions = BuildLineRenderer25Neighbours();
                     break;
             }

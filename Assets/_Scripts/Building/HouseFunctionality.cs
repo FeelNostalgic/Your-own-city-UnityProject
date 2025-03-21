@@ -2,18 +2,17 @@ using System;
 using Residents;
 using Managers;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace Buildings
 {
-    public class HouseFunctionality : MonoBehaviour, IBuilding
+    public class HouseFunctionality : Building
     {
         #region Inspector Variables
 
-        [FormerlySerializedAs("Lights")] [SerializeField] private Light[] lights;
-        [FormerlySerializedAs("MinSecondsBetweenHabitantes")] [Range(1, 50)] [SerializeField] private int minSecondsBetweenHabitantes;
-        [FormerlySerializedAs("MaxSecondsBetweenHabitantes")] [Range(2, 100)] [SerializeField] private int maxSecondsBetweenHabitantes;
+        [SerializeField] private Light[] lights;
+        [Range(1, 50)] [SerializeField] private int minSecondsBetweenHabitantes;
+        [Range(2, 100)] [SerializeField] private int maxSecondsBetweenHabitantes;
 
         #endregion
 
@@ -61,7 +60,7 @@ namespace Buildings
             LevelPrice = (int)(BuildManager.Instance.HousePrice * 2.5f);
             BuildingsManager.Instance.AddHouse();
         }
-        
+
         private void Update()
         {
             //Each second genere gold
@@ -130,18 +129,17 @@ namespace Buildings
 
         public override string ToString()
         {
-            return $"{gameObject.name}: Level {Level}, Inhabitants: {Inhabitants}, Current Gold Per Second: {CurrentGoldPerSecond}, Max Inhabitants: {MaxInhabitants}, Level Price: {LevelPrice}, Costs per second: {CostsPerSecond}";
+            return
+                $"{gameObject.name}: Level {Level}, Inhabitants: {Inhabitants}, Current Gold Per Second: {CurrentGoldPerSecond}, Max Inhabitants: {MaxInhabitants}, Level Price: {LevelPrice}, Costs per second: {CostsPerSecond}";
         }
 
-        public void Demolish()
+        public override void Demolish()
         {
-            AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.demolishBuilding);
             ResourcesManager.Instance.AddGold((int)(BuildManager.Instance.HousePrice * 0.8f * Level));
             ResourcesManager.Instance.AddGoldPerSecond((-CurrentGoldPerSecond * Multiplier));
             ResourcesManager.Instance.AddCosts(-CostsPerSecond);
             ResourcesManager.Instance.AddResident(-Inhabitants);
-            GetComponentInParent<BuildType>().type = BuildManager.BuildingType.none;
-            BuildingsManager.Instance.RemoveCasa(transform.parent.gameObject);
+            BuildingsManager.Instance.RemoveCasa(MapManager.Instance.GetTile(transform.parent.position));
             UIManagerInGame.Instance.DisableAllHUDExceptBuildPanel();
             Destroy(gameObject);
         }

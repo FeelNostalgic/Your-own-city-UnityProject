@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Utilities;
-using UnityEngine;
 
 namespace Buildings
 {
@@ -46,7 +45,7 @@ namespace Buildings
             }
         }
 
-        public void RemoveCasa(GameObject casa)
+        public void RemoveCasa(TileFunctionality casa)
         {
             foreach (var p in Playgrounds)
             {

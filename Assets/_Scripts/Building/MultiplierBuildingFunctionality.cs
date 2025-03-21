@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Commons;
 using Managers;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Buildings
 {
-    public abstract class MultiplierBuildingFunctionality : MonoBehaviour, IBuilding
+    public abstract class MultiplierBuildingFunctionality : Building
     {
         #region Inspector Variables
 
@@ -17,9 +17,8 @@ namespace Buildings
 
         [SerializeField] protected float startingMultiplier;
         [SerializeField] protected float multiplierUpgradePerLevel;
-        [SerializeField] private BuildManager.BuildingType type;
+        [SerializeField] private BuildingType type;
         
-
         #endregion
 
         #region Public Variables
@@ -31,7 +30,7 @@ namespace Buildings
         public int AffectedHouses => _affectedHouses.Count;
         public int LevelPrice => _levelPrice;
         public float BuyPrice => _buildingPrice;
-        public BuildManager.BuildingType BuildingType => type;
+        public BuildingType BuildingType => type;
         public event Action OnLevelUpdate;
 
         #endregion
@@ -43,8 +42,8 @@ namespace Buildings
         protected float _currentMultiplier;
         protected int _effectArea;
         protected int _levelPrice;
-        protected List<GameObject> _affectedHouses;
-        protected List<GameObject> _neighbourTiles;
+        protected List<TileFunctionality> _affectedHouses;
+        protected List<TileFunctionality> _neighbourTiles;
         protected LineRenderer _lineRenderer;
         protected float _buildingPrice;
 
@@ -56,8 +55,8 @@ namespace Buildings
         {
             _lineRenderer = GetComponent<LineRenderer>();
             RegisterBuilding();
-            _affectedHouses = new List<GameObject>();
-            _neighbourTiles = new List<GameObject>();
+            _affectedHouses = new List<TileFunctionality>();
+            _neighbourTiles = new List<TileFunctionality>();
             _currentLevel = 1;
             _costsPerSecond = startingCostsPerSecond;
             _currentMultiplier = 1 + startingMultiplier;
@@ -98,29 +97,27 @@ namespace Buildings
             }
         }
 
-        public void Demolish()
+        public override void Demolish()
         {
-            AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.demolishBuilding);
             ResourcesManager.Instance.AddGold((int)(_buildingPrice * 0.8f * _currentLevel));
             ResourcesManager.Instance.AddCosts(-_costsPerSecond);
             UpdateCurrentNeighboursMultiplier(-(_currentMultiplier - 1));
-            GetComponentInParent<BuildType>().type = BuildManager.BuildingType.none;
             UnregisterBuilding();
             UIManagerInGame.Instance.DisableAllHUDExceptBuildPanel();
             Destroy(gameObject);
         }
 
-        public void RemoveHouseFromAffectedHouses(GameObject casa)
+        public void RemoveHouseFromAffectedHouses(TileFunctionality house)
         {
-            if (_affectedHouses.Contains(casa)) _affectedHouses.Remove(casa);
+            if (_affectedHouses.Contains(house)) _affectedHouses.Remove(house);
         }
 
         public virtual void UpdateMultiplierNewNeighbours()
         {
-            foreach (var v in _neighbourTiles.Where(v => v != null && v.GetComponent<BuildType>().type == BuildManager.BuildingType.house && !_affectedHouses.Contains(v)))
+            foreach (var tile in _neighbourTiles.Where(tile => tile != null && tile.BuildingType == BuildingType.house && !_affectedHouses.Contains(tile)))
             {
-                _affectedHouses.Add(v);
-                v.GetComponentInChildren<HouseFunctionality>().UpgradeMultiplier(multiplierUpgradePerLevel);
+                _affectedHouses.Add(tile);
+                tile.GetComponentInChildren<HouseFunctionality>().UpgradeMultiplier(multiplierUpgradePerLevel);
             }
         }
 
@@ -156,16 +153,16 @@ namespace Buildings
             }
         }
 
-        protected virtual GameObject GetParentGameObject()
+        protected virtual Vector3 ParentPosition()
         {
-            return transform.parent.gameObject;
+            return transform.parent.position;
         }
 
         protected virtual void UpdateCurrentNeighboursMultiplier(float m)
         {
-            foreach (var c in _affectedHouses)
+            foreach (var tile in _affectedHouses)
             {
-                c.GetComponentInChildren<HouseFunctionality>().UpgradeMultiplier(m);
+                tile.GetComponentInChildren<HouseFunctionality>().UpgradeMultiplier(m);
             }
         }
 
@@ -177,15 +174,15 @@ namespace Buildings
             switch (_effectArea)
             {
                 case 1:
-                    _neighbourTiles = MapManager.Instance.Get4Neighbours(GetParentGameObject());
+                    _neighbourTiles = MapManager.Instance.Get4Neighbours(ParentPosition());
                     lineRendererPositions = BuildLineRenderer4Neighbours();
                     break;
                 case 2:
-                    _neighbourTiles = MapManager.Instance.Get8Neighbours(GetParentGameObject());
+                    _neighbourTiles = MapManager.Instance.Get8Neighbours(ParentPosition());
                     lineRendererPositions = BuildLineRenderer8Neighbours();
                     break;
                 case 3:
-                    _neighbourTiles = MapManager.Instance.Get12Neightbour(GetParentGameObject());
+                    _neighbourTiles = MapManager.Instance.Get12Neighbours(ParentPosition());
                     lineRendererPositions = BuildLineRenderer12Neighbours();
                     break;
             }

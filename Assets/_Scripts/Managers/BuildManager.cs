@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Buildings;
+using Commons;
 using Utilities;
 using UnityEngine;
 
@@ -9,9 +11,8 @@ namespace Managers
     public class BuildManager : MonoBehaviourSinglenton<BuildManager>
     {
         #region Inspector Variables
-
-        [Tooltip("Order: house, Playground, Hospital, Police")] [SerializeField]
-        private GameObject[] buildingsPrefab;
+        
+        [SerializeField] private List<BuildingPrefab> buildingPrefabs = new List<BuildingPrefab>();
 
         [Tooltip("Construction height of buildings")] [SerializeField]
         private float yBuilding;
@@ -36,39 +37,27 @@ namespace Managers
 
         public static BuildingType ActiveBuildingType { get; private set; }
         public static BuildingStatus Status { get; private set; }
-        
+
         public bool IsFirstRoadBuild
         {
             set => _isFirstRoadBuild = value;
         }
-
-        public enum BuildingType
-        {
-            none,
-            house,
-            playground,
-            hospital,
-            police,
-            road
-        }
-
-        public enum BuildingStatus
-        {
-            none, demolishing, building
-        }
-
+        
         #endregion
 
         #region Private Variables
 
-        private GameObject _currentTile;
+        private Dictionary<BuildingType, BuildingPrefab> _buildingPrefabsDic = new();
         private bool _isFirstRoadBuild;
 
         #endregion
 
         #region Unity Methods
 
-        // EMPTY
+        private void Awake()
+        {
+            _buildingPrefabsDic = buildingPrefabs.ToDictionary(x => x.type, x => x);
+        }
 
         #endregion
 
@@ -83,13 +72,13 @@ namespace Managers
                 ActiveBuildingType = BuildingType.none;
                 return false;
             }
-            
+
             Debug.Log($"Building is active with {type}");
             Status = BuildingStatus.building;
             ActiveBuildingType = type;
             return true;
         }
-        
+
         public static bool ToggleDemolish()
         {
             Status = Status == BuildingStatus.demolishing ? BuildingStatus.none : BuildingStatus.demolishing;
@@ -97,27 +86,26 @@ namespace Managers
             return Status == BuildingStatus.demolishing;
         }
 
-        public void BuildBuilding(GameObject tile)
+        public void BuildBuilding(TileFunctionality tile)
         {
-            _currentTile = tile;
             switch (ActiveBuildingType)
             {
                 case BuildingType.none:
                     break;
                 case BuildingType.house:
-                    BuildHouse();
+                    BuildHouse(tile);
                     break;
                 case BuildingType.playground:
-                    BuildPlayground();
+                    BuildPlayground(tile);
                     break;
                 case BuildingType.hospital:
-                    BuildHospital();
+                    BuildHospital(tile);
                     break;
                 case BuildingType.police:
-                    BuildPolice();
+                    BuildPolice(tile);
                     break;
                 case BuildingType.road:
-                    BuildRoad();
+                    BuildRoad(tile);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -128,7 +116,7 @@ namespace Managers
 
         #region Private Methods
 
-        private void BuildRoad()
+        private void BuildRoad(TileFunctionality tile)
         {
             if (ResourcesManager.Instance.CurrentGold >= roadPrice)
             {
@@ -136,12 +124,10 @@ namespace Managers
                 if (!_isFirstRoadBuild)
                 {
                     //Check if currentTile is neighbour of the firstRoad
-                    var tilePosition = MapManager.Instance.TilePosition(_currentTile.transform.position.x, _currentTile.transform.position.z);
-                    if (tilePosition.x == 0 && Mathf.Approximately(tilePosition.y, MapManager.Instance.RoadZ))
+                    var (i, j) = tile.MapPosition;
+                    if (i == 0 && j.Equals(MapManager.RoadJ))
                     {
-                        var newTile = MapManager.Instance.ChangeTileToRoad((int)tilePosition.x, (int)tilePosition.y);
-                        newTile.GetComponent<BuildType>().type = BuildingType.road;
-                        ResourcesManager.Instance.AddGold((int)-roadPrice);
+                        BuildRoadAtMap(i,j);
                         _isFirstRoadBuild = true;
                     }
                     else
@@ -151,18 +137,11 @@ namespace Managers
                 }
                 else
                 {
-                    var neighbours = MapManager.Instance.Get4Neighbours(_currentTile, BuildingType.road);
+                    var neighbours = MapManager.Instance.Get4Neighbours(tile, BuildingType.road);
                     if (neighbours.Count > 0)
                     {
-                        var tilePosition = MapManager.Instance.TilePosition(_currentTile.transform.position.x,
-                            _currentTile.transform.position.z);
-                        var newTile = MapManager.Instance.ChangeTileToRoad((int)tilePosition.x, (int)tilePosition.y);
-                        newTile.GetComponent<BuildType>().type = BuildingType.road;
-
-                        MapManager.Instance.NavMeshSurface
-                            .UpdateNavMesh(MapManager.Instance.NavMeshSurface.navMeshData);
-
-                        ResourcesManager.Instance.AddGold((int)-roadPrice);
+                        var (i, j) = tile.MapPosition;
+                        BuildRoadAtMap(i,j);
                         return;
                     }
 
@@ -175,17 +154,16 @@ namespace Managers
             }
         }
 
-        private void BuildHouse()
+        private void BuildHouse(TileFunctionality tile)
         {
             if (ResourcesManager.Instance.CurrentGold >= housePrice)
             {
-                var neighbours = MapManager.Instance.Get4Neighbours(_currentTile, BuildingType.road);
+                var neighbours = MapManager.Instance.Get4Neighbours(tile, BuildingType.road);
                 if (neighbours.Count > 0)
                 {
-                    var tilePosition = MapManager.Instance.TilePosition(_currentTile.transform.position.x, _currentTile.transform.position.z);
-                    var rotation = CalculateRotation(neighbours, tilePosition);
-                    BuildBuildingAtMapTile((int)tilePosition.x, (int)tilePosition.y, BuildingType.house, rotation);
-                    _currentTile.GetComponent<BuildType>().type = BuildingType.house;
+                    var (i, j) = tile.MapPosition;
+                    var rotation = CalculateRotation(neighbours, tile.MapPosition);
+                    BuildBuildingAtMapTile(i, j, BuildingType.house, rotation);
                     ResourcesManager.Instance.AddGold((int)-housePrice);
                     PointAndClickManager.DisableCurrentLineRendererSelected();
                     return;
@@ -198,17 +176,16 @@ namespace Managers
             UIManagerInGame.Instance.ShowNotEnoughGoldFeedback();
         }
 
-        private void BuildPlayground()
+        private void BuildPlayground(TileFunctionality tile)
         {
             if (ResourcesManager.Instance.CurrentGold >= playgroundPrice)
             {
-                var neighbours = MapManager.Instance.Get4Neighbours(_currentTile, BuildingType.road);
+                var neighbours = MapManager.Instance.Get4Neighbours(tile, BuildingType.road);
                 if (neighbours.Count > 0)
                 {
-                    var tilePosition = MapManager.Instance.TilePosition(_currentTile.transform.position.x, _currentTile.transform.position.z);
-                    var rotation = CalculateRotation(neighbours, tilePosition);
-                    BuildBuildingAtMapTile((int)tilePosition.x, (int)tilePosition.y, BuildingType.playground, rotation);
-                    _currentTile.GetComponent<BuildType>().type = BuildingType.playground;
+                    var (i, j) = tile.MapPosition;
+                    var rotation = CalculateRotation(neighbours, tile.MapPosition);
+                    BuildBuildingAtMapTile(i, j, BuildingType.playground, rotation);
                     ResourcesManager.Instance.AddGold((int)-playgroundPrice);
                     return;
                 }
@@ -220,18 +197,16 @@ namespace Managers
             UIManagerInGame.Instance.ShowNotEnoughGoldFeedback();
         }
 
-        private void BuildHospital()
+        private void BuildHospital(TileFunctionality tile)
         {
             if (ResourcesManager.Instance.CurrentGold >= hospitalPrice)
             {
-                var neighbours = MapManager.Instance.Get4Neighbours(_currentTile, BuildingType.road);
+                var neighbours = MapManager.Instance.Get4Neighbours(tile, BuildingType.road);
                 if (neighbours.Count > 0)
                 {
-                    var tilePosition = MapManager.Instance.TilePosition(_currentTile.transform.position.x,
-                        _currentTile.transform.position.z);
-                    var rotation = CalculateRotation(neighbours, tilePosition);
-                    BuildBuildingAtMapTile((int)tilePosition.x, (int)tilePosition.y, BuildingType.hospital, rotation);
-                    _currentTile.GetComponent<BuildType>().type = BuildingType.hospital;
+                    var (i, j) = tile.MapPosition;
+                    var rotation = CalculateRotation(neighbours, tile.MapPosition);
+                    BuildBuildingAtMapTile(i, j, BuildingType.hospital, rotation);
                     ResourcesManager.Instance.AddGold((int)-hospitalPrice);
                     return;
                 }
@@ -243,18 +218,16 @@ namespace Managers
             UIManagerInGame.Instance.ShowNotEnoughGoldFeedback();
         }
 
-        private void BuildPolice()
+        private void BuildPolice(TileFunctionality tile)
         {
             if (ResourcesManager.Instance.CurrentGold >= policePrice)
             {
-                var neighbours = MapManager.Instance.Get4Neighbours(_currentTile, BuildingType.road);
+                var neighbours = MapManager.Instance.Get4Neighbours(tile, BuildingType.road);
                 if (neighbours.Count > 0)
                 {
-                    var tilePosition = MapManager.Instance.TilePosition(_currentTile.transform.position.x,
-                        _currentTile.transform.position.z);
-                    var rotation = CalculateRotation(neighbours, tilePosition);
-                    BuildBuildingAtMapTile((int)tilePosition.x, (int)tilePosition.y, BuildingType.police, rotation);
-                    _currentTile.GetComponent<BuildType>().type = BuildingType.police;
+                    var (i, j) = tile.MapPosition;
+                    var rotation = CalculateRotation(neighbours, tile.MapPosition);
+                    BuildBuildingAtMapTile(i, j, BuildingType.police, rotation);
                     ResourcesManager.Instance.AddGold((int)-policePrice);
                     return;
                 }
@@ -266,31 +239,30 @@ namespace Managers
             UIManagerInGame.Instance.ShowNotEnoughGoldFeedback();
         }
 
-        private static Quaternion CalculateRotation(List<GameObject> vecinos, Vector2 position)
+        private static Quaternion CalculateRotation(List<TileFunctionality> vecinos, Vector2Int position)
         {
-            var neighbour =
-                MapManager.Instance.TilePosition(vecinos[0].transform.position.x, vecinos[0].transform.position.z);
+            var neighbour = MapManager.Instance.GetTilePositionInMap(vecinos[0].transform.position.x, vecinos[0].transform.position.z);
 
             //Left
-            if (Mathf.Approximately(neighbour.x + 1, position.x))
+            if ((neighbour.x + 1).Equals(position.x))
             {
                 return Quaternion.AngleAxis(90, Vector3.up);
             }
 
             //Up
-            if (Mathf.Approximately(neighbour.y - 1, position.y))
+            if ((neighbour.y - 1).Equals(position.y))
             {
                 return Quaternion.AngleAxis(180, Vector3.up);
             }
 
             //Right
-            if (Mathf.Approximately(neighbour.x - 1, position.x))
+            if ((neighbour.x - 1).Equals(position.x))
             {
                 return Quaternion.AngleAxis(270, Vector3.up);
             }
 
             //Down
-            if (Mathf.Approximately(neighbour.y + 1, position.y))
+            if ((neighbour.y + 1).Equals(position.y))
             {
                 return Quaternion.identity;
             }
@@ -298,15 +270,34 @@ namespace Managers
             return Quaternion.identity;
         }
 
+        private void BuildRoadAtMap(int i, int j)
+        {
+            AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buildBuilding);
+            var newBuilding = Instantiate(_buildingPrefabsDic[BuildingType.road].buildingPrefab, MapManager.Instance.MapTiles[i, j].transform);
+            newBuilding.transform.position = Vector3.zero;
+            newBuilding.name = BuildingType.road + "[" + i + ", " + j + "]";
+            MapManager.SetTileToNewBuilding(i,j, newBuilding.GetComponent<Building>(), BuildingType.road);
+            MapManager.Instance.ChangeTileToRoad(i,j);
+            ResourcesManager.Instance.AddGold((int)-roadPrice);
+        }
+
         private void BuildBuildingAtMapTile(int i, int j, BuildingType type, Quaternion rotation)
         {
             AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buildBuilding);
-            var newBuilding = Instantiate(buildingsPrefab[(int)type - 1], MapManager.Instance.MapTiles[i, j].transform);
+            var newBuilding = Instantiate(_buildingPrefabsDic[type].buildingPrefab, MapManager.Instance.MapTiles[i, j].transform);
             newBuilding.transform.position = new Vector3(newBuilding.transform.position.x, yBuilding, newBuilding.transform.position.z);
             newBuilding.transform.rotation = rotation;
             newBuilding.name = type + "[" + i + ", " + j + "]";
+            MapManager.SetTileToNewBuilding(i,j, newBuilding.GetComponent<Building>(), type);
         }
 
         #endregion
+    }
+
+    [Serializable]
+    public struct BuildingPrefab
+    {
+        public BuildingType type;
+        public GameObject buildingPrefab;
     }
 }

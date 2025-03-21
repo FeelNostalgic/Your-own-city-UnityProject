@@ -1,6 +1,6 @@
 using System.Linq;
+using Commons;
 using Managers;
-using UnityEngine;
 
 namespace Buildings
 {
@@ -27,15 +27,10 @@ namespace Buildings
         {
             BuildingsManager.Instance.Playgrounds.Remove(this);
         }
-
-        protected override GameObject GetParentGameObject()
-        {
-            return gameObject;
-        }
-
+        
         public override void UpdateMultiplierNewNeighbours()
         {
-            foreach (var v in _neighbourTiles.Where(v => v != null && v.GetComponent<BuildType>().type == BuildManager.BuildingType.house && !_affectedHouses.Contains(v)))
+            foreach (var v in _neighbourTiles.Where(tileFunctionality => tileFunctionality != null && tileFunctionality.BuildingType == BuildingType.house && !_affectedHouses.Contains(tileFunctionality)))
             {
                 _affectedHouses.Add(v);
                 v.GetComponentInChildren<HouseFunctionality>().UpgradeMultiplier(_currentMultiplier - 1);

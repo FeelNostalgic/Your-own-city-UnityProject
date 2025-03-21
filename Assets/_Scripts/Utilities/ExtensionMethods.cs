@@ -295,6 +295,16 @@ namespace Utilities
 
         #endregion
 
+        #region Vector2Int
+
+        public static void Deconstruct(this Vector2Int vector, out int x, out int y)
+        {
+            x = vector.x;
+            y = vector.y;
+        }
+
+        #endregion
+
         #region Vector3
 
         public static Vector3 AddXOffset(this Vector3 v3, float offset)

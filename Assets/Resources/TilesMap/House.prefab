@@ -309,12 +309,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d73e54dd780099240ad14da70f91a120, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Lights:
+  lights:
   - {fileID: 3577211424673633918}
   - {fileID: 7449230272876807099}
   - {fileID: 1701418677694771424}
-  MinSecondsBetweenHabitantes: 6
-  MaxSecondsBetweenHabitantes: 12
+  minSecondsBetweenHabitantes: 0
+  maxSecondsBetweenHabitantes: 0
 --- !u!1 &7300200207925328643
 GameObject:
   m_ObjectHideFlags: 0
