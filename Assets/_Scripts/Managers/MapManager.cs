@@ -51,7 +51,6 @@ namespace Managers
         public float ZOffset => zOffset;
         public static int RoadJ { get; private set; }
 
-        public GameObject[,] MapTiles { get; private set; }
 
         public GameObject RoadSpawnPoint { get; private set; }
 
@@ -63,6 +62,7 @@ namespace Managers
         #region Private Variables
 
         private static GameObject[,] _borderTiles;
+        private GameObject[,] _mapTilesGameObjects;
         private static MeshRenderer[,] _mapTilesMeshRenderers;
         private static TileFunctionality[,] _mapTilesFunctionality;
 
@@ -102,7 +102,7 @@ namespace Managers
         public void ChangeTileToRoad(int i, int j)
         {
             _mapTilesMeshRenderers[i, j].material = roadMaterial;
-            MapTiles[i, j].transform.SetParent(roadParent);
+            _mapTilesGameObjects[i, j].transform.SetParent(roadParent);
             SetTileName(Tile.road, i, j);
             _navMeshSurface.BuildNavMesh();
         }
@@ -332,14 +332,14 @@ namespace Managers
                     _mapTilesMeshRenderers[i, j] = newTile.GetComponentInChildren<MeshRenderer>();
                     _mapTilesFunctionality[i, j] = newTile.GetComponent<TileFunctionality>();
                     _mapTilesFunctionality[i, j].MapPosition = new Vector2Int(i, j);
-                    MapTiles[i, j] = newTile;
+                    _mapTilesGameObjects[i, j] = newTile;
                 }
             }
         }
 
         private void InitializeMapArrays()
         {
-            MapTiles = new GameObject[mapSize, mapSize];
+            _mapTilesGameObjects = new GameObject[mapSize, mapSize];
             _mapTilesMeshRenderers = new MeshRenderer[mapSize, mapSize];
             _mapTilesFunctionality = new TileFunctionality[mapSize, mapSize];
         }
@@ -460,13 +460,13 @@ namespace Managers
         {
             if (i == 0 && j == RoadJ) BuildManager.Instance.IsFirstRoadBuild = false;
             _mapTilesMeshRenderers[i, j].material = baseMaterial;
-            MapTiles[i, j].transform.SetParent(mapParent);
+            _mapTilesGameObjects[i, j].transform.SetParent(mapParent);
             SetTileName(Tile.baseTile, i, j);
         }
 
         private void SetTileName(Tile type, int i, int j)
         {
-            MapTiles[i, j].name = type + "[" + i + ", " + j + "]";
+            _mapTilesGameObjects[i, j].name = type + "[" + i + ", " + j + "]";
         }
 
         private void InicializateLineRenderer(GameObject newTile)

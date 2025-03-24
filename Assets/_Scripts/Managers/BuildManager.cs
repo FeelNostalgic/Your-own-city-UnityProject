@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Buildings;
 using Commons;
+using UnityEditor.AddressableAssets.Build.Layout;
 using Utilities;
 using UnityEngine;
 
@@ -11,8 +12,9 @@ namespace Managers
     public class BuildManager : MonoBehaviourSinglenton<BuildManager>
     {
         #region Inspector Variables
-        
-        [SerializeField] private List<BuildingPrefab> buildingPrefabs = new List<BuildingPrefab>();
+
+        [SerializeField] private List<BuildingPrefab> buildingPrefabs = new();
+        [SerializeField] private List<BuildingPrefab> previewBuildings = new();
 
         [Tooltip("Construction height of buildings")] [SerializeField]
         private float yBuilding;
@@ -42,13 +44,16 @@ namespace Managers
         {
             set => _isFirstRoadBuild = value;
         }
-        
+
         #endregion
 
         #region Private Variables
 
-        private Dictionary<BuildingType, BuildingPrefab> _buildingPrefabsDic = new();
+        private Dictionary<BuildingType, GameObject> _buildingPrefabsDic = new();
+        private Dictionary<BuildingType, GameObject> _buildingPreviewsDic = new();
+
         private bool _isFirstRoadBuild;
+        private GameObject _activeBuildingPreview;
 
         #endregion
 
@@ -56,7 +61,8 @@ namespace Managers
 
         private void Awake()
         {
-            _buildingPrefabsDic = buildingPrefabs.ToDictionary(x => x.type, x => x);
+            _buildingPrefabsDic = buildingPrefabs.ToDictionary(x => x.type, x => x.buildingPrefab);
+            _buildingPreviewsDic = previewBuildings.ToDictionary(x => x.type, x => x.buildingPrefab);
         }
 
         #endregion
@@ -86,6 +92,61 @@ namespace Managers
             return Status == BuildingStatus.demolishing;
         }
 
+
+        /// <summary>
+        /// Show preview in tile only if building
+        /// </summary>
+        /// <param name="tile">On which tile to show the preview</param>
+        public void ShowBuildingPreview(TileFunctionality tile)
+        {
+            if (Status != BuildingStatus.building) return;
+            // Check if tile has already a building
+            if (tile.BuildingType == BuildingType.none)
+            {
+                var neighbours = MapManager.Instance.Get4Neighbours(tile, BuildingType.road);
+                switch (ActiveBuildingType)
+                {
+                    case BuildingType.house:
+                    case BuildingType.playground:
+                    case BuildingType.hospital:
+                    case BuildingType.police:
+                        // Show preview
+                        if (neighbours.Count > 0)
+                        {
+                            var rotation = CalculateRotation(neighbours, tile.MapPosition);
+                            ShowPreview(tile.WorldPosition, rotation, ActiveBuildingType);
+                            return;
+                        }
+
+                        break;
+                    case BuildingType.road:
+                        if (!_isFirstRoadBuild)
+                        {
+                            //Check if currentTile is neighbour of the firstRoad
+                            var (i, j) = tile.MapPosition;
+                            if (i == 0 && j.Equals(MapManager.RoadJ))
+                            {
+                                ShowPreview(tile.WorldPosition, ActiveBuildingType);
+                                return;
+                            }
+                        }
+
+                        if (neighbours.Count > 0)
+                        {
+                            ShowPreview(tile.WorldPosition, ActiveBuildingType);
+                            return;
+                        }
+
+                        break;
+                    case BuildingType.none:
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+
+            DisablePreview();
+        }
+
         public void BuildBuilding(TileFunctionality tile)
         {
             switch (ActiveBuildingType)
@@ -110,6 +171,8 @@ namespace Managers
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+
+            DisablePreview();
         }
 
         #endregion
@@ -127,7 +190,7 @@ namespace Managers
                     var (i, j) = tile.MapPosition;
                     if (i == 0 && j.Equals(MapManager.RoadJ))
                     {
-                        BuildRoadAtMap(i,j);
+                        BuildRoadAtMap(tile);
                         _isFirstRoadBuild = true;
                     }
                     else
@@ -141,7 +204,7 @@ namespace Managers
                     if (neighbours.Count > 0)
                     {
                         var (i, j) = tile.MapPosition;
-                        BuildRoadAtMap(i,j);
+                        BuildRoadAtMap(tile);
                         return;
                     }
 
@@ -163,7 +226,7 @@ namespace Managers
                 {
                     var (i, j) = tile.MapPosition;
                     var rotation = CalculateRotation(neighbours, tile.MapPosition);
-                    BuildBuildingAtMapTile(i, j, BuildingType.house, rotation);
+                    BuildBuildingAtMapTile(tile, BuildingType.house, rotation);
                     ResourcesManager.Instance.AddGold((int)-housePrice);
                     PointAndClickManager.DisableCurrentLineRendererSelected();
                     return;
@@ -185,7 +248,7 @@ namespace Managers
                 {
                     var (i, j) = tile.MapPosition;
                     var rotation = CalculateRotation(neighbours, tile.MapPosition);
-                    BuildBuildingAtMapTile(i, j, BuildingType.playground, rotation);
+                    BuildBuildingAtMapTile(tile, BuildingType.playground, rotation);
                     ResourcesManager.Instance.AddGold((int)-playgroundPrice);
                     return;
                 }
@@ -206,7 +269,7 @@ namespace Managers
                 {
                     var (i, j) = tile.MapPosition;
                     var rotation = CalculateRotation(neighbours, tile.MapPosition);
-                    BuildBuildingAtMapTile(i, j, BuildingType.hospital, rotation);
+                    BuildBuildingAtMapTile(tile, BuildingType.hospital, rotation);
                     ResourcesManager.Instance.AddGold((int)-hospitalPrice);
                     return;
                 }
@@ -227,7 +290,7 @@ namespace Managers
                 {
                     var (i, j) = tile.MapPosition;
                     var rotation = CalculateRotation(neighbours, tile.MapPosition);
-                    BuildBuildingAtMapTile(i, j, BuildingType.police, rotation);
+                    BuildBuildingAtMapTile(tile, BuildingType.police, rotation);
                     ResourcesManager.Instance.AddGold((int)-policePrice);
                     return;
                 }
@@ -270,25 +333,58 @@ namespace Managers
             return Quaternion.identity;
         }
 
-        private void BuildRoadAtMap(int i, int j)
+        private void BuildRoadAtMap(TileFunctionality tile)
         {
             AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buildBuilding);
-            var newBuilding = Instantiate(_buildingPrefabsDic[BuildingType.road].buildingPrefab, MapManager.Instance.MapTiles[i, j].transform);
+            var newBuilding = Instantiate(_buildingPrefabsDic[BuildingType.road], tile.Transform);
             newBuilding.transform.position = Vector3.zero;
+            var (i, j) = tile.MapPosition;
             newBuilding.name = BuildingType.road + "[" + i + ", " + j + "]";
-            MapManager.SetTileToNewBuilding(i,j, newBuilding.GetComponent<Building>(), BuildingType.road);
-            MapManager.Instance.ChangeTileToRoad(i,j);
+            MapManager.SetTileToNewBuilding(i, j, newBuilding.GetComponent<Building>(), BuildingType.road);
+            MapManager.Instance.ChangeTileToRoad(i, j);
             ResourcesManager.Instance.AddGold((int)-roadPrice);
         }
 
-        private void BuildBuildingAtMapTile(int i, int j, BuildingType type, Quaternion rotation)
+        private void DisablePreview()
+        {
+            if (_activeBuildingPreview) _activeBuildingPreview.SetActive(false);
+        }
+
+        private void ShowPreview(Vector3 position, Quaternion rotation, BuildingType type)
+        {
+            if (_activeBuildingPreview) _activeBuildingPreview.SetActive(false);
+            var preview = _buildingPreviewsDic[type];
+            preview.transform.SetXZ(position.x, position.z);
+            preview.transform.SetRotation(rotation);
+            preview.SetActive(true);
+            _activeBuildingPreview = preview;
+        }
+
+        /// <summary>
+        /// Only for road
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="type"></param>
+        private void ShowPreview(Vector3 position, BuildingType type)
+        {
+            if (_activeBuildingPreview) _activeBuildingPreview.SetActive(false);
+            var preview = _buildingPreviewsDic[type];
+            // var meshRenderer = _buildingPreviewsMeshRendererDic[type];
+            //meshRenderer.material.color = isRed ? Color.red : Color.white;
+            preview.transform.SetPosition(position);
+            preview.SetActive(true);
+            _activeBuildingPreview = preview;
+        }
+
+        private void BuildBuildingAtMapTile(TileFunctionality tile, BuildingType type, Quaternion rotation)
         {
             AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.buildBuilding);
-            var newBuilding = Instantiate(_buildingPrefabsDic[type].buildingPrefab, MapManager.Instance.MapTiles[i, j].transform);
-            newBuilding.transform.position = new Vector3(newBuilding.transform.position.x, yBuilding, newBuilding.transform.position.z);
+            var newBuilding = Instantiate(_buildingPrefabsDic[type], tile.Transform);
+            newBuilding.transform.SetY(yBuilding);
             newBuilding.transform.rotation = rotation;
+            var (i, j) = tile.MapPosition;
             newBuilding.name = type + "[" + i + ", " + j + "]";
-            MapManager.SetTileToNewBuilding(i,j, newBuilding.GetComponent<Building>(), type);
+            MapManager.SetTileToNewBuilding(i, j, newBuilding.GetComponent<Building>(), type);
         }
 
         #endregion

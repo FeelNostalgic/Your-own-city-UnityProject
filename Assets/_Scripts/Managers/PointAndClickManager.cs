@@ -11,9 +11,9 @@ namespace Managers
         #region Inspector Variables
 
         [SerializeField] private LayerMask layerHitable;
-        
+
         #endregion
-        
+
         #region Private Variables
 
         private Camera _mainCamera; //Cached camera
@@ -23,14 +23,14 @@ namespace Managers
         private static TileFunctionality _selectedTile;
 
         #endregion
-        
+
         #region Unity Methods
 
         private void Awake()
         {
             _mainCamera = Helpers.Camera;
         }
-        
+
         private void Update()
         {
             if (GameManager.CurrentGameState == GameState.Playing)
@@ -68,7 +68,7 @@ namespace Managers
             }
 
             _ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
-            Debug.DrawRay(_ray.origin, _ray.direction * 100, Color.red);
+            Debug.DrawRay(_ray.origin, _ray.direction * 300, Color.red);
 
             if (!Physics.Raycast(_ray, out _hit, 300, layerHitable)) return;
 
@@ -85,7 +85,7 @@ namespace Managers
             if (!MapManager.Instance.TryGetTile(_hit.collider.transform.position, out var newTile)) return;
 
             // Debug.Log($"Pointing to: {_hit.collider.name} | Get tile: {newTile.name} | World position: {_hit.collider.transform.position}, Map: {newTile.MapPosition}");
-            
+
             switch (newTile.HighlightState)
             {
                 case HighlightType.selected:
@@ -99,6 +99,7 @@ namespace Managers
                     _currentHighlightedTile?.Unhighlight();
                     newTile.Highlight();
                     _currentHighlightedTile = newTile;
+                    BuildManager.Instance.ShowBuildingPreview(newTile);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -180,7 +181,7 @@ namespace Managers
                     break;
             }
         }
-        
+
         #endregion
     }
 }
