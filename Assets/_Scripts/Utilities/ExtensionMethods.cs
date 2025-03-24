@@ -19,6 +19,11 @@ namespace Utilities
             t.position = new Vector3(t.position.x, t.position.y + moveY, t.position.z);
         }
 
+        public static void SetX(this Transform t, float x)
+        {
+            t.position = new Vector3(x, t.position.y, t.position.z);
+        }
+        
         public static void SetZ(this Transform t, float z)
         {
             t.position = new Vector3(t.position.x, t.position.y, z);
@@ -29,19 +34,24 @@ namespace Utilities
             t.position = new Vector3(t.position.x, y, t.position.z);
         }
 
+        public static void SetXZ(this Transform t, float x, float z)
+        {
+            t.position = new Vector3(x, t.position.y, z);
+        }
+
         public static void SetZLocalRotation(this Transform t, float zRotation)
         {
-            t.localRotation = Quaternion.Euler(new Vector3(t.transform.localRotation.eulerAngles.x, t.transform.localRotation.eulerAngles.y, zRotation));
+            t.localRotation = Quaternion.Euler(new Vector3(t.localRotation.eulerAngles.x, t.localRotation.eulerAngles.y, zRotation));
         }
 
         public static void AddZLocalRotation(this Transform t, float zToAdd)
         {
-            t.localRotation = Quaternion.Euler(new Vector3(t.transform.localRotation.eulerAngles.x, t.transform.localRotation.eulerAngles.y, t.transform.localRotation.eulerAngles.z + zToAdd));
+            t.localRotation = Quaternion.Euler(new Vector3(t.localRotation.eulerAngles.x, t.localRotation.eulerAngles.y, t.localRotation.eulerAngles.z + zToAdd));
         }
 
         public static void SetXLocalRotation(this Transform t, float xRotation)
         {
-            t.localRotation = Quaternion.Euler(new Vector3(xRotation, t.transform.localRotation.eulerAngles.y, t.transform.localRotation.eulerAngles.z));
+            t.localRotation = Quaternion.Euler(new Vector3(xRotation, t.localRotation.eulerAngles.y, t.localRotation.eulerAngles.z));
         }
 
         public static float AnglePointingTo(this Transform t, Vector3 towards)
@@ -56,26 +66,36 @@ namespace Utilities
 
         public static void SetZRotation(this Transform t, float rotationZ)
         {
-            var rotationEuler = t.transform.rotation.eulerAngles;
-            t.transform.rotation = Quaternion.Euler(new Vector3(rotationEuler.x, rotationEuler.y, rotationZ));
+            var rotationEuler = t.rotation.eulerAngles;
+            t.rotation = Quaternion.Euler(new Vector3(rotationEuler.x, rotationEuler.y, rotationZ));
         }
         
         public static void LimitX(this Transform t, float min, float max)
         {
-            var newX = Mathf.Clamp(t.transform.position.x, min, max);
-            t.transform.position = new Vector3(newX, t.transform.position.y, t.transform.position.z);
+            var newX = Mathf.Clamp(t.position.x, min, max);
+            t.position = new Vector3(newX, t.position.y, t.position.z);
         }
 
         public static void LimitY(this Transform t, float min, float max)
         {
-            var newY = Mathf.Clamp(t.transform.position.y, min, max);
-            t.transform.position = new Vector3(t.transform.position.x, newY, t.transform.position.z);
+            var newY = Mathf.Clamp(t.position.y, min, max);
+            t.position = new Vector3(t.position.x, newY, t.position.z);
         }
 
         public static void LimitZ(this Transform t, float min, float max)
         {
-            var newZ = Mathf.Clamp(t.transform.position.z, min, max);
-            t.transform.position = new Vector3(t.transform.position.x, t.transform.position.y, newZ);
+            var newZ = Mathf.Clamp(t.position.z, min, max);
+            t.position = new Vector3(t.position.x, t.position.y, newZ);
+        }
+
+        public static void SetPosition(this Transform t, Vector3 position)
+        {
+            t.position = position;
+        }
+
+        public static void SetRotation(this Transform t, Quaternion rotation)
+        {
+            t.rotation = rotation;
         }
 
         public static void DeleteChildren(this Transform t)
