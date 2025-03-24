@@ -58,15 +58,15 @@ namespace UI
             _buttonDefaultSprite = _buttonImages[BuildingType.road].sprite;
             _demolishButtonImage = demolishButton.GetComponent<Image>();
             _openPanelRectTransformTMP = openPanelButton.GetComponentInChildren<TMP_Text>().GetComponent<RectTransform>();
-            OwnAnimateUI.OnShowAnimationPlay += RotateOpenButton;
-            OwnAnimateUI.OnHideAnimationPlay += RotateOpenButton;
+            OwnAnimateUI.OnShowAnimationPlay += RotateOpenButtonToClose;
+            OwnAnimateUI.OnHideAnimationCompleted += RotateOpenButtonToOpen;
             OwnAnimateUI.OnHideAnimationCompleted += SetBuildingModeToNone;
         }
         
         private void OnDestroy()
         {
-            OwnAnimateUI.OnShowAnimationPlay -= RotateOpenButton;
-            OwnAnimateUI.OnHideAnimationPlay -= RotateOpenButton;
+            OwnAnimateUI.OnShowAnimationPlay -= RotateOpenButtonToClose;
+            OwnAnimateUI.OnHideAnimationCompleted -= RotateOpenButtonToOpen;
             OwnAnimateUI.OnHideAnimationCompleted -= SetBuildingModeToNone;
         }
 
@@ -131,9 +131,14 @@ namespace UI
             _demolishButtonImage.sprite = isDemolishActive ? buttonPressedSprite : _buttonDefaultSprite;
         }
         
-        private void RotateOpenButton()
+        private void RotateOpenButtonToOpen()
         {
-            _openPanelRectTransformTMP.rotation = Quaternion.Euler(0, 0, OwnAnimateUI.IsOpen ? 180 : 0);
+            _openPanelRectTransformTMP.rotation = Quaternion.Euler(0, 0, 0);
+        }
+
+        private void RotateOpenButtonToClose()
+        {
+            _openPanelRectTransformTMP.rotation = Quaternion.Euler(0, 0, 180);
         }
         
         private void ToggleBuildingType(BuildingType type)
