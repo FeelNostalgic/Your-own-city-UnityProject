@@ -40,7 +40,7 @@ namespace Managers
         public static BuildingType ActiveBuildingType { get; private set; }
         public static BuildingStatus Status { get; private set; }
 
-        public bool IsFirstRoadBuild
+        public static bool IsFirstRoadBuild
         {
             set => _isFirstRoadBuild = value;
         }
@@ -49,11 +49,11 @@ namespace Managers
 
         #region Private Variables
 
-        private Dictionary<BuildingType, GameObject> _buildingPrefabsDic = new();
-        private Dictionary<BuildingType, GameObject> _buildingPreviewsDic = new();
+        private static Dictionary<BuildingType, GameObject> _buildingPrefabsDic = new();
+        private static Dictionary<BuildingType, GameObject> _buildingPreviewsDic = new();
 
-        private bool _isFirstRoadBuild;
-        private GameObject _activeBuildingPreview;
+        private static bool _isFirstRoadBuild;
+        private static GameObject _activeBuildingPreview;
 
         #endregion
 
@@ -175,6 +175,11 @@ namespace Managers
             DisablePreview();
         }
 
+        public static void DisablePreview()
+        {
+            if (_activeBuildingPreview) _activeBuildingPreview.SetActive(false);
+        }
+        
         #endregion
 
         #region Private Methods
@@ -344,12 +349,7 @@ namespace Managers
             MapManager.Instance.ChangeTileToRoad(i, j);
             ResourcesManager.AddGold((int)-roadPrice);
         }
-
-        private void DisablePreview()
-        {
-            if (_activeBuildingPreview) _activeBuildingPreview.SetActive(false);
-        }
-
+        
         private void ShowPreview(Vector3 position, Quaternion rotation, BuildingType type)
         {
             if (_activeBuildingPreview) _activeBuildingPreview.SetActive(false);

@@ -64,6 +64,8 @@ namespace Managers
             if (Input.GetMouseButton(1) || Helpers.IsOverUI())
             {
                 _currentHighlightedTile?.Unhighlight();
+                _currentHighlightedTile = null;
+                BuildManager.DisablePreview();
                 return;
             }
 
@@ -82,7 +84,13 @@ namespace Managers
 
         private void HighlightHoveredTile()
         {
-            if (!MapManager.Instance.TryGetTile(_hit.collider.transform.position, out var newTile)) return;
+            if (!MapManager.Instance.TryGetTile(_hit.collider.transform.position, out var newTile))
+            {
+                _currentHighlightedTile?.Unhighlight();
+                _currentHighlightedTile = null;
+                BuildManager.DisablePreview();
+                return;
+            }
 
             // Debug.Log($"Pointing to: {_hit.collider.name} | Get tile: {newTile.name} | World position: {_hit.collider.transform.position}, Map: {newTile.MapPosition}");
 

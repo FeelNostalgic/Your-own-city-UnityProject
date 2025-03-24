@@ -458,7 +458,7 @@ namespace Managers
 
         private void ChangeRoadTileToBase(int i, int j)
         {
-            if (i == 0 && j == RoadJ) BuildManager.Instance.IsFirstRoadBuild = false;
+            if (i == 0 && j == RoadJ) BuildManager.IsFirstRoadBuild = false;
             _mapTilesMeshRenderers[i, j].material = baseMaterial;
             _mapTilesGameObjects[i, j].transform.SetParent(mapParent);
             SetTileName(Tile.baseTile, i, j);
