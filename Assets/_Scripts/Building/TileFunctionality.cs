@@ -18,7 +18,9 @@ namespace Buildings
 		public BuildingType BuildingType { get; set; }
 		public HighlightType HighlightState { get; private set; }
 		public Vector2Int MapPosition { get; set; }
+		public Vector3 WorldPosition => Transform.position;
 		public Building Building { get; set; }
+		public Transform Transform { get; private set; }
 			
 		#endregion
 
@@ -35,6 +37,7 @@ namespace Buildings
 		{
 			_lineRenderer = GetComponent<LineRenderer>();
 			_defaultLineRendererMaterial = _lineRenderer.material;
+			Transform = transform;
 		}
 		
 		#endregion
