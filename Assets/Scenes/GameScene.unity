@@ -12935,10 +12935,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38d9960b4b35bac43817d79db381aac1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Prefabs:
-  - {fileID: 4240557103710374846, guid: 5951478bcf624884da274c613c787afa, type: 3}
-  - {fileID: 8768776472337186647, guid: 9dcad3239683c89428a24f7b1e6547da, type: 3}
-  - {fileID: 3694931733053576721, guid: 331ed556c6e57fe469acdc984aee6ff0, type: 3}
+  residentPrefabs:
+  - {fileID: 5102499207178918891, guid: 5951478bcf624884da274c613c787afa, type: 3}
+  - {fileID: 9149407082503964382, guid: 331ed556c6e57fe469acdc984aee6ff0, type: 3}
+  - {fileID: 5338036111108342469, guid: 9dcad3239683c89428a24f7b1e6547da, type: 3}
+  minSecondsBetweenResidents: 2.5
+  maxSecondsBetweenResidents: 5
 --- !u!1 &1341321080
 GameObject:
   m_ObjectHideFlags: 0

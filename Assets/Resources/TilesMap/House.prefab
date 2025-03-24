@@ -313,8 +313,8 @@ MonoBehaviour:
   - {fileID: 3577211424673633918}
   - {fileID: 7449230272876807099}
   - {fileID: 1701418677694771424}
-  minSecondsBetweenHabitantes: 0
-  maxSecondsBetweenHabitantes: 0
+  minSecondsBetweenResidents: 2
+  maxSecondsBetweenResidents: 4.5
 --- !u!1 &7300200207925328643
 GameObject:
   m_ObjectHideFlags: 0
