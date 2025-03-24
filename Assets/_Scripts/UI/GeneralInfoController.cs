@@ -40,18 +40,18 @@ namespace UI
 
         private void Awake()
         {
-            ResourcesManager.Instance.OnGoldUpdate += UpdateTotalGoldTMP;
-            ResourcesManager.Instance.OnResidentUpdate += UpdateInhabitantsNumberTMP;
-            ResourcesManager.Instance.OnCostsPerSecondUpdate += UpdateCostsPerSecondTMP;
-            ResourcesManager.Instance.OnGoldPerSecondUpdate += UpdateGoldPerSecondTMP;
+            ResourcesManager.OnGoldUpdate += UpdateTotalGoldTMP;
+            ResourcesManager.OnResidentUpdate += UpdateInhabitantsNumberTMP;
+            ResourcesManager.OnCostsPerSecondUpdate += UpdateCostsPerSecondTMP;
+            ResourcesManager.OnGoldPerSecondUpdate += UpdateGoldPerSecondTMP;
         }
 
         private void OnDestroy()
         {
-            ResourcesManager.Instance.OnGoldUpdate -= UpdateTotalGoldTMP;
-            ResourcesManager.Instance.OnResidentUpdate -= UpdateInhabitantsNumberTMP;
-            ResourcesManager.Instance.OnCostsPerSecondUpdate -= UpdateCostsPerSecondTMP;
-            ResourcesManager.Instance.OnGoldPerSecondUpdate -= UpdateGoldPerSecondTMP;
+            ResourcesManager.OnGoldUpdate -= UpdateTotalGoldTMP;
+            ResourcesManager.OnResidentUpdate -= UpdateInhabitantsNumberTMP;
+            ResourcesManager.OnCostsPerSecondUpdate -= UpdateCostsPerSecondTMP;
+            ResourcesManager.OnGoldPerSecondUpdate -= UpdateGoldPerSecondTMP;
         }
 
         #endregion

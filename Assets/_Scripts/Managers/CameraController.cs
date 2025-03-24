@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Controllers
 {
-    public class CameraController : MonoBehaviourSinglenton<CameraController>
+    public class CameraController : MonoBehaviourSingleton<CameraController>
     {
         #region Inspector Variables
 

@@ -13,7 +13,7 @@ using Utilities;
 namespace Managers
 {
     [DefaultExecutionOrder(-999)]
-    public class UIManagerInGame : MonoBehaviourSinglenton<UIManagerInGame>
+    public class UIManagerInGame : MonoBehaviourSingleton<UIManagerInGame>
     {
         #region Inspector Variables
 

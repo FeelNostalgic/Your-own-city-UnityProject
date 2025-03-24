@@ -10,7 +10,7 @@ using Random = UnityEngine.Random;
 
 namespace Managers
 {
-    public class MapManager : MonoBehaviourSinglenton<MapManager>
+    public class MapManager : MonoBehaviourSingleton<MapManager>
     {
         #region Inspector Variables
 
@@ -120,7 +120,7 @@ namespace Managers
             _mapTilesFunctionality[i, j].Building = building;
         }
 
-        public void DemolishBuilding(TileFunctionality tileToDemolish)
+        public static void DemolishBuilding(TileFunctionality tileToDemolish)
         {
             AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.demolishBuilding);
             var (i, j) = tileToDemolish.MapPosition;

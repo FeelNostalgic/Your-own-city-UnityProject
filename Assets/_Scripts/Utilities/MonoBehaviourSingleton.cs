@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Utilities
 {
-    public class MonoBehaviourSinglenton<T> : MonoBehaviour where T : MonoBehaviour
+    public class MonoBehaviourSingleton<T> : MonoBehaviour where T : MonoBehaviour
     {
         protected static T _instance;
 

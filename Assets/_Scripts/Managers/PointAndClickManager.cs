@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Managers
 {
-    public class PointAndClickManager : MonoBehaviourSinglenton<PointAndClickManager>
+    public class PointAndClickManager : MonoBehaviourSingleton<PointAndClickManager>
     {
         #region Inspector Variables
 
@@ -118,7 +118,7 @@ namespace Managers
                     break;
                 case BuildingStatus.demolishing:
                     if (selectedTile.BuildingType == BuildingType.none) return;
-                    MapManager.Instance.DemolishBuilding(selectedTile);
+                    MapManager.DemolishBuilding(selectedTile);
                     break;
                 case BuildingStatus.none:
                     if (selectedTile.BuildingType == BuildingType.none) return;

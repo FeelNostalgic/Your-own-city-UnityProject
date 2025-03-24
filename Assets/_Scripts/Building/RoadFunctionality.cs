@@ -25,7 +25,7 @@ namespace Buildings
 		
 		public override void Demolish()
 		{
-			ResourcesManager.Instance.AddGold((int)(BuildManager.Instance.RoadPrice * 0.8));
+			ResourcesManager.AddGold((int)(BuildManager.Instance.RoadPrice * 0.8));
 			MapManager.Instance.DemolishRoad(transform.parent.transform.position);
 			UIManagerInGame.Instance.DisableAllHUDExceptBuildPanel();
 			Destroy(gameObject);

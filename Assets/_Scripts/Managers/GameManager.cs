@@ -6,7 +6,7 @@ using Utilities;
 
 namespace Managers
 { 
-	public class GameManager : MonoBehaviourSinglenton<GameManager>
+	public class GameManager : MonoBehaviourSingleton<GameManager>
 	{
 		#region Public Variables
 		

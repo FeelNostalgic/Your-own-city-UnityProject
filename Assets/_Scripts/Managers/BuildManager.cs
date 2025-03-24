@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Managers
 {
-    public class BuildManager : MonoBehaviourSinglenton<BuildManager>
+    public class BuildManager : MonoBehaviourSingleton<BuildManager>
     {
         #region Inspector Variables
 
@@ -181,7 +181,7 @@ namespace Managers
 
         private void BuildRoad(TileFunctionality tile)
         {
-            if (ResourcesManager.Instance.CurrentGold >= roadPrice)
+            if (ResourcesManager.CurrentGold >= roadPrice)
             {
                 //Check if is possible to build a road
                 if (!_isFirstRoadBuild)
@@ -219,7 +219,7 @@ namespace Managers
 
         private void BuildHouse(TileFunctionality tile)
         {
-            if (ResourcesManager.Instance.CurrentGold >= housePrice)
+            if (ResourcesManager.CurrentGold >= housePrice)
             {
                 var neighbours = MapManager.Instance.Get4Neighbours(tile, BuildingType.road);
                 if (neighbours.Count > 0)
@@ -227,7 +227,7 @@ namespace Managers
                     var (i, j) = tile.MapPosition;
                     var rotation = CalculateRotation(neighbours, tile.MapPosition);
                     BuildBuildingAtMapTile(tile, BuildingType.house, rotation);
-                    ResourcesManager.Instance.AddGold((int)-housePrice);
+                    ResourcesManager.AddGold((int)-housePrice);
                     PointAndClickManager.DisableCurrentLineRendererSelected();
                     return;
                 }
@@ -241,7 +241,7 @@ namespace Managers
 
         private void BuildPlayground(TileFunctionality tile)
         {
-            if (ResourcesManager.Instance.CurrentGold >= playgroundPrice)
+            if (ResourcesManager.CurrentGold >= playgroundPrice)
             {
                 var neighbours = MapManager.Instance.Get4Neighbours(tile, BuildingType.road);
                 if (neighbours.Count > 0)
@@ -249,7 +249,7 @@ namespace Managers
                     var (i, j) = tile.MapPosition;
                     var rotation = CalculateRotation(neighbours, tile.MapPosition);
                     BuildBuildingAtMapTile(tile, BuildingType.playground, rotation);
-                    ResourcesManager.Instance.AddGold((int)-playgroundPrice);
+                    ResourcesManager.AddGold((int)-playgroundPrice);
                     return;
                 }
 
@@ -262,7 +262,7 @@ namespace Managers
 
         private void BuildHospital(TileFunctionality tile)
         {
-            if (ResourcesManager.Instance.CurrentGold >= hospitalPrice)
+            if (ResourcesManager.CurrentGold >= hospitalPrice)
             {
                 var neighbours = MapManager.Instance.Get4Neighbours(tile, BuildingType.road);
                 if (neighbours.Count > 0)
@@ -270,7 +270,7 @@ namespace Managers
                     var (i, j) = tile.MapPosition;
                     var rotation = CalculateRotation(neighbours, tile.MapPosition);
                     BuildBuildingAtMapTile(tile, BuildingType.hospital, rotation);
-                    ResourcesManager.Instance.AddGold((int)-hospitalPrice);
+                    ResourcesManager.AddGold((int)-hospitalPrice);
                     return;
                 }
 
@@ -283,7 +283,7 @@ namespace Managers
 
         private void BuildPolice(TileFunctionality tile)
         {
-            if (ResourcesManager.Instance.CurrentGold >= policePrice)
+            if (ResourcesManager.CurrentGold >= policePrice)
             {
                 var neighbours = MapManager.Instance.Get4Neighbours(tile, BuildingType.road);
                 if (neighbours.Count > 0)
@@ -291,7 +291,7 @@ namespace Managers
                     var (i, j) = tile.MapPosition;
                     var rotation = CalculateRotation(neighbours, tile.MapPosition);
                     BuildBuildingAtMapTile(tile, BuildingType.police, rotation);
-                    ResourcesManager.Instance.AddGold((int)-policePrice);
+                    ResourcesManager.AddGold((int)-policePrice);
                     return;
                 }
 
@@ -342,7 +342,7 @@ namespace Managers
             newBuilding.name = BuildingType.road + "[" + i + ", " + j + "]";
             MapManager.SetTileToNewBuilding(i, j, newBuilding.GetComponent<Building>(), BuildingType.road);
             MapManager.Instance.ChangeTileToRoad(i, j);
-            ResourcesManager.Instance.AddGold((int)-roadPrice);
+            ResourcesManager.AddGold((int)-roadPrice);
         }
 
         private void DisablePreview()

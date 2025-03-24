@@ -6,7 +6,7 @@ using UnityEngine.Serialization;
 
 namespace Managers
 {
-    public class ResourcesManager : MonoBehaviourSinglenton<ResourcesManager>
+    public class ResourcesManager : MonoBehaviourSingleton<ResourcesManager>
     {
         #region Inspector Variables
 
@@ -16,26 +16,21 @@ namespace Managers
 
         #region Public Variables
 
-        public int CurrentGold { get; private set; }
+        public static int CurrentGold { get; private set; }
 
-        public event Action<int> OnGoldUpdate;
-        public event Action<int> OnResidentUpdate;
-        public event Action<int> OnCostsPerSecondUpdate;
-        public event Action<int> OnGoldPerSecondUpdate;
+        public static event Action<int> OnGoldUpdate;
+        public static event Action<int> OnResidentUpdate;
+        public static event Action<int> OnCostsPerSecondUpdate;
+        public static event Action<int> OnGoldPerSecondUpdate;
 
         #endregion
 
         #region Private Variables
 
-        private int _currentInhabitants;
-        private int _currentCostsPerSecond;
-        private float _currentGoldPerSecond;
-
-        public ResourcesManager(int startGold)
-        {
-            this.startGold = startGold;
-        }
-
+        private static int _currentInhabitants;
+        private static int _currentCostsPerSecond;
+        private static float _currentGoldPerSecond;
+        
         #endregion
 
         #region Unity Methods
@@ -73,25 +68,25 @@ namespace Managers
 
         #region Public Methods
 
-        public void AddResident(int h)
+        public static void AddResident(int h)
         {
             _currentInhabitants += h;
             OnResidentUpdate?.Invoke(_currentInhabitants);
         }
 
-        public void AddGold(int g)
+        public static void AddGold(int g)
         {
             CurrentGold += g;
             OnGoldUpdate?.Invoke(CurrentGold);
         }
 
-        public void AddCosts(int g)
+        public static void AddCosts(int g)
         {
             _currentCostsPerSecond += g;
             OnCostsPerSecondUpdate?.Invoke(_currentCostsPerSecond);
         }
 
-        public void AddGoldPerSecond(float g)
+        public static void AddGoldPerSecond(float g)
         {
             _currentGoldPerSecond += g;
             OnGoldPerSecondUpdate?.Invoke((int)_currentGoldPerSecond);
@@ -110,7 +105,7 @@ namespace Managers
 
         #region Private Methods
 
-        private void GameOver()
+        private static void GameOver()
         {
             GameManager.Instance.ChangeState(GameState.GameOver);
             Time.timeScale = 0;

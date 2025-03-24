@@ -62,7 +62,7 @@ namespace Buildings
             _currentMultiplier = 1 + startingMultiplier;
             _effectArea = 1;
             _levelPrice = (int)(_buildingPrice * 2f);
-            ResourcesManager.Instance.AddCosts(_costsPerSecond);
+            ResourcesManager.AddCosts(_costsPerSecond);
             UpdateArea();
             UpdateMultiplierNewNeighbours();
             EnableLights();
@@ -74,16 +74,16 @@ namespace Buildings
 
         public void LevelUp()
         {
-            if (ResourcesManager.Instance.CurrentGold > _levelPrice)
+            if (ResourcesManager.CurrentGold > _levelPrice)
             {
                 AudioManager.Instance.PlaySFXSound(AudioManager.SFX_Type.levelUp);
-                ResourcesManager.Instance.AddGold(-_levelPrice);
+                ResourcesManager.AddGold(-_levelPrice);
                 _effectArea++;
                 _currentLevel++;
                 EnableLights();
                 _levelPrice = (int)(_levelPrice * 2.2f);
                 _currentMultiplier += multiplierUpgradePerLevel;
-                ResourcesManager.Instance.AddCosts((int)(_costsPerSecond * 0.25f));
+                ResourcesManager.AddCosts((int)(_costsPerSecond * 0.25f));
                 _costsPerSecond = (int)(_costsPerSecond * 1.25f);
                 UpdateArea();
                 UpdateCurrentNeighboursMultiplier(multiplierUpgradePerLevel);
@@ -99,8 +99,8 @@ namespace Buildings
 
         public override void Demolish()
         {
-            ResourcesManager.Instance.AddGold((int)(_buildingPrice * 0.8f * _currentLevel));
-            ResourcesManager.Instance.AddCosts(-_costsPerSecond);
+            ResourcesManager.AddGold((int)(_buildingPrice * 0.8f * _currentLevel));
+            ResourcesManager.AddCosts(-_costsPerSecond);
             UpdateCurrentNeighboursMultiplier(-(_currentMultiplier - 1));
             UnregisterBuilding();
             UIManagerInGame.Instance.DisableAllHUDExceptBuildPanel();

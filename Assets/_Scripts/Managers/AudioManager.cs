@@ -6,7 +6,7 @@ using Random = UnityEngine.Random;
 
 namespace Managers
 {
-    public class AudioManager : MonoBehaviourSinglenton<AudioManager>
+    public class AudioManager : MonoBehaviourSingleton<AudioManager>
     {
         #region Inspector Variables
 
