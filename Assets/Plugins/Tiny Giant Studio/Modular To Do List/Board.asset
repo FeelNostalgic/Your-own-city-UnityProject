@@ -334,9 +334,29 @@ MonoBehaviour:
       _hourInTweleveHourFormat:
         hour: 0
         format: 0
-    opened: 0
+    opened: 1
     searchingFor: 
   - myName: Doing
+    editing: 0
+    mainColor: {r: 1, g: 1, b: 1, a: 1}
+    addedDescription: 0
+    myDescription: Description
+    tasks: []
+    creationTime:
+      year: 0
+      month: 0
+      day: 0
+      dayOfTheWeek: 
+      minute: 0
+      hour: 0
+      hourBeforeCountingAMPM: 0
+      timeIndex: 0
+      _hourInTweleveHourFormat:
+        hour: 0
+        format: 0
+    opened: 0
+    searchingFor: 
+  - myName: In Review
     editing: 0
     mainColor: {r: 1, g: 1, b: 1, a: 1}
     addedDescription: 0
@@ -429,26 +449,6 @@ MonoBehaviour:
         hour: 0
         format: 0
     opened: 1
-    searchingFor: 
-  - myName: In Review
-    editing: 0
-    mainColor: {r: 1, g: 1, b: 1, a: 1}
-    addedDescription: 0
-    myDescription: Description
-    tasks: []
-    creationTime:
-      year: 0
-      month: 0
-      day: 0
-      dayOfTheWeek: 
-      minute: 0
-      hour: 0
-      hourBeforeCountingAMPM: 0
-      timeIndex: 0
-      _hourInTweleveHourFormat:
-        hour: 0
-        format: 0
-    opened: 0
     searchingFor: 
   - myName: Done
     editing: 0
