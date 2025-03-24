@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Residents
 {
-    public class HabitanteStat : MonoBehaviour
+    public class ResidentStat : MonoBehaviour
     {
         #region Inspector Variables
 
